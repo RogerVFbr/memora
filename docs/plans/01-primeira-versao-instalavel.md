@@ -151,7 +151,7 @@ critérios de aceite e validações específicas ficam nas issues vinculadas; n�
 manter uma segunda cópia integral desses textos no repositório.
 
 **Situação em 2026-10-25:** 5 de 6 etapas concluídas. I1 a I5 integradas e aceitas.
-Próxima etapa: I6 / #12.
+I6 / #12 em andamento: incremento de versão em preparação; upgrade ainda pendente.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -164,7 +164,7 @@ contador das seis etapas de implementação.
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Concluída | [#25](https://github.com/RogerVFbr/memora/pull/25) / [e8f21b4](https://github.com/RogerVFbr/memora/commit/e8f21b4427dcac7fd7022e337d6b3e93af2ad8eb) | Não se aplica | [Aceite de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv): controle/foco, configurações persistentes, reabertura, suspensão/retomada e flag real aprovados; limites na [issue #9](https://github.com/RogerVFbr/memora/issues/9) |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | Concluída | [#30](https://github.com/RogerVFbr/memora/pull/30) / [ff18814](https://github.com/RogerVFbr/memora/commit/ff188147383e0bb2d28fdfa816e6cb77ea1e6a61) | Não se aplica | Entrega assinada em `builds/0.1.0-alpha.1/`; verificação completa, corrupção e recusa de sobrescrita aprovadas; [evidências na issue #10](https://github.com/RogerVFbr/memora/issues/10) |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | Concluída | [#34](https://github.com/RogerVFbr/memora/pull/34) — registro de aceite | [v0.1.0-alpha.1](https://github.com/RogerVFbr/memora/releases/tag/v0.1.0-alpha.1) | Anexo baixado, primeira instalação, smoke e sessão de 10 minutos aprovados; [evidências e limites](https://github.com/RogerVFbr/memora/issues/11#issuecomment-6402727904); próxima etapa I6 |
-| I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | A fazer | — | A produzir | Exige upgrade real e matriz de preferências antes/depois |
+| I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | Em andamento | — | A produzir | Matriz não padrão registrada na alpha.1; preparando alpha.2; upgrade e aceite ainda pendentes |
 
 ### Como manter o progresso
 
