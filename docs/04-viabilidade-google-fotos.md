@@ -39,7 +39,8 @@ comportamento da conta de teste. Reconsultar antes de decisões de implementaç�
 
 A [avaliação inicial G1](#51-g1--enquadramento-e-arquitetura-candidata) compara
 caminhos Picker. A [retomada Ambient](#52-g1--tv-gallery-e-acesso-à-ambient-api)
-corrige a cobertura e define o impedimento atual. Nenhuma arquitetura está
+corrige a cobertura. A [retomada Picker](#53-g1--retomada-do-caminho-picker)
+registra o encaminhamento vigente. Nenhuma arquitetura está
 aprovada para implantação.
 
 Para cada candidato registrar tipo de cliente, componentes executados em cada
@@ -90,7 +91,8 @@ Não houve login, acesso a mídia, criação de cliente/projeto ou instalação.
 
 Esta análise inicial trata dos caminhos Picker e não esgota as alternativas
 Google Fotos. Para o resultado vigente após investigar o TV Gallery, consultar
-a [retomada Ambient](#52-g1--tv-gallery-e-acesso-à-ambient-api). As leituras de
+as retomadas [Ambient](#52-g1--tv-gallery-e-acesso-à-ambient-api) e
+[Picker](#53-g1--retomada-do-caminho-picker). As leituras de
 hardware abaixo pertencem à primeira avaliação; não foram repetidas na retomada.
 
 #### Enquadramento e dúvida impeditiva
@@ -213,7 +215,9 @@ Retomada da [issue #42](https://github.com/RogerVFbr/memora/issues/42) em 2026-1
 a pedido do desenvolvedor, para aprofundar a referência já testada no Fire Stick.
 O proprietário confirmou nesta retomada: **não possui acesso aprovado à Ambient
 API**. Não foi inspecionado um projeto Cloud nem se presumiu inexistência dele.
-Esta seção atualiza a conclusão inicial da §5.1, preservada como histórico.
+Esta seção complementa a conclusão inicial da §5.1. O encaminhamento vigente
+foi posteriormente definido na [retomada Picker](#53-g1--retomada-do-caminho-picker);
+a candidatura abaixo é material histórico, não uma ação necessária agora.
 
 #### Evidências públicas e grau de certeza
 
@@ -300,7 +304,7 @@ proponente devem ser fornecidos pelo proprietário conforme a realidade.
 Nenhum dado de contato ou identificação pessoal foi incluído no rascunho público.
 Nenhum envio, contato com Google/Klebo ou aceitação de termos foi realizado.
 
-#### Resultado vigente e retomada
+#### Resultado da investigação Ambient
 
 G1 continua sem passagem para G2. Primeiro, o proprietário deve solicitar acesso
 ou esclarecimento de elegibilidade pelo canal oficial acima e trazer resposta
@@ -314,3 +318,80 @@ copiado como aceite Ambient. Nenhuma dessas mudanças de escopo foi aplicada aqu
 Se o acesso for recusado ou permanecer indisponível, registrar o resultado e
 levar a decisão ao desenvolvedor, sem chamar isso de falha técnica do Fire TV.
 Não executar G2, implantar serviço ou tentar endpoints privados para contornar.
+
+
+### 5.3 G1 — Retomada do caminho Picker
+
+Em 2026-10-25, o desenvolvedor reafirmou o [caminho do PRD §3.1](00-PRD.md#31-google-photos-picker-api).
+Esta retomada da [issue #42](https://github.com/RogerVFbr/memora/issues/42)
+substitui o encaminhamento de candidatura Ambient da §5.2. Não é necessário
+aguardar ingresso no programa de parceiros para investigar Picker; não houve
+mudança do recorte das issues G2–G6 para Ambient. A configuração de projeto/API e
+consentimento ainda não foi feita, conforme resposta do proprietário nesta retomada.
+
+#### Preparação do projeto de teste
+
+O proprietário pode preparar estes elementos sem escolher antecipadamente o
+cliente OAuth ou contratar infraestrutura:
+
+1. No Google Cloud Console, criar/selecionar um projeto de teste do Memora sob sua
+   conta. Não publicar ID do projeto, dados de conta ou arquivos de credenciais.
+2. Habilitar **Google Photos Picker API**. Não é Google Picker, Library ou Ambient.
+3. Configurar Google Auth Platform com identificação real do Memora, e-mails de
+   suporte/contato e audiência adequada à conta. Para conta pessoal, configurar
+   audiência externa em teste e adicionar a própria conta como usuário de teste.
+4. Em acesso a dados, cadastrar somente o escopo Picker definido no PRD §3.1.
+   Não acrescentar escopos Library ou Drive para tentar contornar seus limites.
+5. Informar apenas que API, consentimento e usuário de teste estão preparados.
+   O tipo de cliente será decidido conforme o candidato OAuth verificado abaixo;
+   não criar Desktop para o APK nem cliente web com secret embarcado.
+
+Fonte: [configuração Photos](https://developers.google.com/photos/overview/configure-your-app).
+O exemplo web dessa página não escolhe a plataforma do Memora. Modo de teste não
+é aprovação de conformidade e pode afetar validade OAuth; medir no gate pertinente.
+Não foi acessado ou alterado o Console nesta entrega.
+
+#### Próxima investigação OAuth
+
+Além do candidato web da §5.1, há uma alternativa Android ainda não avaliada
+operacionalmente: cliente **Android** com navegador externo e retorno ao próprio
+APK, PKCE e `state`. Evitaria GMS, backend e custódia de secret confidencial **se**
+o Google e o navegador do Fire TV aceitarem esse fluxo para o cliente real.
+É hipótese de ensaio, não suporte confirmado.
+
+O [anúncio oficial de 2023](https://developers.googleblog.com/improving-user-safety-in-oauth-flows-through-new-oauth-custom-uri-scheme-restrictions/)
+descreve bloqueio por padrão e uma opção avançada para habilitar URI própria
+quando a alternativa recomendada não atende. Porém, o
+[guia OAuth atual](https://developers.google.com/identity/protocols/oauth2/native-app)
+informa que esse retorno não é suportado no Android, e a ajuda antiga
+[Setting up OAuth](https://support.google.com/googleapi/answer/6158849?hl=en)
+se declara desatualizada. A nova ajuda
+[Manage OAuth Clients](https://support.google.com/cloud/answer/15549257?hl=en)
+descreve registro Android por pacote e certificado sem esclarecer a exceção.
+Não assumir que a opção histórica ainda existe ou resolve o Fire TV.
+
+Ação ao preparar o cliente: conferir privadamente as opções efetivas do Console e
+esclarecer a divergência de suporte antes de usar credenciais/dados reais. Se o
+retorno for justificável, o desenho deve manter verifier/tokens em Kotlin, validar
+estado/transação/expiração, usar callback restrito, rejeitar replay e expor zero
+credenciais ao React. O retorno precisa ocorrer no aparelho que iniciou o fluxo:
+ler no celular um QR OAuth com callback Android não devolve automaticamente o
+código à TV. A prova inicial desse candidato seria no navegador externo da própria
+TV, com impacto de usabilidade a medir; não pressupõe onboarding por celular.
+Se for descartado, retomar desenho de pareamento/serviço web, apresentando
+arquitetura, fronteira de dados e custo para decisão, sem implantação automática.
+
+A avaliação de enquadramento da §5.1 continua aberta; a preferência por Picker não
+é evidência de conformidade nem proibição conclusiva. A investigação de OAuth e
+a preparação Cloud podem avançar sem dados de mídia enquanto esse ponto é tratado.
+Não adicionar uma dependência de aprovação Ambient para resolver essa dúvida.
+
+#### Resultado e próximo passo
+
+G1 mantém aceite incompleto. Há trabalho definido para retomar: preparar
+projeto/API/consentimento e verificar o candidato Android com retorno próprio,
+resolvendo sua documentação contraditória. Só depois escolher cliente e autorizar
+a prova operacional de G2 conforme o gate existente. Nenhum prazo/frequência de
+reseleção foi aceito; sessões e expiração continuam sendo ensaios G3/G4.
+Esta entrega registra direção e preparação; não comprova OAuth no Fire TV,
+não cria código/infraestrutura e não encerra #42.
