@@ -831,6 +831,20 @@ válida recebeu HTTP 200 para essa sessão. Com o controle 200 anterior da origi
 fica observado o antes/depois OAuth sem excluir sessão ou revogar o grant.
 Esse 401 não foi classificado como expiração da sessão ou das URLs.
 
+Às 23:42 UTC, o teste direto das URLs iniciais, sem relistar, encontrou 0/12
+acessíveis: 12 respostas HTTP 403, com idades entre 3.646 e 3.651 segundos e
+credencial 1 ainda dentro de sua validade. O controle seguinte da mesma sessão
+respondeu HTTP 200. Só então a relistagem e leitura delimitada dos 12 itens
+foram executadas: 15 requisições lógicas (três páginas e 12 leituras), todas
+HTTP 200 e zero falhas, sem nova autorização ou seleção pelo usuário.
+
+Comparado ao acesso inicial 12/12 antes da janela, o resultado demonstra perda
+de acesso daqueles endereços e recuperação pelos endereços novamente retornados
+pela mesma sessão válida. Não atribuir os 403 a expiração da sessão ou OAuth.
+Não generaliza prazo exato universal, ausência de cache remoto ou acesso após
+expireTime. A fronteira da sessão e revogação continuam pendentes; a renovação
+por refresh token ainda será investigada, sem presumir login manual horário.
+
 ## 9. Escala e coleções G5
 
 Iniciada a preparação de [G5 / #46](https://github.com/RogerVFbr/memora/issues/46)

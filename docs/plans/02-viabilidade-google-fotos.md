@@ -98,7 +98,7 @@ ocorrerem; G6 aguarda evidências suficientes.
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
-| G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
+| G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58), [PR #63](https://github.com/RogerVFbr/memora/pull/63) | [OAuth/URLs observados](../04-viabilidade-google-fotos.md#83-observação-das-fronteiras-oauth-e-url); sessão, refresh e revogação pendentes |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Concluída | [PR #60](https://github.com/RogerVFbr/memora/pull/60), [PR #61](https://github.com/RogerVFbr/memora/pull/61), [PR #62](https://github.com/RogerVFbr/memora/pull/62) | [Aceite investigativo, limites e limpeza](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
@@ -124,6 +124,11 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G4 / #45: [fronteiras naturais OAuth/URL](../04-viabilidade-google-fotos.md#83-observação-das-fronteiras-oauth-e-url)
+  pelo [PR #63](https://github.com/RogerVFbr/memora/pull/63): token original 401
+  com controle 200; URLs iniciais 403 após mais de 60 minutos, sessão 200 e
+  recuperação por relistagem sem reseleção. Sessão/refresh/revogação pendentes; 4/6.
 
 - 2026-10-25 — G5 / #46 concluída: [negativa de limite e duas amostras positivas](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5)
   com comparação e limpeza confirmadas. 4/6; G4 preservada para observação real,
