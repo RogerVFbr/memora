@@ -124,4 +124,5 @@ adb -s <alvo-adb> install apps/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 Esse comando foi validado para a primeira instalação do pacote de desenvolvimento.
-A abertura do aplicativo é uma operação separada, também sujeita a autorização.
+Antes de executar e validar o aplicativo, consulte as
+[autorizações vigentes do Fire Stick](AGENTS.md#fluxo-de-trabalho-no-repositório).
