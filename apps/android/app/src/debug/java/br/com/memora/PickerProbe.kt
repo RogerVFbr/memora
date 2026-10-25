@@ -2,6 +2,7 @@ package br.com.memora
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.os.SystemClock
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -437,7 +438,11 @@ class PickerProbe(context: Context) {
         .put("contentRange", connection.getHeaderField("Content-Range") ?: JSONObject.NULL)
 
     /** Credential replacement is explicit and never creates/deletes a Picker session. */
-    fun replaceAuthorization(response: JSONObject, receivedAt: Instant): String {
+    fun replaceAuthorization(response: JSONObject, receivedAt: Instant): String =
+        storeAuthorization(response, receivedAt, "authorization_code")
+
+    private fun storeAuthorization(response: JSONObject, receivedAt: Instant, origin: String,
+        refreshRun: Int? = null, expectedVersion: Int? = null): String {
         checkActive()
         val token = response.getString("access_token")
         val seconds = response.getLong("expires_in")
@@ -448,9 +453,10 @@ class PickerProbe(context: Context) {
         require(type.equals("Bearer", ignoreCase = true)) { "Unexpected OAuth token type" }
         store.update { saved ->
             preserveInitialAuthorization(saved)
+            if (expectedVersion != null) check(saved.optInt("credentialVersion", 0) == expectedVersion) { "Credential changed during refresh" }
             val history = saved.optJSONArray("authorizationHistory") ?: JSONArray()
             val version = ExpiryProbePolicy.nextIndex(history.length(), ExpiryProbePolicy.MAX_AUTHORIZATIONS) + 1
-            val credential = JSONObject().put("version", version).put("token", token)
+            val credential = JSONObject().put("version", version).put("token", token).put("origin", origin)
                 .put("receivedAt", receivedAt.toString())
                 .put("expiresAt", receivedAt.plusSeconds(seconds).toString())
                 .put("tokenType", type).put("association", "UNVERIFIED")
@@ -458,6 +464,10 @@ class PickerProbe(context: Context) {
                 .put("refreshTokenPresent", response.optString("refresh_token").isNotBlank())
             if (response.has("scope")) credential.put("grantedScopes", response.getString("scope"))
             if (response.optString("refresh_token").isNotBlank()) credential.put("refreshToken", response.getString("refresh_token"))
+            if (response.has("refreshExpiresAt")) credential.put("refreshExpiresAt", response.getString("refreshExpiresAt"))
+            else if (response.has("refresh_token_expires_in")) credential.put("refreshExpiresAt",
+                receivedAt.plusSeconds(response.getLong("refresh_token_expires_in")).toString())
+            if (expectedVersion != null) credential.put("sourceCredentialVersion", expectedVersion)
             history.put(credential)
             saved.put("authorizationHistory", history).put("credentialVersion", version)
                 .put("token", token).put("tokenReceivedAt", receivedAt.toString())
@@ -466,13 +476,113 @@ class PickerProbe(context: Context) {
                 .put("grantedScopesPresent", response.has("scope"))
                 .put("refreshTokenPresent", credential.getBoolean("refreshTokenPresent"))
                 .put("credentialAssociation", "UNVERIFIED")
-            saved.remove("grantedScopes"); saved.remove("refreshToken")
+            saved.remove("grantedScopes"); saved.remove("refreshToken"); saved.remove("refreshExpiresAt")
             if (credential.has("grantedScopes")) saved.put("grantedScopes", credential.get("grantedScopes"))
             if (credential.has("refreshToken")) saved.put("refreshToken", credential.get("refreshToken"))
-            saved.put("lastExpirySummary", "OAuth renovado; sessão e URLs iniciais preservadas. Associação à sessão ainda não comprovada.")
+            if (credential.has("refreshExpiresAt")) saved.put("refreshExpiresAt", credential.get("refreshExpiresAt"))
+            val summary = if (origin == "refresh_token")
+                "Refresh sem navegador concluído; credencial $version gravada. Sessão e URLs iniciais preservadas; consulte a mesma sessão para comprovar acesso."
+                else "OAuth renovado; sessão e URLs iniciais preservadas. Associação à sessão ainda não comprovada."
+            if (refreshRun != null) saved.getJSONArray("refreshChecks").getJSONObject(refreshRun)
+                .put("outcome", "SUCCESS").put("finishedAt", now()).put("summary", summary).put("credentialVersion", version)
+                .remove("candidateCredential")
+            saved.put("lastExpirySummary", summary)
             checkActive()
         }
         return "OAuth renovado; nenhuma sessão criada ou removida. Consulte a mesma sessão para verificar acesso."
+    }
+
+    /** Explicit, bounded refresh of the current grant. No browser, scope expansion, or session creation. */
+    fun refreshAuthorization(clientId: String, isCancelled: () -> Boolean = { false }): String {
+        require(clientId.matches(Regex("[A-Za-z0-9_-]+\\.apps\\.googleusercontent\\.com"))) { "Invalid OAuth client identifier" }
+        val signal = ExpiryProbeCancellation(isCancelled)
+        check(!signal.isCancelled() && !Thread.currentThread().isInterrupted) { "Refresh cancelled before start" }
+        check(expiryRun == null && expiryCancellation == null) { "Another probe action is active" }
+        val saved = store.update { preserveInitialAuthorization(it) }
+        val checks = saved.optJSONArray("refreshChecks") ?: JSONArray()
+        val run = ExpiryProbePolicy.nextIndex(checks.length(), RefreshProbePolicy.MAX_CHECKS)
+        val sourceVersion = saved.optInt("credentialVersion", 0)
+        store.update { checks.put(JSONObject().put("startedAt", now()).put("outcome", "STARTED")
+            .put("sourceCredentialVersion", sourceVersion).put("origin", "refresh_token"))
+            it.put("refreshChecks", checks) }
+        expiryCancellation = signal
+        val started = SystemClock.elapsedRealtime()
+        val deadline = started + 60_000L
+        var connection: HttpsURLConnection? = null
+        var http: JSONObject? = null
+        var oauthError: String? = null
+        var committed = false
+        fun active() { checkActive(); check(SystemClock.elapsedRealtime() < deadline) { "Refresh time budget reached" } }
+        try {
+            active()
+            ExpiryProbePolicy.nextIndex(saved.optJSONArray("authorizationHistory")?.length() ?: 0, ExpiryProbePolicy.MAX_AUTHORIZATIONS)
+            val refresh = saved.optString("refreshToken")
+            if (refresh.isBlank()) {
+                val summary = "Refresh indisponível: a credencial atual não contém refresh token. Nenhuma rede ou autorização automática foi iniciada."
+                persistWithoutInterrupt { store.update { it.getJSONArray("refreshChecks").getJSONObject(run)
+                    .put("outcome", "NO_REFRESH_TOKEN").put("finishedAt", now()).put("durationMs", SystemClock.elapsedRealtime() - started)
+                    .put("summary", summary); it.put("lastExpirySummary", summary) } }
+                return summary
+            }
+            // Intent is already durable. The refresh token is sent only in the native HTTPS body.
+            connection = open("https://oauth2.googleapis.com/token", null).apply {
+                requestMethod = "POST"; doOutput = true
+                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+            }
+            val body = OAuthTransaction.form(mapOf("client_id" to clientId, "refresh_token" to refresh,
+                "grant_type" to "refresh_token")).toByteArray(Charsets.UTF_8)
+            try { connection.outputStream.use { it.write(body) } } finally { body.fill(0) }
+            val status = connection.responseCode
+            http = httpEvidence(connection, status)
+            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+            val bytes = stream?.use { readRefreshBody(it, ::active) } ?: byteArrayOf()
+            val receivedAt = Instant.now()
+            val response = try { if (bytes.isEmpty()) JSONObject() else JSONObject(String(bytes, Charsets.UTF_8)) }
+                finally { bytes.fill(0) }
+            if (status !in 200..299) {
+                oauthError = RefreshProbePolicy.safeError(response.optString("error"))
+                throw ProbeHttpException(status, privateHttpEvidence = http.toString())
+            }
+            // A returned rotated credential must remain recoverable even if cancellation arrives
+            // after the response. Retain it privately without activating it until the atomic commit.
+            persistWithoutInterrupt { store.update { snapshot ->
+                val record = snapshot.getJSONArray("refreshChecks").getJSONObject(run)
+                val candidate = JSONObject().put("receivedAt", receivedAt.toString())
+                listOf("access_token", "expires_in", "token_type", "scope", "refresh_token", "refresh_token_expires_in").forEach {
+                    if (response.has(it)) candidate.put(it, response.get(it))
+                }
+                record.put("candidateCredential", candidate).put("http", http)
+                    .put("durationMs", SystemClock.elapsedRealtime() - started)
+                    .put("refreshTokenReturned", response.has("refresh_token")).put("scopeReturned", response.has("scope"))
+            } }
+            active()
+            fun fields(value: JSONObject, mapping: Map<String, String>): Map<String, String> = mapping.mapNotNull { (from, to) ->
+                if (value.has(from)) to to value.get(from).toString() else null
+            }.toMap()
+            val previous = fields(saved, mapOf("refreshToken" to "refresh_token", "grantedScopes" to "scope", "refreshExpiresAt" to "refreshExpiresAt"))
+            val returned = fields(response, listOf("access_token", "expires_in", "token_type", "scope", "refresh_token", "refresh_token_expires_in").associateWith { it })
+            val merged = RefreshProbePolicy.merge(previous, returned, receivedAt)
+            store.update { it.getJSONArray("refreshChecks").getJSONObject(run).put("http", http)
+                .put("durationMs", SystemClock.elapsedRealtime() - started)
+                .put("refreshTokenReturned", response.has("refresh_token")).put("scopeReturned", response.has("scope")) }
+            // Credentials and SUCCESS are committed together, preventing a false failure after a successful save.
+            storeAuthorization(JSONObject(merged as Map<*, *>), receivedAt, "refresh_token", run, sourceVersion)
+            committed = true
+            return store.read()!!.getString("lastExpirySummary")
+        } catch (error: Exception) {
+            if (committed) throw error
+            val cancelled = this.isCancelled()
+            val status = if (http != null) " HTTP ${http.getInt("status")}." else ""
+            val detail = oauthError?.let { " OAuth $it." }.orEmpty()
+            val summary = "Refresh ${if (cancelled) "cancelado" else "não concluído"}.$status$detail Credencial anterior e sessão preservadas; sem nova seleção."
+            persistWithoutInterrupt { store.update { it.getJSONArray("refreshChecks").getJSONObject(run)
+                .put("outcome", if (cancelled) "CANCELLED" else "FAILED").put("finishedAt", now())
+                .put("durationMs", SystemClock.elapsedRealtime() - started).put("http", http ?: JSONObject.NULL)
+                .put("oauthError", oauthError ?: JSONObject.NULL).put("category", error.javaClass.simpleName).put("summary", summary)
+                it.put("lastExpirySummary", summary) } }
+            if (cancelled) throw error
+            return summary
+        } finally { connection?.disconnect(); expiryCancellation = null }
     }
 
     private fun preserveInitialAuthorization(saved: JSONObject) {
@@ -480,7 +590,7 @@ class PickerProbe(context: Context) {
         val initial = JSONObject().put("version", saved.optInt("credentialVersion", 0))
         mapOf("token" to "token", "tokenReceivedAt" to "receivedAt", "tokenIssuedAt" to "issuedAt",
             "tokenExpiresAt" to "expiresAt", "tokenType" to "tokenType", "grantedScopes" to "grantedScopes",
-            "refreshToken" to "refreshToken").forEach { (from, to) -> if (saved.has(from)) initial.put(to, saved.get(from)) }
+            "refreshToken" to "refreshToken", "refreshExpiresAt" to "refreshExpiresAt").forEach { (from, to) -> if (saved.has(from)) initial.put(to, saved.get(from)) }
         saved.put("initialAuthorization", initial)
     }
 

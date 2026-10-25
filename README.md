@@ -299,6 +299,11 @@ URLs atuais e consultar com o OAuth original. **Renovar OAuth sem nova seleção
 abre o consentimento e substitui a credencial ativa, preservando a sessão e as
 âncoras originais. Não use o botão SPK-02 para renovar autorização.
 
+**SPK-03: renovar token sem navegador** tenta o grant de refresh atual, sem nova
+seleção ou consentimento. A tela informa ausência/recusa sem retry automático;
+um sucesso ainda deve ser conferido por **Consultar sessão**. Informações locais
+mostram somente a presença do refresh token, nunca seu valor.
+
 **Histórico de expiração** lê o registro local sem rede. Abrir novamente o app
 não inicia medições. Os [procedimentos e pendências G4](docs/04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
 definem quando medir; não limpe dados, desinstale nem revogue o acesso antes das

@@ -845,6 +845,54 @@ Não generaliza prazo exato universal, ausência de cache remoto ou acesso após
 expireTime. A fronteira da sessão e revogação continuam pendentes; a renovação
 por refresh token ainda será investigada, sem presumir login manual horário.
 
+### 8.4 Prova de renovação sem navegador
+
+A [documentação OAuth para aplicações instaladas](https://developers.google.com/identity/protocols/oauth2/native-app#refresh-token)
+descreve refresh token e grant em POST ao token endpoint, sem client_secret para
+cliente Android. Assim, a prova anterior de renovação por consentimento não
+demonstra que login manual horário é necessário. Primeiro conferir somente a
+presença da credencial no snapshot cifrado; não imprimir seu valor.
+
+A prova prepara uma ação diagnóstica explícita de refresh, sem navegador, nova
+seleção ou escopo adicional, preservando token original, URLs e sessão. Resposta
+que omite refresh token deve conservar o anterior; rotação retornada deve ser
+registrada, sem reiniciar localmente uma validade antiga. Preservar também
+escopos e prazo conhecido quando ausentes na resposta. Intenção e resultado
+HTTP são privados e duráveis, sem retry automático.
+
+O prazo de refresh token em projeto externo Testing é uma restrição distinta da
+sessão Picker: a [documentação OAuth](https://developers.google.com/identity/protocols/oauth2#expiration)
+indica sete dias para aplicações Testing com escopos além dos básicos de
+identidade. Não supor acesso indefinido por conseguir refresh. A emissão e retenção foram observadas por indicadores locais: refresh token
+atual e original presentes, sem exibir seus valores. O comportamento de renovação foi medido após expiração do access token atual,
+conforme os resultados abaixo.
+
+Implementação nativa isolada em debug: ação explícita sem navegador/novo consentimento,
+intenção e HTTP privados antes/depois, 64 KiB de resposta, timeouts/budget e
+controle de cancelamento pré-worker. Credencial candidata e sucesso são gravados
+atomicamente; resposta perdida antes de parse/persistência ainda pode ocultar
+rotação remota, sem garantia de validade da credencial anterior. Sem retry ou
+fallback automático. Build, 38 testes e lint aprovados; revisão independente sem
+impeditivos. Atualização preservou sessão/URLs/âncoras.
+
+Às 23:50 UTC, a credencial 1 deixou de acessar a sessão, recebendo HTTP 401 após
+sua validade prevista. A ação de refresh, sem navegador, nova seleção ou
+intervenção do proprietário, gravou credencial 2 com validade prevista até
+2026-10-26T00:50:47.665Z. O GET da mesma sessão respondeu HTTP 200 com ela.
+Os indicadores de refresh token atual/original continuaram presentes.
+
+Em processo novo, o resultado e a credencial foram restaurados; um segundo
+refresh explícito funcionou, gravando credencial 3, e o GET da mesma sessão
+voltou a responder HTTP 200. A repetição não aguardou outra hora: testa
+persistência/reutilização do grant, não segunda expiração natural. O primeiro
+ensaio após 401 comprova recuperação da condição expirada observada. Isso não
+prova renovação indefinida, funcionamento após revogação ou após expireTime,
+nem automação de produção: o comando é diagnóstico e explicitamente acionado.
+Com a credencial 3, relistagem e leitura delimitada dos 12 itens produziram
+15 respostas HTTP 200 e zero falhas, sem navegador ou nova seleção. Sessão e
+âncoras originais permaneceram preservadas. Fronteira de expireTime e revogação
+continuam sem observação; G4 não recebe aceite completo por esse resultado.
+
 ## 9. Escala e coleções G5
 
 Iniciada a preparação de [G5 / #46](https://github.com/RogerVFbr/memora/issues/46)

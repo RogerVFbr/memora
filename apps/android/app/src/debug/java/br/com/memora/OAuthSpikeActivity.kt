@@ -104,6 +104,7 @@ class OAuthSpikeActivity : Activity() {
                 expiryAction("SPK-03: testar URLs iniciais") { runExpiryAction("initial") }
                 expiryAction("SPK-03: relistar e testar URLs atuais") { runExpiryAction("relist") }
                 expiryAction("SPK-03: testar OAuth original") { runExpiryAction("initial-token-session") }
+                expiryAction("SPK-03: renovar token sem navegador") { refreshToken() }
                 expiryAction("SPK-03: renovar OAuth sem nova seleção") { begin(Mode.RENEW_EXISTING) }
                 expiryAction("Histórico de expiração") { showExpiryHistory() }
                 addView(Button(context).apply {
@@ -227,6 +228,42 @@ class OAuthSpikeActivity : Activity() {
         }
     }
 
+    private fun refreshToken() {
+        if (busy || transaction != null) return
+        val client = getString(R.string.oauth_spike_client_id)
+        if (client.isBlank()) { status.text = "Cliente Android local não configurado."; return }
+        val saved = try { ProbeStore(applicationContext).read() } catch (_: Exception) {
+            status.text = "Evidência privada indisponível; renovação não iniciada."; return
+        }
+        val selected = try {
+            if (saved == null) { status.text = "Nenhuma sessão privada preservada para renovar."; return }
+            Selection(saved.getString("token"), saved.getString("sessionId"), finished = true)
+        } catch (_: Exception) { status.text = "Evidência privada incompleta; nada foi sobrescrito."; return }
+        cancel("", clearSelection = false)
+        selection = selected; mode = Mode.RENEW_EXISTING
+        busy = true; controls(false)
+        val current = generation
+        val cancellation = AtomicBoolean(false)
+        expiryCancellation = cancellation
+        status.text = "Renovando token explicitamente, sem navegador; sessão e URLs iniciais preservadas…"
+        currentNetwork = worker.submit {
+            if (cancellation.get()) return@submit
+            val summary = try {
+                probe.refreshAuthorization(client, isCancelled = { cancellation.get() })
+            } catch (_: Exception) {
+                "Renovação interrompida ou recusada. Consulte o histórico; sessão e referências iniciais preservadas."
+            }
+            handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                if (expiryCancellation === cancellation) expiryCancellation = null
+                busy = false
+                restoreSavedProbe() // Local state and encrypted result only; never triggers another request.
+                showProbeInfo()
+                status.append("\n$summary")
+                controls(true)
+            } }
+        }
+    }
+
     private fun showExpiryHistory() {
         try {
             val saved = ProbeStore(applicationContext).read()
@@ -262,6 +299,10 @@ class OAuthSpikeActivity : Activity() {
                 if (seconds >= 0) "em ${seconds}s" else "há ${-seconds}s"
             } catch (_: Exception) { "indeterminado" }
             val tokenExpiry = saved.optString("tokenExpiresAt")
+            val currentRefreshPresent = saved.optString("refreshToken").isNotBlank()
+            val originalAuthorization = saved.optJSONObject("initialAuthorization")
+            val originalRefreshPresent = if (originalAuthorization != null)
+                originalAuthorization.optString("refreshToken").isNotBlank() else currentRefreshPresent
             val sessionExpiry = saved.optJSONObject("session")?.optString("expireTime").orEmpty()
             val first = saved.optJSONArray("initialCatalog")?.optJSONObject(0)?.optString("firstReceivedAt").orEmpty()
             val pages = saved.optJSONArray("listPages")?.length() ?: 0
@@ -307,6 +348,7 @@ class OAuthSpikeActivity : Activity() {
             fun counts(values: Map<String, Int>) = if (values.isEmpty()) "nenhuma" else
                 values.entries.joinToString(", ") { "${it.key}: ${it.value}" }
             status.text = "Agora UTC: $current\nOAuth expira: ${utc(tokenExpiry)} (${delta(tokenExpiry)})" +
+                "\nRefresh token presente: atual=$currentRefreshPresent; original=$originalRefreshPresent" +
                 "\nSessão expira: ${utc(sessionExpiry)} (${delta(sessionExpiry)})" +
                 "\nPrimeira URL obtida: ${utc(first)} (${delta(first)})" +
                 "\nÚltima listagem: ${utc(saved.optString("listedAt"))}" +
