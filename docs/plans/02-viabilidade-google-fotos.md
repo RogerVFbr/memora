@@ -81,14 +81,14 @@ A preparação documental é atendida pela [issue #41](https://github.com/RogerV
 e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 1 de 6 etapas concluídas. G1 com cliente Android,
-consentimento e desenho delimitado preparados. G2 implementada em debug e em validação de
-autorização sem seleção de mídia. Enquadramento da apresentação/retencão ainda
+consentimento e desenho delimitado preparados. G2 tem autorização positiva no
+alvo sem mídia; faltam negativos controlados e revisão final de privacidade. Enquadramento da apresentação/retencão ainda
 precisa de esclarecimento antes de G3; não é aceite de produto.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
-| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Em validação | [PR #54](https://github.com/RogerVFbr/memora/pull/54) | [Ensaio debug instalado](../04-viabilidade-google-fotos.md#6-ensaio-oauth-nativo-de-desenvolvimento); aguarda autorização real e negativos no alvo |
+| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Em validação | [PR #54](https://github.com/RogerVFbr/memora/pull/54) | [Autorização positiva no Fire TV](../04-viabilidade-google-fotos.md#61-evidência-positiva-no-fire-tv); negativos e revisão final pendentes |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
@@ -116,6 +116,9 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G2 / #43: [autorização e sessão vazia confirmadas no alvo](../04-viabilidade-google-fotos.md#61-evidência-positiva-no-fire-tv).
+  Aceite parcial registrado; 1/6, G2 em validação, sem seleção de mídia ou avanço G3.
 
 - 2026-10-25 — G1 / #42: consentimento/cliente preparados pelo proprietário e
   exportação validada; [desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01).
