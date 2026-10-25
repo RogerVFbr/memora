@@ -49,4 +49,35 @@ class PickerProbePolicyTest {
             catch (_: IllegalArgumentException) { }
         }
     }
+    @Test fun redirectsAllowSignedGoogleMediaButRejectCredentialAndOriginEscapes() {
+        val original = "https://lh3.googleusercontent.com/p/sample=dv"
+        assertEquals("https://video-downloads.googleusercontent.com/video?signature=synthetic",
+            ProbePolicy.redirectUrl(original, "https://video-downloads.googleusercontent.com/video?signature=synthetic"))
+        assertEquals("https://lh3.googleusercontent.com/next?signature=synthetic",
+            ProbePolicy.redirectUrl(original, "/next?signature=synthetic"))
+        listOf("http://lh3.googleusercontent.com/x", "https://googleusercontent.com.evil.test/x",
+            "https://user@lh3.googleusercontent.com/x", "https://lh3.googleusercontent.com:443/x",
+            "https://redirect.googlevideo.com/x", "https://lh3.googleusercontent.com/x#fragment").forEach {
+            try { ProbePolicy.redirectUrl(original, it); fail("Unsafe redirect accepted") }
+            catch (_: IllegalArgumentException) { }
+        }
+    }
+    @Test fun redirectChainCannotLoopOrExceedThreeHops() {
+        val loop = ProbeRedirectGuard("https://a.googleusercontent.com/x")
+        loop.follow("https://b.googleusercontent.com/x")
+        try { loop.follow("https://a.googleusercontent.com/x"); fail("Redirect loop accepted") }
+        catch (_: IllegalStateException) { }
+        val chain = ProbeRedirectGuard("start")
+        repeat(ProbePolicy.MAX_REDIRECTS) { chain.follow("hop-$it") }
+        try { chain.follow("excess"); fail("Unbounded redirects") }
+        catch (_: IllegalStateException) { }
+    }
+
+    @Test fun httpErrorMessageNeverIncludesPrivateRedirectCapabilities() {
+        val error = ProbeHttpException(302, "https://example.test/private?signature=synthetic", "example.test")
+        assertEquals("Probe HTTP 302", error.message)
+        assertFalse(error.toString().contains("signature"))
+        assertFalse(error.toString().contains("private"))
+    }
+
 }

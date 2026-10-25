@@ -12,8 +12,17 @@ import java.security.MessageDigest
 import java.time.Instant
 import javax.net.ssl.HttpsURLConnection
 
-/** Safe category for UI/evidence: never carries endpoint, body, or account data. */
-class ProbeHttpException(val status: Int) : Exception("Probe HTTP $status")
+/** Sanitized message for UI; optional redirect fields are private evidence only. */
+class ProbeHttpException(
+    val status: Int,
+    // Diagnostic data may contain a signed media URL. Persist only in ProbeStore; never print.
+    val privateRedirectLocation: String? = null,
+    val redirectHost: String? = null,
+    val privateRedirectTrail: String? = null
+) : Exception("Probe HTTP $status")
+
+enum class ProbeMediaFailure { UNEXPECTED_MIME, EMPTY_RESPONSE, IMAGE_DECODE_FAILED }
+class ProbeMediaException(val reason: ProbeMediaFailure) : Exception("Probe media validation failed: ${reason.name}")
 
 /** Diagnostic limits, not product cache/FPS targets. No media bytes are persisted. */
 internal object ProbePolicy {
@@ -21,10 +30,24 @@ internal object ProbePolicy {
     const val VIDEO_PREFIX = 64 * 1024
     const val JSON_LIMIT = 2 * 1024 * 1024
     const val MAX_PAGES = 32
+    const val MAX_REDIRECTS = 3
 
     fun sessionId(value: String): String {
         require(value.matches(Regex("[A-Za-z0-9_-]{1,1024}"))) { "Invalid Picker session identifier" }
         return value
+    }
+
+    fun redirectUrl(current: String, location: String): String {
+        require(location.isNotBlank() && location.length <= 16_384) { "Invalid media redirect" }
+        val next = URI(current).resolve(location)
+        val host = next.host.orEmpty().lowercase()
+        require(next.scheme == "https" && next.rawUserInfo == null && next.port == -1 &&
+            next.rawFragment == null &&
+            (host == "googleusercontent.com" || host.endsWith(".googleusercontent.com"))) {
+            "Media redirect origin rejected"
+        }
+        // Signed query parameters are allowed, but remain private in the encrypted snapshot.
+        return next.toASCIIString()
     }
 
     fun mediaUrl(base: String, video: Boolean): String {
@@ -36,6 +59,16 @@ internal object ProbePolicy {
             "Media origin rejected"
         }
         return base + if (video) "=dv" else "=w1280-h720"
+    }
+}
+
+internal class ProbeRedirectGuard(original: String) {
+    private val visited = mutableSetOf(original)
+    var hops = 0
+        private set
+    fun follow(next: String) {
+        check(hops < ProbePolicy.MAX_REDIRECTS && visited.add(next)) { "Media redirect loop or limit" }
+        hops++
     }
 }
 
@@ -84,14 +117,14 @@ class PickerProbe(context: Context) {
     private fun checkActive() { check(!Thread.currentThread().isInterrupted) { "Probe cancelled" } }
     private fun encoded(value: String) = URLEncoder.encode(value, "UTF-8")
 
-    private fun open(url: String, token: String): HttpsURLConnection {
+    private fun open(url: String, token: String?): HttpsURLConnection {
         checkActive()
         return (URI(url).toURL().openConnection() as HttpsURLConnection).apply {
             instanceFollowRedirects = false
             connectTimeout = 15_000
             readTimeout = 15_000
             useCaches = false
-            setRequestProperty("Authorization", "Bearer $token")
+            if (token != null) setRequestProperty("Authorization", "Bearer $token")
             setRequestProperty("Cache-Control", "no-cache, no-store")
             setRequestProperty("Pragma", "no-cache")
         }
@@ -221,6 +254,8 @@ class PickerProbe(context: Context) {
         var videoNotReady = 0; var unknown = 0; var missingMetadata = 0; var failures = 0
         var totalBytes = 0L
         val failureStatuses = linkedMapOf<Int, Int>()
+        val failureCategories = linkedMapOf<String, Int>()
+        val blockedRedirectHosts = linkedSetOf<String>()
         for (index in 0 until catalog.length()) {
             checkActive()
             val item = catalog.getJSONObject(index)
@@ -256,9 +291,20 @@ class PickerProbe(context: Context) {
                 failures++
                 // Exception messages from URL/HTTP layers can include private identifiers.
                 result.put("outcome", "FETCH_FAILED").put("category", e.javaClass.simpleName)
+                val category = if (e is ProbeMediaException) {
+                    result.put("reason", e.reason.name)
+                    "${e.javaClass.simpleName}/${e.reason.name}"
+                } else e.javaClass.simpleName
+                failureCategories[category] = (failureCategories[category] ?: 0) + 1
                 if (e is ProbeHttpException) {
                     result.put("httpStatus", e.status)
                     failureStatuses[e.status] = (failureStatuses[e.status] ?: 0) + 1
+                    if (e.privateRedirectLocation != null) result.put("redirectLocation", e.privateRedirectLocation)
+                    if (e.redirectHost != null) {
+                        result.put("redirectHost", e.redirectHost)
+                        blockedRedirectHosts.add(e.redirectHost)
+                    }
+                    if (e.privateRedirectTrail != null) result.put("redirects", JSONArray(e.privateRedirectTrail))
                 }
             }
             result.put("finishedAt", now())
@@ -272,6 +318,8 @@ class PickerProbe(context: Context) {
             "${guard.pages} páginas; ${guard.duplicates} duplicatas; $missingMetadata itens com metadados ausentes.\n" +
             "$totalBytes bytes lidos; $failures falhas; $videoNotReady vídeos não prontos.\n" +
             "Falhas HTTP: ${failureStatuses.entries.joinToString { "${it.key} (${it.value})" }.ifEmpty { "nenhuma" }}.\n" +
+            "Categorias de falha: ${failureCategories.entries.joinToString { "${it.key} (${it.value})" }.ifEmpty { "nenhuma" }}.\n" +
+            "Destinos de redirect bloqueados: ${blockedRedirectHosts.joinToString().ifEmpty { "nenhum" }}.\n" +
             "Vídeos parciais: não comprova arquivo completo, reprodução ou codec. Nenhum byte de mídia salvo."
         store.update {
             it.put("summary", summary).put("inspectionFinishedAt", now()).put("sampleVerified", accepted)
@@ -281,51 +329,81 @@ class PickerProbe(context: Context) {
     }
 
     private fun media(url: String, token: String, video: Boolean): JSONObject {
-        val connection = open(url, token)
-        if (video) connection.setRequestProperty("Range", "bytes=0-${ProbePolicy.VIDEO_PREFIX - 1}")
-        try {
-            val status = connection.responseCode
-            if (status !in 200..299) throw ProbeHttpException(status)
-            val responseMime = connection.contentType.orEmpty().substringBefore(';').lowercase()
-            check(if (video) responseMime.startsWith("video/") || responseMime == "application/octet-stream"
-                else responseMime.startsWith("image/")) { "Unexpected media response type" }
-            val digest = MessageDigest.getInstance("SHA-256")
-            var count = 0L
-            var reachedEof = false
-            var responseWidth: Int? = null
-            var responseHeight: Int? = null
-            if (video) {
-                connection.inputStream.use { input ->
-                    val buffer = ByteArray(16 * 1024)
-                    while (count < ProbePolicy.VIDEO_PREFIX) {
-                        checkActive()
-                        val read = input.read(buffer, 0, minOf(buffer.size.toLong(), ProbePolicy.VIDEO_PREFIX - count).toInt())
-                        if (read == -1) { reachedEof = true; break }
-                        digest.update(buffer, 0, read); count += read
+        var currentUrl = url
+        val guard = ProbeRedirectGuard(url)
+        val redirects = JSONArray()
+        while (true) {
+            checkActive()
+            // A redirected URL is a separate capability; never forward the OAuth bearer.
+            val connection = open(currentUrl, if (guard.hops == 0) token else null)
+            if (video) connection.setRequestProperty("Range", "bytes=0-${ProbePolicy.VIDEO_PREFIX - 1}")
+            try {
+                val status = connection.responseCode
+                if (status in setOf(301, 302, 303, 307, 308)) {
+                    val location = connection.getHeaderField("Location").orEmpty()
+                    val host = try { URI(currentUrl).resolve(location).host?.lowercase() } catch (_: Exception) { null }
+                    val next = try {
+                        ProbePolicy.redirectUrl(currentUrl, location).also { guard.follow(it) }
+                    } catch (_: Exception) {
+                        throw ProbeHttpException(status, location.takeIf { it.isNotBlank() }, host, redirects.toString())
                     }
+                    redirects.put(JSONObject().put("fromHost", URI(currentUrl).host)
+                        .put("location", location).put("toHost", URI(next).host)
+                        .put("authorizationForwarded", false).put("http", httpEvidence(connection, status)))
+                    currentUrl = next
+                    continue
                 }
-            } else {
-                val bytes = connection.inputStream.use { readProbeBytes(it, ProbePolicy.PHOTO_LIMIT) }
-                try {
-                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
-                    check(bounds.outWidth > 0 && bounds.outHeight > 0) { "Image bytes could not be identified" }
-                    responseWidth = bounds.outWidth; responseHeight = bounds.outHeight
-                    count = bytes.size.toLong(); digest.update(bytes); reachedEof = true
-                } finally { bytes.fill(0) }
-            }
-            check(count > 0) { "Empty media response" }
-            return JSONObject().put("at", now()).put("status", status).put("bytes", count)
-                .put("sha256", digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) })
-                .put("responseMimeType", responseMime)
-                .put("responseWidth", responseWidth ?: JSONObject.NULL)
-                .put("responseHeight", responseHeight ?: JSONObject.NULL)
-                .put("contentLength", connection.contentLengthLong)
-                .put("rangeRequested", video).put("reachedEof", reachedEof)
-                .put("completeFileProven", !video).put("fromNetwork", true)
-                .put("http", httpEvidence(connection, status))
-        } finally { connection.disconnect() }
+                if (status !in 200..299) throw ProbeHttpException(status, privateRedirectTrail = redirects.toString())
+                return readMedia(connection, status, video).put("redirects", redirects)
+                    .put("finalHost", URI(currentUrl).host)
+                    .put("redirectCount", guard.hops)
+            } finally { connection.disconnect() }
+        }
     }
+
+    private fun readMedia(connection: HttpsURLConnection, status: Int, video: Boolean): JSONObject {
+        val responseMime = connection.contentType.orEmpty().substringBefore(';').lowercase()
+        val acceptedMime = if (video) responseMime.startsWith("video/") || responseMime == "application/octet-stream"
+            else responseMime.startsWith("image/")
+        if (!acceptedMime) throw ProbeMediaException(ProbeMediaFailure.UNEXPECTED_MIME)
+        val digest = MessageDigest.getInstance("SHA-256")
+        var count = 0L
+        var reachedEof = false
+        var responseWidth: Int? = null
+        var responseHeight: Int? = null
+        if (video) {
+            connection.inputStream.use { input ->
+                val buffer = ByteArray(16 * 1024)
+                while (count < ProbePolicy.VIDEO_PREFIX) {
+                    checkActive()
+                    val read = input.read(buffer, 0, minOf(buffer.size.toLong(), ProbePolicy.VIDEO_PREFIX - count).toInt())
+                    if (read == -1) { reachedEof = true; break }
+                    digest.update(buffer, 0, read); count += read
+                }
+            }
+        } else {
+            val bytes = connection.inputStream.use { readProbeBytes(it, ProbePolicy.PHOTO_LIMIT) }
+            try {
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+                if (bounds.outWidth <= 0 || bounds.outHeight <= 0)
+                    throw ProbeMediaException(ProbeMediaFailure.IMAGE_DECODE_FAILED)
+                responseWidth = bounds.outWidth; responseHeight = bounds.outHeight
+                count = bytes.size.toLong(); digest.update(bytes); reachedEof = true
+            } finally { bytes.fill(0) }
+        }
+        if (count <= 0) throw ProbeMediaException(ProbeMediaFailure.EMPTY_RESPONSE)
+        return JSONObject().put("at", now()).put("status", status).put("bytes", count)
+            .put("sha256", digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) })
+            .put("responseMimeType", responseMime)
+            .put("responseWidth", responseWidth ?: JSONObject.NULL)
+            .put("responseHeight", responseHeight ?: JSONObject.NULL)
+            .put("contentLength", connection.contentLengthLong)
+            .put("rangeRequested", video).put("reachedEof", reachedEof)
+            .put("completeFileProven", !video).put("fromNetwork", true)
+            .put("http", httpEvidence(connection, status))
+    }
+
 
     private fun httpEvidence(connection: HttpsURLConnection, status: Int) = JSONObject()
         .put("observedAt", now()).put("status", status)

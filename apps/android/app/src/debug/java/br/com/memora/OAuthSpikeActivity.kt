@@ -24,6 +24,7 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.Instant
+import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
@@ -42,6 +43,7 @@ class OAuthSpikeActivity : Activity() {
     private lateinit var status: TextView
     private lateinit var login: Button
     private lateinit var selectMedia: Button
+    private lateinit var revalidate: Button
     private lateinit var qr: ImageView
     private lateinit var probe: PickerProbe
     private var mode = Mode.AUTH_ONLY
@@ -77,13 +79,20 @@ class OAuthSpikeActivity : Activity() {
             text = "SPK-02: selecionar 10 fotos e 2 vídeos"
             setOnClickListener { begin(Mode.SELECT_MEDIA) }
         }
+        revalidate = Button(this).apply {
+            text = "Revalidar amostra privada"
+            setOnClickListener { revalidateSavedProbe() }
+        }
         setContentView(ScrollView(this).apply {
             addView(LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(48, 24, 48, 24)
                 addView(status)
                 addView(qr, LinearLayout.LayoutParams(360, 360))
-                addView(login); addView(selectMedia)
+                addView(login); addView(selectMedia); addView(revalidate)
+                addView(Button(context).apply {
+                    text = "Informações do ensaio"; setOnClickListener { showProbeInfo() }
+                })
                 addView(Button(context).apply {
                     text = "Cancelar tentativa"; setOnClickListener { cancel("Tentativa cancelada.") }
                 })
@@ -93,11 +102,119 @@ class OAuthSpikeActivity : Activity() {
                 addView(Button(context).apply { text = "Encerrar ensaio"; setOnClickListener { finish() } })
             })
         })
+        restoreSavedProbe()
         // No OAuth verifier is restored. G3 evidence remains encrypted for the separate G4 experiment.
         if (intent.data != null) { intent.data = null; status.text = "Retorno sem tentativa ativa. Inicie novamente." }
     }
 
-    private fun controls(enabled: Boolean) { login.isEnabled = enabled; selectMedia.isEnabled = enabled }
+    private fun controls(enabled: Boolean) {
+        login.isEnabled = enabled; selectMedia.isEnabled = enabled; revalidate.isEnabled = enabled
+    }
+
+    private fun restoreSavedProbe() {
+        try {
+            val saved = ProbeStore(applicationContext).read() ?: return
+            val token = saved.getString("token")
+            val id = saved.getString("sessionId")
+            selection = Selection(token, id, finished = true) // Never resume polling/retrieval implicitly after process restart.
+            mode = Mode.SELECT_MEDIA
+            status.text = saved.optString("summary").takeIf { it.isNotBlank() }
+                ?: "Há sessão privada preservada. Revalidação explícita disponível; nenhuma rede foi acessada ao abrir."
+        } catch (_: Exception) {
+            status.text = "Evidência privada não pôde ser lida. Nenhum dado foi sobrescrito."
+        }
+    }
+
+    private fun revalidateSavedProbe() {
+        if (busy || transaction != null) return
+        val saved = try { ProbeStore(applicationContext).read() } catch (_: Exception) {
+            status.text = "Não foi possível ler a evidência privada; nada foi sobrescrito."; return
+        }
+        if (saved == null) { status.text = "Nenhuma amostra privada salva para revalidar."; return }
+        if (saved.optJSONObject("session")?.optBoolean("mediaItemsSet", false) != true) {
+            status.text = "Seleção privada ainda não concluída. Nenhuma inspeção foi iniciada; preserve ou limpe a tentativa."
+            return
+        }
+        val selected = try { Selection(saved.getString("token"), saved.getString("sessionId"), finished = true) }
+            catch (_: Exception) { status.text = "Evidência privada incompleta. Não será sobrescrita."; return }
+        cancel("", clearSelection = false)
+        selection = selected
+        mode = Mode.SELECT_MEDIA
+        busy = true
+        controls(false)
+        val current = generation
+        status.text = "Revalidando a mesma amostra e sessão, sem nova autorização…"
+        currentNetwork = worker.submit {
+            try {
+                val summary = probe.inspect(selected.token, selected.sessionId) { message ->
+                    handler.post { if (generation == current && resumed) status.text = message }
+                }
+                handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                    busy = false; status.text = summary + "\nEvidência inicial preservada para G4; não limpe ainda."
+                    controls(true)
+                } }
+            } catch (error: Exception) {
+                val http = if (error is ProbeHttpException) " (HTTP ${error.status})" else ""
+                handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                    busy = false
+                    status.text = "Revalidação interrompida ou recusada$http. Evidência privada preservada."
+                    controls(true)
+                } }
+            }
+        }
+    }
+
+    private fun showProbeInfo() {
+        try {
+            val saved = ProbeStore(applicationContext).read()
+            if (saved == null) { status.text = "Nenhum ensaio privado preservado."; return }
+            val current = Instant.now()
+            fun utc(value: String): String = try { Instant.parse(value).toString() } catch (_: Exception) { "ausente" }
+            fun delta(value: String): String = try {
+                val seconds = Duration.between(current, Instant.parse(value)).seconds
+                if (seconds >= 0) "em ${seconds}s" else "há ${-seconds}s"
+            } catch (_: Exception) { "indeterminado" }
+            val tokenExpiry = saved.optString("tokenExpiresAt")
+            val sessionExpiry = saved.optJSONObject("session")?.optString("expireTime").orEmpty()
+            val first = saved.optJSONArray("initialCatalog")?.optJSONObject(0)?.optString("firstReceivedAt").orEmpty()
+            val pages = saved.optJSONArray("listPages")?.length() ?: 0
+            val mediaChecks = saved.optJSONArray("mediaChecks")
+            val checks = mediaChecks?.length() ?: 0
+            val failures = sortedMapOf<String, Int>()
+            for (index in 0 until checks) {
+                val check = mediaChecks?.optJSONObject(index) ?: continue
+                if (check.optString("outcome") != "FETCH_FAILED") continue
+                // Categories originate from exception simpleName, never exception messages or remote text.
+                val value = check.optString("category")
+                val category = if (value.matches(Regex("[A-Za-z][A-Za-z0-9_]{0,80}"))) value else "OUTRA"
+                failures[category] = (failures[category] ?: 0) + 1
+            }
+            val processing = sortedMapOf<String, Int>()
+            val catalog = saved.optJSONArray("catalog")
+            for (index in 0 until (catalog?.length() ?: 0)) {
+                val item = catalog?.optJSONObject(index) ?: continue
+                if (item.optString("type") != "VIDEO") continue
+                val value = item.optJSONObject("mediaFile")?.optJSONObject("mediaFileMetadata")
+                    ?.optJSONObject("videoMetadata")?.optString("processingStatus").orEmpty()
+                val label = when (value) {
+                    "READY", "PROCESSING", "FAILED", "PROCESSING_STATUS_UNSPECIFIED" -> value
+                    "" -> "AUSENTE"
+                    else -> "OUTRO"
+                }
+                processing[label] = (processing[label] ?: 0) + 1
+            }
+            fun counts(values: Map<String, Int>) = if (values.isEmpty()) "nenhuma" else
+                values.entries.joinToString(", ") { "${it.key}: ${it.value}" }
+            status.text = "Agora UTC: $current\nOAuth expira: ${utc(tokenExpiry)} (${delta(tokenExpiry)})" +
+                "\nSessão expira: ${utc(sessionExpiry)} (${delta(sessionExpiry)})" +
+                "\nPrimeira URL obtida: ${utc(first)} (${delta(first)})" +
+                "\nÚltima listagem: ${utc(saved.optString("listedAt"))}" +
+                "\nItens: ${saved.optJSONArray("catalog")?.length() ?: 0}; páginas: $pages; verificações: $checks." +
+                "\nFalhas de recuperação: ${counts(failures)}" +
+                "\nStatus de processamento dos vídeos: ${counts(processing)}" +
+                "\nDatas observadas, sem promessa de validade além dos ensaios."
+        } catch (_: Exception) { status.text = "Informações privadas indisponíveis; nada foi sobrescrito." }
+    }
 
     private fun begin(requestedMode: Mode) {
         if (requestedMode == Mode.SELECT_MEDIA) {
@@ -277,11 +394,11 @@ class OAuthSpikeActivity : Activity() {
         }
     }
 
-    private fun cancel(message: String, clearSelection: Boolean = true) {
+    private fun cancel(message: String, clearSelection: Boolean = selection?.finished != true) {
         generation++
         val current = generation
         val creation = creationAttempt
-        val hadPendingCreation = mode == Mode.SELECT_MEDIA && transaction == null &&
+        val hadPendingCreation = mode == Mode.SELECT_MEDIA && selection == null && transaction == null &&
             currentNetwork != null && currentNetwork?.isDone == false
         transaction?.cancel(); transaction = null
         handler.removeCallbacks(timeout); handler.removeCallbacks(pollTask)
@@ -313,11 +430,13 @@ class OAuthSpikeActivity : Activity() {
         }
         if (::login.isInitialized) controls(true)
         if (::status.isInitialized && message.isNotBlank()) status.text =
-            if (needsCleanup) "Tentativa cancelada; verificando limpeza privada…" else message
+            if (needsCleanup) "Tentativa cancelada; verificando limpeza privada…"
+            else if (selected?.finished == true && !clearSelection) "$message Sessão e evidência privada preservadas."
+            else message
     }
 
     private fun clearSavedProbe() {
-        cancel("Preparando limpeza privada…")
+        cancel("Preparando limpeza privada…", clearSelection = true)
         val current = generation
         controls(false)
         currentNetwork = worker.submit {
@@ -379,7 +498,14 @@ class OAuthSpikeActivity : Activity() {
     override fun onPause() {
         resumed = false
         handler.removeCallbacks(pollTask)
-        if (selection != null) { generation++; currentNetwork?.cancel(true); busy = false }
+        if (selection != null) {
+            val pausedRevalidation = busy && selection?.finished == true
+            generation++; currentNetwork?.cancel(true); busy = false
+            if (pausedRevalidation) {
+                controls(true)
+                status.text = "Revalidação pausada ao sair da tela. Evidência preservada; use Revalidar para continuar."
+            }
+        }
         super.onPause()
     }
     override fun onDestroy() {

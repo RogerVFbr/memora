@@ -631,7 +631,8 @@ ou playback. Resultados positivos/negativos serão acrescentados após execuçã
 
 Código nativo debug implementado com separação SPK-01/SPK-02, QR local, polling
 somente em foreground e prazo original não renovável. Core HTTP usa endpoints
-fixos e só envia Bearer para HTTPS Googleusercontent validado, sem redirects.
+fixos, sem redirects de API; tratamento restrito de redirects de mídia está no
+[registro da primeira amostra](#72-primeira-amostra-e-ajustes-de-recuperação).
 Foto recebe verificação de tipo/dimensões e teto de 8 MiB; vídeo READY recebe
 leitura parcial de até 64 KiB. Respostas e catálogo têm limites, sem retry infinito.
 `ProbeStore` usa AES-256-GCM/AAD, chave Android Keystore e escrita atômica; backup
@@ -658,3 +659,38 @@ confirmado por envelope, sem marcadores de token/URI em texto claro. Cancelament
 pelo app confirmou DELETE e remoção do arquivo local. Não foi feito acesso a mídia
 nessa negativa. Outra sessão foi aberta para a amostra e QR confirmado pela UI;
 seleção pessoal ainda depende do proprietário. Não dar aceite a G3 por esse código.
+
+
+### 7.2 Primeira amostra e ajustes de recuperação
+
+A primeira seleção retornou 11 itens: 9 fotos e 2 vídeos, em 3 páginas reais,
+sem duplicatas e sem ausência dos metadados técnicos mínimos observados. As
+9 fotos foram recuperadas e identificadas; ambos os vídeos eram READY, mas
+retornaram HTTP 302 bloqueado pela política inicial. Não recebeu aceite por faltar
+uma foto e não haver bytes dos vídeos comprovados naquele momento.
+
+Corrigida somente a recuperação de mídia: até três redirects manuais, HTTPS
+Googleusercontent validado, sem credenciais de URL/porta/fragmento; URL assinada
+pode conter query. Bearer só vai no pedido original, nunca no destino do redirect.
+Loops e hosts desconhecidos continuam bloqueados. API JSON segue sem redirects.
+Trilha/Location só no snapshot cifrado; mensagem de erro não inclui capability.
+Também adicionados revalidação da mesma sessão e informações de horários/contagens
+lidas do snapshot sem rede; restauração não inicia polling ou inspeção automática.
+Cancelar revalidação preserva evidência; descarte é ação explícita separada.
+
+Rebuild, 19 testes e lint aprovados após os ajustes. Reinstalação sem limpeza
+restaurou a evidência por Keystore no aparelho. Na primeira revalidação, nove
+fotos e o prefixo de um vídeo foram recuperados; o outro sofreu
+SocketTimeoutException, sem HTTP de erro e sem bloqueio de host. Diagnóstico lido
+privadamente do snapshot, sem repetir a rede apenas para descobrir a causa.
+Na tentativa controlada seguinte, nove fotos e os dois prefixos de vídeo foram
+recuperados (1.653.896 bytes no total), sem falhas HTTP/redirect ou rede. Não houve
+retry automático. A seleção seguiu incompleta por conter nove fotos, não dez.
+Cancelar o resultado preservou o arquivo privado; a ação explícita Limpar
+confirmou DELETE e remoção local antes da nova seleção.
+
+As respostas reais dessa sessão indicaram expireTime sete dias após criação;
+isso não define duração fixa universal. G4 precisa observar a fronteira real em
+outra janela, preservando a amostra válida que vier a ser aceita. Não substituir
+esse ensaio por mock ou relógio alterado. Sessão desta amostra incompleta será
+limpa antes de repetir seleção, depois de concluir o diagnóstico dos redirects.
