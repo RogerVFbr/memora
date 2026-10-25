@@ -88,8 +88,8 @@ esclarecimento de enquadramento/retenção antes de acesso a mídia real.
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
-| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem início de G3 |
-| G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
+| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem início de G3 |
+| G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | G2 aceita; conferir [condições antes de mídia](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |

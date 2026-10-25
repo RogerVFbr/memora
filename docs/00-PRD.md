@@ -481,7 +481,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
 | R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
-| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação G1 e alternativa Ambient condicionada a acesso](04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api); sem liberação de dados reais |
+| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação de enquadramento G1](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) e [condições de mídia após G2](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem liberação de dados reais |
 
 Risco residual do ensaio SPK-01: código OAuth temporário observado em logs do
 sistema Fire OS. Tratamento e alcance da aceitação ficam exclusivamente na
