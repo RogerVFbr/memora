@@ -692,5 +692,5 @@ confirmou DELETE e remoção local antes da nova seleção.
 As respostas reais dessa sessão indicaram expireTime sete dias após criação;
 isso não define duração fixa universal. G4 precisa observar a fronteira real em
 outra janela, preservando a amostra válida que vier a ser aceita. Não substituir
-esse ensaio por mock ou relógio alterado. Sessão desta amostra incompleta será
-limpa antes de repetir seleção, depois de concluir o diagnóstico dos redirects.
+esse ensaio por mock ou relógio alterado. A sessão da amostra incompleta foi
+limpa após o diagnóstico dos redirects, antes da nova seleção.

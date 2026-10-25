@@ -81,15 +81,15 @@ A preparação documental é atendida pela [issue #41](https://github.com/RogerV
 e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 2 de 6 etapas concluídas. G2 aceita no alvo com
-positivos, negativos e revisão de segurança documentados. Próxima etapa técnica
-G3 / #44 em preparação diagnóstica, com amostra autorizada e recorte
-recebimento/exportação esclarecido; seleção real ainda não executada.
+positivos, negativos e revisão de segurança documentados. G3 / #44 em validação:
+a primeira amostra de 9 fotos e 2 vídeos foi parcialmente testada; nova sessão/QR
+aguarda a seleção completa de 10 fotos e 2 vídeos pelo proprietário. Ainda sem aceite G3.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
-| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem início de G3 |
-| G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Em andamento | — | [Recorte, retenção e preparação G3](../04-viabilidade-google-fotos.md#7-seleção-e-recuperação-diagnóstica-g3) |
+| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
+| G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Em validação | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Primeira amostra e ajustes](../04-viabilidade-google-fotos.md#72-primeira-amostra-e-ajustes-de-recuperação); nova seleção completa pendente |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
