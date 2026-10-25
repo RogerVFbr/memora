@@ -115,8 +115,8 @@ O mapeamento e o estado de validação no controle físico estão no
 
 ### Instalação de desenvolvimento
 
-Depois de verificar o dispositivo pelo diagnóstico acima e obter a autorização
-específica exigida pelo [AGENTS.md](AGENTS.md#fluxo-de-trabalho-no-repositório),
+Depois de verificar o dispositivo pelo diagnóstico acima e consultar o escopo
+de operação no [AGENTS.md](AGENTS.md#fluxo-de-trabalho-no-repositório),
 substitua `<alvo-adb>` pelo endereço local configurado e execute na raiz:
 
 ```sh

@@ -209,26 +209,26 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   capturas e diagnósticos fora dos arquivos versionados.
 - Operações de leitura no Fire Stick estão autorizadas sempre que necessárias,
   sem pedir autorização explícita, desde que não alterem o estado do dispositivo.
-- Operações normais de execução e validação estão autorizadas dentro do escopo
-  da tarefa, sem nova confirmação: iniciar ou encerrar o aplicativo, navegar,
-  abrir/fechar menus e painéis, enviar teclas do controle, reproduzir, pausar,
-  avançar cenas e colocar o aplicativo em background/retomá-lo. Descreva a ação
-  nos updates e registre resultados pertinentes; não interrompa o teste para
-  pedir aprovação de cada tecla ou transição operacional.
-- Instalar ou atualizar APKs, desinstalar aplicativos e alterar configurações
-  continuam exigindo autorização específica do desenvolvedor antes da operação.
-  Configurações incluem sistema, permissões, conectividade e preferências do
-  aplicativo; navegar até um ajuste não autoriza mudar seu valor.
-- Antes de uma operação protegida, descreva a ação e seu escopo, peça autorização
-  e aguarde a resposta. A autorização não se estende automaticamente à próxima
-  instalação, desinstalação ou mudança de configuração. Manipular diretamente
-  ou excluir dados persistentes/credenciais, limpar dados do aplicativo,
-  reiniciar/restaurar o dispositivo e outras ações destrutivas também exigem
-  autorização específica; os efeitos normais de reprodução e navegação não são
-  tratados como manipulação direta de dados.
-- Skills, scripts e testes devem aplicar essa distinção antes de executar cada
-  operação. A autorização operacional não dispensa o `firestick-check`, as
-  proteções de privacidade ou os critérios de aceite no hardware.
+- Alterações necessárias ao próprio Memora no Fire Stick estão permanentemente
+  autorizadas, sem nova confirmação. Isso inclui instalar, atualizar ou
+  desinstalar seus pacotes, iniciar/encerrar o aplicativo, navegar e enviar
+  teclas, reproduzir/pausar, testar background/retomada, alterar preferências e
+  permissões específicas do Memora e gravar, migrar ou limpar seus próprios
+  dados/cache quando necessário à tarefa. Consulte a
+  [identidade Android](android-release.properties) e as variantes no projeto
+  antes de escolher o pacote-alvo; não peça autorização novamente por uma
+  operação já coberta por esse escopo.
+- Essa autonomia se limita ao Memora. Não altere configurações globais do Fire
+  Stick nem pacotes, configurações, permissões ou dados de outros aplicativos.
+  Reiniciar/restaurar o dispositivo, reconfigurar rede,
+  Bluetooth ou depuração e outras mudanças que excedam o Memora não estão
+  incluídas; se forem indispensáveis, explique o impacto e aguarde autorização
+  específica antes de executá-las.
+- Skills, scripts e testes devem aplicar esse limite de escopo. A autonomia não
+  dispensa o `firestick-check`, a comunicação das ações, as proteções de
+  privacidade nem os critérios de aceite, inclusive a preservação de dados
+  exigida por um teste de atualização. Não declare uma validação concluída
+  apenas porque a operação estava autorizada.
 - Registre no `README.md` somente pré-requisitos e comandos reais introduzidos
   para build, execução, testes e instalação. Não invente comandos nem descreva
   diretórios propostos no PRD como existentes antes de criá-los.
@@ -236,7 +236,7 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   do PRD antes de selecionar mídia para testes.
 - Para alterações apenas documentais, revise conteúdo e execute `git diff --check`.
   Relate o que mudou, as verificações executadas e o que não pôde ser validado.
-- Não execute ações destrutivas sem autorização específica do usuário. Para
+- Não execute ações destrutivas que excedam as autorizações vigentes. Para
   publicação e integração, aplique a
   [autorização permanente de conclusão](#autorização-permanente-para-conclusão-de-trabalho).
 - Ao mudar regras de trabalho, atualize este arquivo. Ao mudar conteúdo de produto
