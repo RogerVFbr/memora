@@ -500,4 +500,30 @@ Hardware: diagnóstico desta retomada retornou parcial, somente foreground
 indisponível em repouso; identidade/conectividade autorizadas. Instalação `-r`
 concluiu e a abertura da tela foi confirmada pelo proprietário após despertar a
 TV. Não houve limpeza de preferências, instalação de outro pacote ou mudança
-global. A autorização efetiva ainda está em validação; G3 não está liberada.
+global. O resultado operacional posterior está na [evidência positiva](#61-evidência-positiva-no-fire-tv); G3 não está liberada.
+
+
+### 6.1 Evidência positiva no Fire TV
+
+Em 2026-10-25, após o proprietário concluir o login Google com verificação pelo
+celular, a primeira tentativa retornou ao Memora com mensagem de retorno rejeitado
+(sem tentativa válida, expirado ou não associado). A demora é compatível com o
+prazo de cinco minutos, mas a mensagem não distingue causas; expiração permanece
+inferência, não diagnóstico confirmado.
+
+Na nova tentativa, proprietário informou sucesso e o agente confirmou em leitura
+no aparelho: **AUTORIZAÇÃO PICKER COMPROVADA — Sessão vazia criada e removida.
+Nenhuma foto selecionada. Tokens não persistidos.** A confirmação foi obtida do
+texto da interface do próprio Memora por UIAutomator; XML e diagnóstico brutos
+ficam privados fora do Git. `firestick-check` dessa confirmação retornou `ok`.
+
+Pelo fluxo implementado e revisado, essa mensagem só é emitida depois de retorno
+associado à tentativa, troca do código com PKCE e respostas HTTP 2xx para criação
+e remoção da sessão vazia. Assim, há evidência positiva de autorização Picker no
+Fire TV com cliente Android e URI própria, sem backend. Não foi necessário
+selecionar mídia nem usar cliente Desktop/TV limitado ou Ambient.
+
+Isso não comprova persistência/refresh, expiração real, acesso recorrente, álbuns,
+vídeos ou conformidade do slideshow. G2 continua em validação até os negativos no
+hardware e a revisão de privacidade exigidos na issue. A rejeição anterior não
+substitui um ensaio controlado de cancelamento/negação. G3 permanece não liberada.
