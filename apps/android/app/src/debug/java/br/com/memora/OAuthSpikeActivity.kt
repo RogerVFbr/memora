@@ -278,6 +278,20 @@ class OAuthSpikeActivity : Activity() {
             }
             val processing = sortedMapOf<String, Int>()
             val catalog = saved.optJSONArray("catalog")
+            val currentUrlsById = mutableMapOf<String, String>()
+            for (index in 0 until (catalog?.length() ?: 0)) {
+                val item = catalog?.optJSONObject(index) ?: continue
+                val id = item.optString("id")
+                val url = item.optJSONObject("mediaFile")?.optString("baseUrl").orEmpty()
+                if (id.isNotBlank() && url.isNotBlank()) currentUrlsById[id] = url
+            }
+            val initialCatalog = saved.optJSONArray("initialCatalog")
+            var equalInitialUrls = 0
+            for (index in 0 until (initialCatalog?.length() ?: 0)) {
+                val item = initialCatalog?.optJSONObject(index) ?: continue
+                val initialUrl = item.optString("firstBaseUrl")
+                if (initialUrl.isNotBlank() && currentUrlsById[item.optString("id")] == initialUrl) equalInitialUrls++
+            }
             for (index in 0 until (catalog?.length() ?: 0)) {
                 val item = catalog?.optJSONObject(index) ?: continue
                 if (item.optString("type") != "VIDEO") continue
@@ -296,6 +310,7 @@ class OAuthSpikeActivity : Activity() {
                 "\nSessão expira: ${utc(sessionExpiry)} (${delta(sessionExpiry)})" +
                 "\nPrimeira URL obtida: ${utc(first)} (${delta(first)})" +
                 "\nÚltima listagem: ${utc(saved.optString("listedAt"))}" +
+                "\nURLs iniciais iguais às atuais: $equalInitialUrls/${initialCatalog?.length() ?: 0}" +
                 "\nItens: ${saved.optJSONArray("catalog")?.length() ?: 0}; páginas: $pages; verificações: $checks." +
                 "\nFalhas de recuperação: ${counts(failures)}" +
                 "\nStatus de processamento dos vídeos: ${counts(processing)}" +
