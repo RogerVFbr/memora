@@ -745,7 +745,8 @@ arquivo cifrado permaneceu idêntico antes/depois da abertura; combinado com a
 revisão do caminho de restauração, evidencia que a abertura não renovou as
 âncoras. Ainda não é prova de acesso à rede após expiração.
 
-A instrumentação separa quatro operações explícitas, com intenção persistida
+A instrumentação do [PR #58](https://github.com/RogerVFbr/memora/pull/58) separa
+quatro operações explícitas, com intenção persistida
 antes de cada requisição e histórico privado de respostas/falhas. Renovação OAuth
 preserva a credencial original, a primeira URL e a sessão. Credencial nova começa
 com associação não comprovada; sucesso na sessão confirma acesso, mas 403/404
