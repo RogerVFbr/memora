@@ -8,3 +8,5 @@ adbkey.pub
 __pycache__/
 *.pyc
 .DS_Store
+/.playwright-cli/
+/output/playwright/
