@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.14 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.15 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -476,7 +476,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 
 | ID | Severidade | Risco/pergunta | Plano |
 |---|---|---|---|
-| R-001 | **Crítica** | Como manter slideshow ao longo dos dias se sessões expiram e `baseUrl` dura 60 min? | SPK-03, política Google, UX de re-seleção; não prometer persistência |
+| R-001 | **Crítica** | Como manter slideshow ao longo dos dias se sessões expiram e `baseUrl` dura 60 min? | [SPK-03 em observação](04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4), política Google e UX de re-seleção; acesso dentro da validade não comprova persistência |
 | R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | [SPK-01 aceito no alvo](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) via cliente Android/URI própria; não prova fluxo TV limitado ou acesso recorrente |
 | R-003 | Alta | Seleção máxima de 2.000 itens por sessão; acervo enorme | SPK-04, múltiplas seleções e limites explicitados |
 | R-004 | Alta | API não lista álbuns completos e membership | Modelo de coleções locais, validação com amostras |
@@ -487,7 +487,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-009 | Média | GPU/RAM/WebView em mosaicos 4K | SPK-06 benchmarks e limites quantitativos |
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
-| R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
+| R-012 | Média | OAuth em modo teste/reautorização frequente | [Matriz OAuth/URL/sessão](04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); renovação explícita não comprova refresh automático nem dispensa publicação apropriada |
 | R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 para distinguir diagnóstico autorizado de apresentação final; dúvidas de produto exigem esclarecimento, [avaliação de enquadramento G1](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) e [condições de mídia após G2](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); diagnóstico limitado conforme §10 não encerra esse risco |
 
 Risco residual do ensaio SPK-01: código OAuth temporário observado em logs do

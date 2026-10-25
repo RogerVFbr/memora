@@ -27,11 +27,12 @@ import java.time.Instant
 import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Native debug probes. G2 never reads media; G3 exports only the user's explicit test selection. */
 @SuppressLint("SetTextI18n") // Portuguese-only debug diagnostics; not a product UI.
 class OAuthSpikeActivity : Activity() {
-    private enum class Mode { AUTH_ONLY, SELECT_MEDIA }
+    private enum class Mode { AUTH_ONLY, SELECT_MEDIA, RENEW_EXISTING }
     private class CreationAttempt {
         @Volatile var requested = false
         @Volatile var resolved = false
@@ -44,6 +45,7 @@ class OAuthSpikeActivity : Activity() {
     private lateinit var login: Button
     private lateinit var selectMedia: Button
     private lateinit var revalidate: Button
+    private val expiryButtons = mutableListOf<Button>()
     private lateinit var qr: ImageView
     private lateinit var probe: PickerProbe
     private var mode = Mode.AUTH_ONLY
@@ -53,6 +55,7 @@ class OAuthSpikeActivity : Activity() {
     private var resumed = false
     private var busy = false
     private var currentNetwork: Future<*>? = null
+    private var expiryCancellation: AtomicBoolean? = null
     private val handler = Handler(Looper.getMainLooper())
     private val worker = Executors.newSingleThreadExecutor()
     @Volatile private var generation = 0
@@ -90,6 +93,19 @@ class OAuthSpikeActivity : Activity() {
                 addView(status)
                 addView(qr, LinearLayout.LayoutParams(360, 360))
                 addView(login); addView(selectMedia); addView(revalidate)
+                fun expiryAction(label: String, action: () -> Unit) {
+                    addView(Button(context).apply {
+                        text = label
+                        setOnClickListener { action() }
+                        expiryButtons.add(this)
+                    })
+                }
+                expiryAction("SPK-03: consultar sessão") { runExpiryAction("session") }
+                expiryAction("SPK-03: testar URLs iniciais") { runExpiryAction("initial") }
+                expiryAction("SPK-03: relistar e testar URLs atuais") { runExpiryAction("relist") }
+                expiryAction("SPK-03: testar OAuth original") { runExpiryAction("initial-token-session") }
+                expiryAction("SPK-03: renovar OAuth sem nova seleção") { begin(Mode.RENEW_EXISTING) }
+                expiryAction("Histórico de expiração") { showExpiryHistory() }
                 addView(Button(context).apply {
                     text = "Informações do ensaio"; setOnClickListener { showProbeInfo() }
                 })
@@ -109,6 +125,7 @@ class OAuthSpikeActivity : Activity() {
 
     private fun controls(enabled: Boolean) {
         login.isEnabled = enabled; selectMedia.isEnabled = enabled; revalidate.isEnabled = enabled
+        expiryButtons.forEach { it.isEnabled = enabled }
     }
 
     private fun restoreSavedProbe() {
@@ -118,7 +135,8 @@ class OAuthSpikeActivity : Activity() {
             val id = saved.getString("sessionId")
             selection = Selection(token, id, finished = true) // Never resume polling/retrieval implicitly after process restart.
             mode = Mode.SELECT_MEDIA
-            status.text = saved.optString("summary").takeIf { it.isNotBlank() }
+            status.text = saved.optString("lastExpirySummary").takeIf { it.isNotBlank() }
+                ?: saved.optString("summary").takeIf { it.isNotBlank() }
                 ?: "Há sessão privada preservada. Revalidação explícita disponível; nenhuma rede foi acessada ao abrir."
         } catch (_: Exception) {
             status.text = "Evidência privada não pôde ser lida. Nenhum dado foi sobrescrito."
@@ -162,6 +180,75 @@ class OAuthSpikeActivity : Activity() {
                 } }
             }
         }
+    }
+
+    private fun runExpiryAction(operation: String) {
+        if (busy || transaction != null) return
+        val saved = try { ProbeStore(applicationContext).read() } catch (_: Exception) {
+            status.text = "Evidência privada indisponível; nenhum ensaio de rede iniciado."; return
+        }
+        val selected = try {
+            if (saved == null) { status.text = "Nenhuma amostra privada preservada para SPK-03."; return }
+            Selection(saved.getString("token"), saved.getString("sessionId"), finished = true)
+        } catch (_: Exception) { status.text = "Evidência privada incompleta; nada foi sobrescrito."; return }
+        cancel("", clearSelection = false)
+        selection = selected
+        mode = Mode.RENEW_EXISTING
+        busy = true; controls(false)
+        val current = generation
+        status.text = when (operation) {
+            "initial" -> "Medindo URLs iniciais sem relistar; acesso de rede sem cache…"
+            "relist" -> "Medindo listagem e URLs atuais separadamente…"
+            "initial-token-session" -> "Consultando sessão com OAuth original preservado…"
+            else -> "Consultando estado da mesma sessão…"
+        }
+        val cancellation = AtomicBoolean(false)
+        expiryCancellation = cancellation // Created before submit: cancellation cannot be lost at worker startup.
+        currentNetwork = worker.submit {
+            if (cancellation.get()) return@submit
+            try {
+                val summary = probe.runExpiryCheck(operation, isCancelled = { cancellation.get() }) { message ->
+                    handler.post { if (generation == current && resumed) status.text = message }
+                }
+                handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                    if (expiryCancellation === cancellation) expiryCancellation = null
+                    busy = false; status.text = summary + "\nSessão e referências iniciais preservadas."
+                    controls(true)
+                } }
+            } catch (error: Exception) {
+                val http = if (error is ProbeHttpException) " (HTTP ${error.status})" else ""
+                handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                    if (expiryCancellation === cancellation) expiryCancellation = null
+                    busy = false
+                    status.text = "Medição interrompida ou recusada$http. Consulte o histórico; amostra preservada e sem nova seleção."
+                    controls(true)
+                } }
+            }
+        }
+    }
+
+    private fun showExpiryHistory() {
+        try {
+            val saved = ProbeStore(applicationContext).read()
+            if (saved == null) { status.text = "Nenhum histórico privado de expiração."; return }
+            val history = saved.optJSONArray("expiryChecks")
+            val count = history?.length() ?: 0
+            if (count == 0) { status.text = "Nenhuma medição de expiração registrada; nenhuma rede foi acessada."; return }
+            val allowedOperations = setOf("session", "initial", "relist", "initial-token-session")
+            val entries = mutableListOf<String>()
+            for (index in maxOf(0, count - 8) until count) {
+                val event = history?.optJSONObject(index) ?: continue
+                val operation = event.optString("operation").takeIf { it in allowedOperations } ?: "outro ensaio"
+                val at = try { Instant.parse(event.optString("startedAt")).toString() } catch (_: Exception) { "horário ausente" }
+                val finished = event.has("finishedAt")
+                // summary is produced by the native probe, never a raw response or media metadata.
+                val summary = event.optString("summary").takeIf { it.isNotBlank() }
+                entries.add("$at — $operation — ${if (finished) "finalizado" else "iniciado/interrompido"}" +
+                    (summary?.let { "\n$it" } ?: ""))
+            }
+            status.text = "Histórico privado: $count medições; últimas ${entries.size}.\n" + entries.joinToString("\n") +
+                "\nInformações locais; nenhuma consulta de rede foi feita."
+        } catch (_: Exception) { status.text = "Histórico privado indisponível; nada foi sobrescrito." }
     }
 
     private fun showProbeInfo() {
@@ -217,6 +304,15 @@ class OAuthSpikeActivity : Activity() {
     }
 
     private fun begin(requestedMode: Mode) {
+        if (busy || transaction != null) return
+        if (requestedMode == Mode.RENEW_EXISTING) {
+            val existing = try { ProbeStore(applicationContext).read() } catch (_: Exception) {
+                status.text = "Evidência privada indisponível; não será renovada ou sobrescrita."; return
+            }
+            if (existing == null || !existing.has("sessionId")) {
+                status.text = "Renovar requer a sessão privada existente. Nenhuma sessão nova será criada."; return
+            }
+        }
         if (requestedMode == Mode.SELECT_MEDIA) {
             if (creationAttempt?.uncertain == true && creationAttempt?.cleaned != true) {
                 status.text = "A criação anterior tem resultado remoto incerto. Não há confirmação de limpeza; preserve o diagnóstico."
@@ -230,7 +326,7 @@ class OAuthSpikeActivity : Activity() {
                 return
             }
         }
-        cancel("", clearSelection = selection?.finished != true)
+        cancel("", clearSelection = requestedMode != Mode.RENEW_EXISTING && selection?.finished != true)
         val client = getString(R.string.oauth_spike_client_id)
         if (client.isBlank()) { status.text = "Cliente Android local não configurado no build."; return }
         mode = requestedMode
@@ -260,6 +356,7 @@ class OAuthSpikeActivity : Activity() {
                 val current = generation
                 val creation = if (requestedMode == Mode.SELECT_MEDIA) CreationAttempt().also { creationAttempt = it } else null
                 status.text = "Retorno validado. Preparando ensaio…"
+                if (requestedMode == Mode.RENEW_EXISTING) busy = true
                 currentNetwork = worker.submit {
                     try {
                         val tokenResponse = exchange(attempt, result.code)
@@ -270,6 +367,14 @@ class OAuthSpikeActivity : Activity() {
                             val message = verifyScope(token, current)
                             handler.post { if (generation == current && !isFinishing && !isDestroyed) {
                                 status.text = message; controls(true)
+                            } }
+                        } else if (requestedMode == Mode.RENEW_EXISTING) {
+                            val summary = probe.replaceAuthorization(tokenResponse, tokenReceivedAt)
+                            handler.post { if (generation == current && !isFinishing && !isDestroyed) {
+                                busy = false
+                                restoreSavedProbe()
+                                status.text = summary + "\nMesma sessão e URLs iniciais mantidas; a renovação não prova revalidação da seleção."
+                                controls(true)
                             } }
                         } else {
                             val expiresIn = tokenResponse.optLong("expires_in", 0L)
@@ -306,6 +411,7 @@ class OAuthSpikeActivity : Activity() {
                             status.text = if (creation?.uncertain == true)
                                 "Criação com resultado remoto incerto$http. Não há confirmação de limpeza; preserve o diagnóstico."
                             else "Falha no ensaio$http: rede, autorização ou resposta inválida. Nenhum detalhe privado foi exibido."
+                            busy = false
                             controls(true)
                         } }
                     }
@@ -394,7 +500,11 @@ class OAuthSpikeActivity : Activity() {
         }
     }
 
-    private fun cancel(message: String, clearSelection: Boolean = selection?.finished != true) {
+    private fun cancel(message: String, clearSelection: Boolean = mode != Mode.RENEW_EXISTING && selection?.finished != true) {
+        val cancelledExpiry = expiryCancellation != null
+        expiryCancellation?.set(true)
+        if (cancelledExpiry && ::probe.isInitialized) probe.cancelExpiryCheck()
+        expiryCancellation = null
         generation++
         val current = generation
         val creation = creationAttempt
@@ -431,6 +541,7 @@ class OAuthSpikeActivity : Activity() {
         if (::login.isInitialized) controls(true)
         if (::status.isInitialized && message.isNotBlank()) status.text =
             if (needsCleanup) "Tentativa cancelada; verificando limpeza privada…"
+            else if (cancelledExpiry) "Interrupção solicitada. Consulte o histórico para confirmar o término; evidência privada mantida."
             else if (selected?.finished == true && !clearSelection) "$message Sessão e evidência privada preservadas."
             else message
     }
@@ -498,18 +609,23 @@ class OAuthSpikeActivity : Activity() {
     override fun onPause() {
         resumed = false
         handler.removeCallbacks(pollTask)
-        if (selection != null) {
-            val pausedRevalidation = busy && selection?.finished == true
+        val expiryExchangeRunning = mode == Mode.RENEW_EXISTING && transaction == null &&
+            currentNetwork != null && currentNetwork?.isDone == false
+        if (selection != null || expiryExchangeRunning) {
+            val pausedRevalidation = (busy && selection?.finished == true) || expiryExchangeRunning
+            expiryCancellation?.set(true)
+            if (expiryCancellation != null) probe.cancelExpiryCheck()
+            expiryCancellation = null
             generation++; currentNetwork?.cancel(true); busy = false
             if (pausedRevalidation) {
                 controls(true)
-                status.text = "Revalidação pausada ao sair da tela. Evidência preservada; use Revalidar para continuar."
+                status.text = "Interrupção solicitada ao sair da tela. Consulte o histórico para confirmar o término; evidência privada mantida."
             }
         }
         super.onPause()
     }
     override fun onDestroy() {
-        cancel("", clearSelection = selection?.finished != true)
+        cancel("", clearSelection = mode != Mode.RENEW_EXISTING && selection?.finished != true)
         worker.shutdown() // Permit pending remote cleanup; each request is bounded.
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()

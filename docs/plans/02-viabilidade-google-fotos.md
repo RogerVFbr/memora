@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; G1–G3 concluídas; próxima etapa G4.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1–G3 concluídas; G4 em validação temporal.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
@@ -82,14 +82,15 @@ e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 3 de 6 etapas concluídas. G3 verificou no alvo a amostra
 completa de 10 fotos e 2 vídeos, entregue pelo PR #57. Evidência privada preservada
-para G4 / #45, próxima etapa, com observação de expirações reais.
+para G4 / #45, com instrumentação integrada e medições dentro da validade.
+Expirações naturais ainda pendentes; próxima ação é retomar G4.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
-| G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Próxima etapa; expirações reais podem atravessar janelas |
+| G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
@@ -115,6 +116,11 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G4 / #45: instrumentação e medições dentro da validade pelo
+  [PR #58](https://github.com/RogerVFbr/memora/pull/58). [Matriz e retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
+  registradas; OAuth renovado sem nova seleção, snapshot preservado e cancelamento
+  corrigido/validado. Sem expiração natural observada ou aceite G4; 3/6.
 
 - 2026-10-25 — G3 / #44 concluída pelo [PR #57](https://github.com/RogerVFbr/memora/pull/57):
   [amostra completa e limites](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3)

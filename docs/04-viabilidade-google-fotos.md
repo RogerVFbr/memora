@@ -716,3 +716,88 @@ prazo universal. Preservar sessão e URLs iniciais até esse ensaio.
 Permanecem os limites de retenção e política do recorte acima, R-013 para o
 produto final e o risco residual de logs do Fire OS aceito no PRD §10 para
 G3–G5. Não há aprovação nominal do Google nem validação de slideshow neste aceite.
+
+## 8. Expiração e reabertura G4
+
+G4 / [#45](https://github.com/RogerVFbr/memora/issues/45) iniciada após aceite e
+integração de G3 pelo PR #57. Preservar a amostra e as âncoras da
+[§7.3](#73-aceite-operacional-da-g3); não criar outra seleção, excluir sessão,
+revogar autorização ou limpar dados antes das observações naturais.
+
+A matriz separa consulta da sessão, acesso direto às URLs iniciais sem relistagem,
+relistagem da mesma sessão e acesso às URLs retornadas. Renovação OAuth será uma
+intervenção distinta, preservando as âncoras anteriores; não demonstra refresh
+automático nem autorização permanente. Reiniciar apenas o processo do Memora
+deve restaurar evidência sem executar rede automaticamente.
+
+Fontes revalidadas em 2026-10-25: o [guia de mídia Picker](https://developers.google.com/photos/picker/guides/media-items)
+exige Bearer válido e documenta URLs de 60 minutos;
+[sessions.get](https://developers.google.com/photos/picker/reference/rest/v1/sessions/get)
+distingue acesso expirado (PERMISSION_DENIED) de sessão ausente/não pertencente
+à conta (NOT_FOUND). Um erro isolado não identifica a causa sem controlar OAuth,
+idade da URL e expireTime. Não alterar relógio nem usar mock como observação.
+
+### 8.1 Preparação e pendências
+
+Reabertura real com processo novo executada ainda dentro das validades: o app
+restaurou o resumo positivo G3 sem consulta ou download implícitos. O hash do
+arquivo cifrado permaneceu idêntico antes/depois da abertura; combinado com a
+revisão do caminho de restauração, evidencia que a abertura não renovou as
+âncoras. Ainda não é prova de acesso à rede após expiração.
+
+A instrumentação do [PR #58](https://github.com/RogerVFbr/memora/pull/58) separa
+quatro operações explícitas, com intenção persistida
+antes de cada requisição e histórico privado de respostas/falhas. Renovação OAuth
+preserva a credencial original, a primeira URL e a sessão. Credencial nova começa
+com associação não comprovada; sucesso na sessão confirma acesso, mas 403/404
+isolado não demonstra que a conta selecionada é a mesma. Não há refresh automático.
+
+Medições no alvo, antes das expirações: consulta de sessão HTTP 200; 12/12 URLs
+iniciais acessíveis sem relistagem, com idades entre 460 e 471 segundos, 12 respostas
+HTTP 200 e zero falhas. Relistagem separada percorreu três páginas e recuperou
+os bytes delimitados dos 12 itens: 15 respostas HTTP 200, zero falhas.
+Renovação explícita pelo navegador da TV não exigiu nova seleção; credencial 1
+acessou a mesma sessão com HTTP 200. A original (credencial 0), preservada, também
+respondeu HTTP 200 dentro de sua validade. A expiração da sessão e o horário da
+primeira URL continuaram iguais aos de G3; a credencial 1 informa validade até
+2026-10-25T23:50:26.762Z. São respostas de rede, com cache local desabilitado,
+Date/Age/Cache-Control registrados privadamente; nenhum byte de mídia foi retido.
+
+O teste de saída da Activity expôs continuação de leituras apesar de Future.cancel:
+a interrupção da thread não bastou para encerrar o loop. Corrigido com sinal
+explícito por operação, criado antes do envio ao worker e independente do flag
+de interrupção que E/S pode limpar. A repetição real registrou ensaio interrompido
+no histórico; o snapshot estabilizou e o resultado foi restaurado em processo novo.
+Uma leitura já em voo pode terminar dentro dos limites antes de observar o sinal;
+não se promete corte instantâneo do socket. Dois testes adicionais cobrem sinal
+anterior ao início e interrupção limpa por E/S.
+
+Build debug, 25 testes e lint aprovados após a correção. Revisão independente sem
+impeditivos. Atualização preservou a evidência cifrada no aparelho. Nenhum desses
+resultados constitui ensaio de expiração natural.
+
+Os limites de leitura e a retenção privada continuam no
+[recorte G3](#7-seleção-e-recuperação-diagnóstica-g3), sem reuso de bytes salvos.
+Nenhuma expiração foi observada ainda. Retomar a partir das âncoras privadas e do
+snapshot cifrado, sem substituí-los por nova seleção. A expiração natural da
+sessão ocorrerá em outra data; G4 permanece sem aceite até reunir as evidências
+exigidas pela issue.
+
+### 8.2 Condição de retomada da matriz temporal
+
+O código não executa em background nem agenda medições. É necessário retomar
+este ensaio quando a fronteira natural tiver passado, preservando o snapshot:
+
+1. Após a expiração OAuth original registrada na §7.3, consultar com **Testar OAuth
+   original**; registrar resposta real, sem tratar falha de rede como expiração.
+2. Após 60 minutos da primeira URL, usar OAuth comprovadamente válido e testar
+   **URLs iniciais** antes de relistar. Se necessário, **Renovar OAuth sem nova
+   seleção**, escolher a mesma conta e consultar a sessão para confirmar acesso.
+   Em seguida, relistar/testar URLs atuais. Registrar idade, respostas e esforço.
+3. Após o expireTime real da sessão, renovar OAuth separadamente e repetir consulta,
+   URLs iniciais e listagem. Considerar 403/404 com suas ambiguidades; não apagar
+   ou recriar a seleção para produzir o resultado. Eventual reseleção e revogação
+   devem ser ensaios distintos, posteriores à observação, conforme a issue.
+
+O resultado antes/depois ainda falta; G4 permanece em validação, issue aberta e
+contador do plano em 3/6. A próxima etapa é retomar G4; G5 não foi iniciada.
