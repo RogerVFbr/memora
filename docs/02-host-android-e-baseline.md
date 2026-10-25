@@ -42,7 +42,7 @@ HTTP, portas explícitas, credenciais, caminhos fora dos assets e escapes de
 caminho. Cada requisição é interceptada: assets ausentes e requisições recusadas
 recebem resposta local de bloqueio, sem fallback de rede. Acesso a arquivos e
 content providers, mixed content, janelas adicionais e rede estão desabilitados;
-o manifesto não pede INTERNET. A I2 habilita JavaScript e DOM storage para React
+o manifesto principal não pede INTERNET. O [ensaio OAuth debug](04-viabilidade-google-fotos.md#6-ensaio-oauth-nativo-de-desenvolvimento) acrescenta permissão de rede e Activity nativa apenas na variante de desenvolvimento; consultar antes de alterar essa fronteira. A I2 habilita JavaScript e DOM storage para React
 e preferências locais. A CSP permite somente scripts e recursos locais, com estilo
 inline necessário às propriedades CSS dinâmicas do React; não permite eval,
 conexões, frames ou formulários. O único canal JS → nativo é a solicitação de tela ligada, restrita à origem

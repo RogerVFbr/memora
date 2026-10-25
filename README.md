@@ -242,3 +242,34 @@ A identidade de abertura permanece a mesma. Consulte o resultado da matriz de
 preservação na [issue I6](https://github.com/RogerVFbr/memora/issues/12) antes de
 usá-lo como evidência de compatibilidade; esta entrega preserva o esquema v1 e
 não comprova migrações futuras.
+
+
+## Ensaio OAuth Picker de desenvolvimento
+
+Requer cliente OAuth Android de teste exportado em
+`.local/google/oauth-android-dev.json` (ignorado pelo Git), associado ao pacote e
+certificado do APK debug. Somente o client ID público é incorporado à variante
+debug; arquivo ausente deixa a tela sem configuração. Não usar exportação com
+client secret. O [registro do ensaio](docs/04-viabilidade-google-fotos.md#6-ensaio-oauth-nativo-de-desenvolvimento)
+concentra desenho, limites e estado da validação.
+
+Com os pré-requisitos Android/Node acima, executar na raiz:
+
+```sh
+apps/android/gradlew -p apps/android assembleDebug testDebugUnitTest lintDebug
+```
+
+Após o diagnóstico `firestick-check` e usando seu alvo privado:
+
+```sh
+adb -s <alvo-adb> install -r apps/android/app/build/outputs/apk/debug/app-debug.apk
+adb -s <alvo-adb> shell am start -W -n br.com.memora.dev/br.com.memora.OAuthSpikeActivity
+```
+
+Escolher **Iniciar autorização Google** pelo controle. O navegador Amazon da TV
+abre o consentimento; retorno válido verifica o escopo criando/removendo uma sessão
+vazia, sem selecionar mídia. **Cancelar tentativa** invalida o retorno pendente;
+perder o processo exige recomeçar. Tokens não são persistidos. Sem cliente local,
+login ou limpeza de sessão concluídos, não interpretar o build como aceite OAuth.
+A tela e a permissão de rede só existem no debug; artefatos contendo o cliente
+local devem permanecer privados nesta investigação.

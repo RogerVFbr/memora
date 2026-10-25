@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.10 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.11 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -462,7 +462,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | ID | Severidade | Risco/pergunta | Plano |
 |---|---|---|---|
 | R-001 | **Crítica** | Como manter slideshow ao longo dos dias se sessões expiram e `baseUrl` dura 60 min? | SPK-03, política Google, UX de re-seleção; não prometer persistência |
-| R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | SPK-01; avaliar alternativa suportada/pareamento seguro |
+| R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | [SPK-01 em ensaio nativo debug](04-viabilidade-google-fotos.md#6-ensaio-oauth-nativo-de-desenvolvimento); sem autorização efetiva comprovada |
 | R-003 | Alta | Seleção máxima de 2.000 itens por sessão; acervo enorme | SPK-04, múltiplas seleções e limites explicitados |
 | R-004 | Alta | API não lista álbuns completos e membership | Modelo de coleções locais, validação com amostras |
 | R-005 | Alta | Dificuldade de media autenticada no WebView | Prototipar bridge/stream local seguro; sem URL/token no JS |
