@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; G1 bloqueada após avaliação inicial.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1 bloqueada por acesso externo e arquitetura pendente.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
@@ -81,13 +81,13 @@ A preparação documental é atendida pela [issue #41](https://github.com/RogerV
 e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 0 de 6 etapas concluídas. G1 investigada, com
-impedimentos de enquadramento e arquitetura ainda abertos;
-implementação e testes Google não iniciados. Retomar G1 após esclarecimento
-oficial e decisão específica de arquitetura; G2 não liberada.
+TV Gallery aprofundado e candidato Ambient documentado. Proprietário sem acesso
+aprovado à API; retomar G1 com resposta de elegibilidade/acesso, depois decidir
+arquitetura/custo e eventual revisão do recorte dependente. G2 não liberada.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
-| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49) | [Avaliação e ação de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) |
+| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49) | [Ambient: evidências e ação de acesso](../04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | A fazer | — | Depende de G1 e pré-requisitos externos |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
@@ -116,6 +116,11 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — Retomada G1 / #42: investigação do TV Gallery e Ambient corrigiu
+  a cobertura inicial; [evidências, candidatura preparada e retomada](../04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api).
+  Proprietário confirmou ausência de acesso aprovado; nenhum envio externo,
+  implementação ou ensaio. G1 aberta, 0/6; etapas seguintes não executadas.
 
 - 2026-10-25 — G1 / #42: avaliação documental e inventário em leitura realizados;
   [resultado e condições de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata).
