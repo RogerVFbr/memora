@@ -52,7 +52,8 @@ Registre comandos, resultados, evidências e o que ainda não foi validado.
 Quando houver hardware, consulte a
 [firestick-check](../firestick-check/SKILL.md) e as
 [regras de acesso ao dispositivo](../../../AGENTS.md#fluxo-de-trabalho-no-repositório)
-antes de executar. Siga as autorizações exigidas ali no momento da operação;
+antes de executar. Classifique a operação pelas autorizações vigentes ali e
+não peça nova confirmação quando ela já estiver autorizada;
 compilar um APK não equivale a instalar, iniciar ou testar no aparelho.
 
 ## Revisão e entrega

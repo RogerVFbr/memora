@@ -161,7 +161,7 @@ contador das seis etapas de implementação.
 |---|---|---|---|---|---|---|
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware permanece em I3 |
-| I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Em validação | [#25](https://github.com/RogerVFbr/memora/pull/25) | Não se aplica | Código integrado, testes locais aprovados e instalação dev confirmada; [aceite de hardware pendente](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv), aguardando autorização para abrir o app |
+| I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Em validação | [#25](https://github.com/RogerVFbr/memora/pull/25) | Não se aplica | Código integrado, testes locais aprovados e instalação dev confirmada; [aceite de hardware pendente](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv), aguardando os testes operacionais |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
 | I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | A fazer | — | A produzir | Exige upgrade real e matriz de preferências antes/depois |
@@ -241,10 +241,10 @@ FPS/RAM nem declarar estabilidade prolongada a partir de um smoke curto.
 
 Todas as operações de hardware ficam sujeitas à
 [skill e às autorizações de dispositivo](../../AGENTS.md#fluxo-de-trabalho-no-repositório).
-Este plano não executa nem autoriza antecipadamente uma instalação, abertura,
-encerramento ou alteração de estado no Fire Stick. Seguir o procedimento vigente
-no momento de cada operação. Não há dependência da conectividade do aparelho
-para escrever ou revisar este plano.
+O plano não amplia essas autorizações. Consulte a classificação da operação
+no AGENTS.md antes de executar; não use este documento como uma segunda política
+de aprovação. Não há dependência da conectividade do aparelho para escrever
+ou revisar este plano.
 
 ## 7. Evidências e conclusão do incremento
 

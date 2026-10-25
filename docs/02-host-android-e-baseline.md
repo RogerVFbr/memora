@@ -198,9 +198,10 @@ ADB retornou `Success`; `dumpsys package` confirmou `br.com.memora.dev`,
 limitação de foreground do [baseline](#3-baseline-em-leitura). Nenhuma abertura,
 key event injetado, suspensão forçada ou alteração de configuração foi executada.
 
-Para aceitar I3, falta obter autorização específica para abrir o APK instalado
-e, depois, para cada operação modificadora necessária no aparelho. Verificar
-controle físico/visibilidade/retomada, preferências não
+Para aceitar I3, falta concluir os testes operacionais no APK instalado.
+Consulte as [autorizações vigentes](../AGENTS.md#fluxo-de-trabalho-no-repositório)
+antes de executar cada tipo de operação. Verificar controle físico/visibilidade/
+retomada, preferências não
 padrão, DOM/resolução, erros e flag de tela ligada. Registrar evidências sanitizadas
 na issue e atualizar a central antes de encerrar. I4 permanece dependente desse
 aceite; não usar o resultado do desktop como substituto.
