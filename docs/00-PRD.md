@@ -93,7 +93,7 @@ Referência: https://developers.google.com/identity/protocols/oauth2/limited-inp
 
 Fire OS 8 é baseado em Android 11 e aceita **APK sideload por ADB** com depuração habilitada. A UX pode ser implementada com **Kotlin + Android WebView**, frontend React compilado e incluído no APK. Validar versão real do WebView/Chromium e suporte ao Tailwind v4 e efeitos; se incompatível, fixar Tailwind v3.4 ou alternativa de CSS. `FLAG_KEEP_SCREEN_ON` pode evitar suspensão de tela enquanto a Activity está visível, mas não garante identificar desligamento físico da TV ou presença humana.
 
-O host demonstrativo de I1 concretiza a origem local e a política de navegação;
+O host demonstrativo e o frontend compartilhado concretizam a origem local e a política de navegação;
 consulte [host e baseline](02-host-android-e-baseline.md#1-host-e-fronteira) antes
 de alterá-los e o [baseline em leitura](02-host-android-e-baseline.md#3-baseline-em-leitura)
 antes de escolher o target do frontend. Essas consultas não encerram SPK-06.

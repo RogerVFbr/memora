@@ -16,11 +16,24 @@ evitando conflito de assinatura com a futura release. A assinatura persistente
 e a fonte consolidada de metadados de versão serão tratadas em I4; este build
 usa assinatura debug e não é uma release distribuível.
 
-`app/src/main/assets` contém somente a página de baseline e seu CSS. A I2
-substituirá essa entrada pelo frontend estático compilado, preservando uma única
-apresentação compartilhada com o laboratório; `apps/tv` e
-`packages/presentation` continuam propostos até a extração. Não foi necessário
-alterar o protótipo para criar o host.
+A I2 concretiza `apps/tv` e `packages/presentation`: o primeiro contém somente a
+entrada de TV; o segundo contém apresentação, controlador de estado, modelos,
+ícones, estilos e mídia. O catálogo demonstrativo é injetado pelo contrato
+`Catalog`, não importado pela apresentação. `apps/prototype` conserva a bancada
+e os simuladores, consumindo a mesma apresentação. A proveniência das fotografias
+permanece no [documento visual](01-identidade-visual-e-ux.md#7-mídia-e-proveniência).
+
+Os três pacotes são workspaces npm, com dependências e lockfile na raiz. O Gradle
+registra uma tarefa geradora de assets por variante, dependente das fontes e da
+configuração/lockfile, e injeta o `versionName` efetivo no build Vite. A API de
+fontes geradas do AGP determina o diretório final; a linha de execução resolve
+esse caminho no início da tarefa. Não há cópia manual nem dependência de Vite
+em execução. Ambos os frontends usam `base: './'` e target `chrome150`, escolhido
+a partir da consulta de WebView abaixo; compatibilidade no aparelho continua
+pendente de observação. O CSS nativo foi preservado, sem Tailwind ou polyfills
+adicionais. A entrada de TV ocupa o viewport, inclui o seletor de tema em Ajustes
+e inicia pausada com controles visíveis. A UI mostra a versão injetada no APK.
+
 
 `WebViewAssetLoader` serve exclusivamente `/assets/` sob
 `https://appassets.androidplatform.net`. A política rejeita outra origem,
@@ -28,14 +41,15 @@ HTTP, portas explícitas, credenciais, caminhos fora dos assets e escapes de
 caminho. Cada requisição é interceptada: assets ausentes e requisições recusadas
 recebem resposta local de bloqueio, sem fallback de rede. Acesso a arquivos e
 content providers, mixed content, janelas adicionais e rede estão desabilitados;
-o manifesto não pede INTERNET. JavaScript permanece desligado nesta página;
-a I2 precisa habilitá-lo deliberadamente para o frontend. A CSP restringe os
-recursos ao CSS local e não há interfaces nativas expostas ao JS.
+o manifesto não pede INTERNET. A I2 habilita JavaScript e DOM storage para React
+e preferências locais. A CSP permite somente scripts e recursos locais, com estilo
+inline necessário às propriedades CSS dinâmicas do React; não permite eval,
+conexões, frames ou formulários. Não há interfaces nativas expostas ao JS.
 
-A Activity encaminha pausa/retomada ao WebView e o destrói ao encerrar. Não há
-timers de reprodução nem `KEEP_SCREEN_ON` nesta página. A fonte única de playback,
-o contrato mínimo de visibilidade e a política de tela ligada são trabalho da
-I3; `WebView.onPause()` sozinho não comprova suspensão dos timers JavaScript.
+A Activity encaminha pausa/retomada ao WebView e o destrói ao encerrar. A fonte de playback da demonstração é o controlador React compartilhado;
+o avanço é suspenso sob menus e com documento oculto. A versão I2 não usa
+`KEEP_SCREEN_ON`. O contrato nativo de visibilidade e a política de tela ligada
+são trabalho da I3; `WebView.onPause()` sozinho não comprova suspensão dos timers JavaScript.
 
 O manifesto declara launcher Android e Leanback, ausência de exigência de toque,
 orientação landscape, banner e ícone locais, backup desabilitado e Activity de
@@ -94,3 +108,11 @@ launcher e Leanback; `unzip -l` confirmou HTML/CSS no APK; `apksigner verify
 --verbose` confirmou assinatura debug válida (v2). Resultados detalhados e
 comandos executados ficam na issue e no PR de I1. Validação em hardware limita-se às
 consultas acima: não há aceite de instalação, launcher, D-pad ou lifecycle.
+
+A I2 foi verificada também com `npm ci`, builds dos dois frontends e smoke
+Playwright do laboratório e dos arquivos estáticos extraídos do APK. Foram
+conferidos os três layouts, mídia carregada e geometria dos slots, preservar/
+preencher, temas, ajustes, persistência, vazio/recuperação e retorno de foco.
+A entrada TV não contém os CTAs dos simuladores; seus recursos não fizeram
+requisições externas no smoke. A inspeção do APK confirmou oito assets e versão
+injetada. Evidências detalhadas e limitações ficam na issue #8 e no PR respectivo.

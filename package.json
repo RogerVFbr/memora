@@ -1,0 +1,16 @@
+{
+  "name": "memora",
+  "private": true,
+  "workspaces": [
+    "apps/prototype",
+    "apps/tv",
+    "packages/presentation"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "build:prototype": "npm run build --workspace @memora/prototype",
+    "build:tv": "npm run build --workspace @memora/tv"
+  }
+}

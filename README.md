@@ -6,8 +6,8 @@ Photo visualization application
 Requer Node.js `^20.19.0` ou `>=22.12.0`, com npm. Na raiz do repositório:
 
 ```sh
-cd apps/prototype
 npm ci
+cd apps/prototype
 npm run dev
 ```
 
@@ -64,7 +64,8 @@ Requer JDK 17 (`JAVA_HOME`), [Android SDK](https://developer.android.com/studio#
 `cmdline-tools/19.0/bin/sdkmanager --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0"`
 e aceite as licenças do SDK. O Gradle Wrapper baixa a distribuição fixada;
 a primeira execução também requer acesso aos repositórios Google/Maven Central.
-Não é necessário instalar Gradle globalmente ou executar o frontend.
+Não é necessário instalar Gradle globalmente ou manter servidor de frontend.
+Node/npm e as dependências dos workspaces também são necessários para gerar os assets.
 
 Na raiz, com as variáveis apontando às instalações locais:
 
@@ -75,7 +76,27 @@ apps/android/gradlew -p apps/android assembleDebug testDebugUnitTest lintDebug
 APK de desenvolvimento: `apps/android/app/build/outputs/apk/debug/app-debug.apk`
 (pacote `br.com.memora.dev`). Relatórios ficam em
 `apps/android/app/build/reports/`, incluindo `tests/testDebugUnitTest/index.html`
-e `lint-results-debug.html`. O comando compila e verifica localmente; instalação
-não faz parte dele. A página desta etapa é apenas um baseline estático.
+e `lint-results-debug.html`. O comando compila os assets de TV e o APK e verifica localmente; instalação
+não faz parte dele. Execute `npm ci` na raiz antes do primeiro build Android.
+O APK contém a experiência demonstrativa completa, sem laboratório.
 Consulte [host e baseline](docs/02-host-android-e-baseline.md#1-host-e-fronteira)
 para segurança, lifecycle, versões fixadas e limites da validação.
+
+## Frontend demonstrativo de TV
+
+Os workspaces usam um único `package-lock.json` na raiz. Na raiz do repositório:
+
+```sh
+npm ci
+npm run build:prototype
+npm run build:tv
+npm run preview --workspace @memora/tv
+```
+
+A entrada de TV compilada fica em `apps/tv/dist/`; o preview usa
+http://127.0.0.1:4174/. Os controles e painéis compartilham a implementação com
+o laboratório, mas ocupam a janela inteira. Em **Ajustes**, **Aparência** troca o
+tema. A primeira entrada é pausada, com controles visíveis e Cinema acolhedor;
+reabrir preserva os ajustes e mantém a reprodução pausada. Para encerrar, `Ctrl+C`.
+O Gradle gera sua própria cópia dos assets por variante, com a versão do APK;
+o preview avulso exibe desenvolvimento e não instala nada no dispositivo.

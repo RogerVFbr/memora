@@ -60,11 +60,10 @@ engenharia da aplicação, não a conclusão do MVP do PRD.
    consciente, sem avanço de fila invisível. O retorno reapresenta os controles
    com reprodução pausada, preservando os ajustes salvos.
 
-O host I1 está em `apps/android`; consulte sua [fronteira concreta](../02-host-android-e-baseline.md#1-host-e-fronteira)
-antes de alterá-lo. Frontend de produção em `apps/tv` e apresentação compartilhada
-em `packages/presentation` continuam **propostos, ainda inexistentes**, preservando
-`apps/prototype`; confirmar na I2 após avaliar a extração mínima necessária.
-Não reestruturar o repositório inteiro para este incremento.
+O host está em `apps/android`, a entrada TV em `apps/tv` e a apresentação
+compartilhada em `packages/presentation`, preservando `apps/prototype`. Consulte a
+[fronteira concreta](../02-host-android-e-baseline.md#1-host-e-fronteira) antes de
+alterar a organização ou o empacotamento.
 
 A validação deve registrar WebView efetivo, resolução de renderização, versão do
 sistema, erros e comportamento observado. Não prometer suporte a efeitos ou
@@ -152,7 +151,7 @@ critérios de aceite e validações específicas ficam nas issues vinculadas; n�
 manter uma segunda cópia integral desses textos no repositório.
 
 **Situação em 2026-10-25:** 1 de 6 etapas concluídas. I1 integrada e aceita
-no recorte da issue #7. Próxima etapa: I2 / #8.
+no recorte da issue #7. I2 / #8 em revisão.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -161,7 +160,7 @@ contador das seis etapas de implementação.
 | Etapa | Issue de implementação | Depende de | Status | PR / commit integrado | Release | Evidências e pendências |
 |---|---|---|---|---|---|---|
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
-| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | A fazer | — | Não se aplica | Extração e empacotamento do frontend pendentes |
+| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Em revisão | — | Não se aplica | Builds, assets no APK e smoke estático/browser aprovados; hardware permanece em I3 |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | A fazer | — | Não se aplica | Aceite exige controle físico e lifecycle no WebView real |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
@@ -271,7 +270,7 @@ Toolchain, identidade de pacote e consultas de plataforma da I1 estão no
 [registro técnico](../02-host-android-e-baseline.md#2-toolchain). Pendências a resolver
 nas etapas seguintes: validação do WebView com Activity visível, contrato mínimo
 nativo, localização da persistência, custódia da chave de release,
-layout de código compartilhado e duração do ensaio. São decisões técnicas ou
+duração do ensaio e validação da apresentação compartilhada no hardware. São decisões técnicas ou
 evidências da execução; não bloqueiam este registro do plano.
 
 Aprovar este plano não equivale à comprovação dos gates Google. Antes de ampliar

@@ -1,0 +1,17 @@
+{
+  "name": "@memora/presentation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./Presentation": "./src/Presentation.tsx",
+    "./usePresentation": "./src/usePresentation.ts",
+    "./model": "./src/model.ts",
+    "./demoCatalog": "./src/demoCatalog.ts",
+    "./Icons": "./src/Icons.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "peerDependencies": {
+    "react": "19.3.1"
+  }
+}
