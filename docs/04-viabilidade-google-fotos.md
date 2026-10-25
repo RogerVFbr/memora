@@ -589,3 +589,72 @@ Próxima etapa técnica é G3 / #44. Antes de obter mídia real, permanecem as
 condições de amostra consentida e esclarecimento de enquadramento/retenção R-013
 já registradas no PRD/G1; esta conclusão de OAuth não as remove. Nenhuma seleção,
 G3, refresh/persistência ou validação de acesso recorrente foi iniciada nesta rodada.
+
+
+## 7. Seleção e recuperação diagnóstica G3
+
+Retomada de [#44](https://github.com/RogerVFbr/memora/issues/44) em 2026-10-25,
+com G2 integrada/aceita. O desenvolvedor confirmou dispor e autorizar 10 fotos e
+2 vídeos para recuperar bytes/metadados privadamente no Fire Stick, com escolha
+pelo próprio Picker. Estendeu explicitamente o risco residual OAuth aos ensaios
+G3–G5; alcance no [PRD §10](00-PRD.md#10-segurança-e-privacidade).
+
+### Recorte e retenção antes de operar
+
+Ensaio de recebimento/exportação temporária iniciado pelo proprietário, sem
+exibição de galeria/slideshow. A [política Photos](https://developers.google.com/photos/support/api-policy)
+contempla armazenamento/exportação e o [guia Picker](https://developers.google.com/photos/picker/guides/media-items)
+documenta a obtenção dos itens selecionados. Isso esclarece a passagem para esse
+recorte técnico; R-013 continua aberto para a apresentação final e sua retenção.
+Não é aprovação nominal Google do Memora ou dispensa de políticas.
+
+Tokens, sessão/expiração, IDs/URLs e metadados mínimos para G4 serão guardados
+somente em arquivo privado cifrado pelo Android Keystore, excluído de backup.
+Nenhum byte de foto/vídeo será retido: leitura limitada em streaming e descarte.
+Preservar a sessão positiva até o ensaio real de expiração de G4; limpeza explícita
+ao concluir a investigação ou a pedido do proprietário. Se o ensaio for abandonado,
+remover sessão/dados privados; não transformar esse registro em catálogo permanente.
+Evidências públicas limitam-se a contagens, status, tempos/durações sem IDs/URLs.
+
+QR nativo contém somente o `pickerUri` necessário à seleção, nunca token OAuth;
+fica restrito à tela de diagnóstico protegida e não é publicado em capturas/chat.
+O proprietário usa a mesma conta de teste no celular e seleciona a amostra.
+A biblioteca ZXing Core 3.5.3 é dependência apenas debug para gerar QR localmente,
+sem serviço externo; fontes na [biblioteca](https://github.com/zxing/zxing) e
+[release fixada](https://github.com/zxing/zxing/releases/tag/zxing-3.5.3).
+Paginação real com pageSize5; fotos com resolução delimitada; vídeos READY só têm
+acesso parcial aos primeiros bytes, explicitamente separado de download completo
+ou playback. Resultados positivos/negativos serão acrescentados após execução.
+
+
+### 7.1 Preparação e validação parcial
+
+Código nativo debug implementado com separação SPK-01/SPK-02, QR local, polling
+somente em foreground e prazo original não renovável. Core HTTP usa endpoints
+fixos e só envia Bearer para HTTPS Googleusercontent validado, sem redirects.
+Foto recebe verificação de tipo/dimensões e teto de 8 MiB; vídeo READY recebe
+leitura parcial de até 64 KiB. Respostas e catálogo têm limites, sem retry infinito.
+`ProbeStore` usa AES-256-GCM/AAD, chave Android Keystore e escrita atômica; backup
+Android permanece desabilitado. URLs iniciais, OAuth/expiry e histórico de sessão
+são preservados separadamente para G4.
+
+Revisão por subagentes e agente principal corrigiu duas classes de risco antes
+do uso de mídia: histórico original de expiração/URLs não é sobrescrito e
+cancelamento durante criação aguarda o resultado limitado em vez de interromper
+a leitura e afirmar limpeza sem ID. Resultado remoto incerto não é anunciado
+como removido; falha de rede/limpeza preserva evidência. Perda simultânea de
+resposta e armazenamento impede garantia de rastreio remoto: limite explícito do
+ensaio, sem promessa de limpeza quando não confirmada.
+
+Build debug, 16 testes e lint aprovados. Testes cobrem OAuth/origem local existentes,
+polling/deadline/background, paginação/ciclos/duplicatas, origem de mídia e limites
+de leitura. Não são ensaios reais de HTTP 401/403/429/5xx. Manifesto/recursos release
+gerados e dependência ZXing restrita às configurações debug, sem cliente ou
+Activity de ensaio em release.
+
+No Fire TV, `firestick-check` retornou `ok`, instalação `-r` e abertura aprovadas.
+Sessão real incompleta foi criada sem selecionar itens; arquivo privado cifrado
+confirmado por envelope, sem marcadores de token/URI em texto claro. Cancelamento
+pelo app confirmou DELETE e remoção do arquivo local. Não foi feito acesso a mídia
+nessa negativa. Outra sessão foi aberta para a amostra e QR confirmado pela UI;
+seleção pessoal ainda depende do proprietário. Não dar aceite a G3 por esse código.

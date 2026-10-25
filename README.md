@@ -273,3 +273,19 @@ perder o processo exige recomeçar. Tokens não são persistidos. Sem cliente lo
 login ou limpeza de sessão concluídos, não interpretar o build como aceite OAuth.
 A tela e a permissão de rede só existem no debug; artefatos contendo o cliente
 local devem permanecer privados nesta investigação.
+
+
+### Seleção diagnóstica SPK-02
+
+Na mesma Activity de ensaio, **SPK-02: selecionar 10 fotos e 2 vídeos** inicia
+OAuth e mostra QR nativo para o Picker. A conta usada no celular deve ser a mesma
+autorizada na TV. Selecione exatamente a amostra combinada e conclua no Picker;
+a TV consulta a sessão somente enquanto visível, respeitando os intervalos
+retornados, percorre páginas de cinco itens e mostra resumo técnico.
+
+O [recorte e a retenção](docs/04-viabilidade-google-fotos.md#7-seleção-e-recuperação-diagnóstica-g3)
+explicam limites de bytes e preservação cifrada para G4. Não há apresentação de
+mídia, download completo de vídeos ou publicação. **Cancelar tentativa** limpa
+a sessão incompleta; **Limpar sessão e evidência privada** descarta o registro
+preservado quando autorizado ao fim do ensaio. Não limpe o resultado positivo
+antes das observações de expiração de G4.
