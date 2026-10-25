@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.16 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.17 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -481,8 +481,8 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 |---|---|---|---|
 | R-001 | **Crítica** | Como manter slideshow ao longo dos dias se sessões expiram e `baseUrl` dura 60 min? | [SPK-03 em observação](04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4), política Google e UX de re-seleção; acesso dentro da validade não comprova persistência |
 | R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | [SPK-01 aceito no alvo](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) via cliente Android/URI própria; não prova fluxo TV limitado ou acesso recorrente |
-| R-003 | Alta | Seleção máxima de 2.000 itens por sessão; acervo enorme | SPK-04, múltiplas seleções e limites explicitados |
-| R-004 | Alta | API não lista álbuns completos e membership | Modelo de coleções locais, validação com amostras |
+| R-003 | Alta | Seleção máxima de 2.000 itens por sessão; acervo enorme | [SPK-04 investigado](04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5): bloqueio na UI e paginação real; transferência no máximo não demonstrada |
+| R-004 | Alta | API não lista álbuns completos e membership | [Amostras e comparação SPK-04](04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) sustentam coleções locais da §4.1; sem garantia de membership ou sincronização |
 | R-005 | Alta | Dificuldade de media autenticada no WebView | Prototipar bridge/stream local seguro; sem URL/token no JS |
 | R-006 | Alta | Stream progressivo e codecs de vídeo | SPK-05 Media3, Range/seek/transcode; fallback UX |
 | R-007 | Média | Live Photos do iPhone representadas de forma diferente de Motion Photos | Testar casos reais após backup Google |

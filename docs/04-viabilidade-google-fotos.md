@@ -872,8 +872,76 @@ ou quantidade de origem exibida. A ausência de lista direta não prova ausênci
 da busca por álbum nem constitui falha operacional do Picker.
 
 O proprietário confirmou que a busca exibiu o álbum ou fotos dele; ainda não
-separou essas duas apresentações. Aguardando identificar controles de seleção
-em lote, sem exigir marcação manual de milhares de itens. Correspondência exata,
+separou essas duas apresentações. Confirmou em seguida a opção de selecionar tudo ou marcar o álbum inteiro, sem
+exigir marcação manual de milhares de itens. Correspondência exata,
 quantidade de origem, limite e seleção continuam sem comprovação; inventário de
 campos da API ainda depende da seleção. A busca por título não demonstra que a
 API devolve membership nem que haverá sincronização de novas fotos.
+
+### 9.3 Limite observado na seleção
+
+O proprietário informou o seguinte resultado na UI do Picker ao marcar o álbum
+inteiro: 6.244 itens, botão Done desabilitado e mensagem para selecionar somente
+até 2.000 itens. É observação da UI relatada pelo usuário, não contagem retornada
+pela API. Comprova o bloqueio daquela seleção acima do limite; não comprova
+transferência de 2.000 itens, paginação ou acesso ao álbum como entidade. Nenhum
+item dessa seleção bloqueada foi concluído ou recebido pelo app.
+
+Para evitar marcação/desmarcação manual de milhares de itens, orientar desfazer
+a seleção inteira e procurar outro álbum com seleção entre 101 e 2.000 itens.
+Essa amostra positiva terá origem distinta da negativa de 6.244; manter ambas
+as proveniências separadas ao avaliar o aceite. Atravessar as páginas reais e
+comparar uma segunda seleção com sobreposição conhecida continuam pendentes.
+
+### 9.4 Amostra positiva A
+
+O proprietário informou 500 itens selecionados em outro álbum e concluiu no
+Picker. O app recebeu 500 fotos, 500 IDs únicos, zero duplicatas internas e
+percorreu cinco páginas até ausência de nextPageToken. A listagem levou
+7.492 ms. Foram cinco pedidos LIST nessa travessia; o resumo acumulado do slot
+registrou 116 tentativas Picker e 449.767 bytes de corpos JSON, incluindo criação
+e consultas/polling anteriores, não apenas a listagem. Esses números não incluem
+a navegação OAuth nem equivalem ao tráfego total de rede. Nenhum byte de mídia
+foi solicitado.
+
+O inventário observado continha 17 caminhos de campos: ID/tipo/createTime e
+mediaFile com URL, filename, MIME, dimensões, câmera e propriedades de foto.
+Somente nomes/presença e IDs mínimos foram retidos; valores pessoais/URLs foram
+descartados. Não apareceu campo de associação a álbum nessa amostra.
+
+A tentativa negativa de 6.244 e o positivo de 500 têm origens distintas e
+complementares. Não houve transferência de 2.000 itens nem truncamento automático
+demonstrado. A seleção B do mesmo álbum de 500 e comparação dos IDs ainda faltam.
+A primeira autorização B foi rejeitada antes da criação, sem causa determinada;
+repetição controlada funcionou e mostrou QR, mantendo A preservada.
+
+### 9.5 Comparação, limpeza e aceite investigativo G5
+
+O proprietário confirmou nova seleção dos mesmos 500 itens para B. A API
+retornou 500 fotos e IDs únicos, zero duplicatas internas e cinco páginas até o
+fim, em 8.266 ms. Foram cinco pedidos LIST; o acumulado do slot B foi de
+17 tentativas Picker e 404.968 bytes de corpos JSON, com consultas/criação
+incluídas. Os 17 caminhos de campos foram os mesmos observados em A, sem campo
+de associação a álbum. Nenhum byte de mídia foi solicitado.
+
+Comparação local, sem rede: A=500, B=500, interseção=500, união=500. Demonstra
+reconhecimento dos mesmos IDs entre essas seleções; não comprova autorização
+permanente, membership, descoberta de novidades ou sincronização automática.
+O resultado é compatível com a [coleção local definida no PRD §4.1](00-PRD.md#41-semântica-de-álbuns-e-coleções-validar):
+propor agrupar seleções explícitas e deduplicar por IDs, sem apresentar essa
+coleção como álbum cloud sincronizado. Não é aceite de UX final ou MVP.
+
+As duas sessões G5 tiveram DELETE confirmado pelo cliente; depois o apagamento
+explícito removeu arquivo/chave G5. A ausência do arquivo foi conferida no
+aparelho. O hash do arquivo cifrado G4 continuou bit a bit igual à referência
+anterior a G5, e sua Activity restaurou o resultado após a limpeza, confirmando
+que o registro permaneceu legível. Mídia e IDs pessoais não foram publicados.
+
+O conjunto atende ao aceite investigativo de [G5 / #46](https://github.com/RogerVFbr/memora/issues/46):
+origem acima do limite e bloqueio real na UI relatados pelo proprietário;
+contagens selecionadas/recebidas, paginação real e comparação por IDs medidas;
+semântica compatível com o modelo observado. As origens negativa/positiva são
+distintas: não alegar transferência de 2.000/6.244, truncamento automático ou
+benchmark no limite máximo. O caminho sem duplicatas foi real; proteção contra
+duplicata interna e excesso também tem testes locais, não resposta duplicada
+real simulada como observação. G4 continua sem aceite temporal e G6 não foi iniciada.
