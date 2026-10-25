@@ -18,7 +18,8 @@ class ProbeHttpException(
     // Diagnostic data may contain a signed media URL. Persist only in ProbeStore; never print.
     val privateRedirectLocation: String? = null,
     val redirectHost: String? = null,
-    val privateRedirectTrail: String? = null
+    val privateRedirectTrail: String? = null,
+    val privateHttpEvidence: String? = null
 ) : Exception("Probe HTTP $status")
 
 enum class ProbeMediaFailure { UNEXPECTED_MIME, EMPTY_RESPONSE, IMAGE_DECODE_FAILED }
@@ -114,7 +115,12 @@ class PickerProbe(context: Context) {
     private val api = "https://photospicker.googleapis.com/v1"
 
     private fun now() = Instant.now().toString()
-    private fun checkActive() { check(!Thread.currentThread().isInterrupted) { "Probe cancelled" } }
+    @Volatile private var expiryCancellation: ExpiryProbeCancellation? = null
+    private fun isCancelled() = Thread.currentThread().isInterrupted || expiryCancellation?.isCancelled() == true
+    private fun checkActive() { check(!isCancelled()) { "Probe cancelled" } }
+
+    /** UI signals this before cancelling its Future; native I/O may clear interruption. */
+    fun cancelExpiryCheck() { expiryCancellation?.cancel() }
     private fun encoded(value: String) = URLEncoder.encode(value, "UTF-8")
 
     private fun open(url: String, token: String?): HttpsURLConnection {
@@ -130,7 +136,15 @@ class PickerProbe(context: Context) {
         }
     }
 
-    private fun json(url: String, token: String, method: String = "GET", body: JSONObject? = null): JSONObject {
+    private var expiryRun: Int? = null
+    private var expiryResponseHttp: JSONObject? = null
+
+    private fun json(url: String, token: String, method: String = "GET", body: JSONObject? = null): JSONObject =
+        observedRequest(if (url.contains("/mediaItems?")) "LIST" else "SESSION_$method") {
+            jsonRequest(url, token, method, body)
+        }
+
+    private fun jsonRequest(url: String, token: String, method: String, body: JSONObject?): JSONObject {
         // API requests are constructed internally; never accept a caller-provided endpoint.
         require(url.startsWith("$api/") && URI(url).host == "photospicker.googleapis.com")
         val connection = open(url, token)
@@ -142,7 +156,10 @@ class PickerProbe(context: Context) {
                 connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
             }
             val status = connection.responseCode
-            if (status !in 200..299) throw ProbeHttpException(status)
+            if (expiryRun != null) {
+                    expiryResponseHttp = httpEvidence(connection, status)
+                }
+            if (status !in 200..299) throw ProbeHttpException(status, privateHttpEvidence = httpEvidence(connection, status).toString())
             val bytes = connection.inputStream.use { readProbeBytes(it, ProbePolicy.JSON_LIMIT) }
             val response = if (bytes.isEmpty()) JSONObject() else JSONObject(String(bytes, Charsets.UTF_8))
             return response.put("_probeHttp", httpEvidence(connection, status))
@@ -287,7 +304,7 @@ class PickerProbe(context: Context) {
                         .put("retrieval", checked)
                 }
             } catch (e: Exception) {
-                if (Thread.currentThread().isInterrupted) throw e
+                if (isCancelled()) throw e
                 failures++
                 // Exception messages from URL/HTTP layers can include private identifiers.
                 result.put("outcome", "FETCH_FAILED").put("category", e.javaClass.simpleName)
@@ -328,7 +345,10 @@ class PickerProbe(context: Context) {
         return summary
     }
 
-    private fun media(url: String, token: String, video: Boolean): JSONObject {
+    private fun media(url: String, token: String, video: Boolean): JSONObject =
+        observedRequest(if (video) "VIDEO_PREFIX" else "PHOTO") { mediaRequest(url, token, video) }
+
+    private fun mediaRequest(url: String, token: String, video: Boolean): JSONObject {
         var currentUrl = url
         val guard = ProbeRedirectGuard(url)
         val redirects = JSONArray()
@@ -339,13 +359,16 @@ class PickerProbe(context: Context) {
             if (video) connection.setRequestProperty("Range", "bytes=0-${ProbePolicy.VIDEO_PREFIX - 1}")
             try {
                 val status = connection.responseCode
+                if (expiryRun != null) {
+                    expiryResponseHttp = httpEvidence(connection, status)
+                }
                 if (status in setOf(301, 302, 303, 307, 308)) {
                     val location = connection.getHeaderField("Location").orEmpty()
                     val host = try { URI(currentUrl).resolve(location).host?.lowercase() } catch (_: Exception) { null }
                     val next = try {
                         ProbePolicy.redirectUrl(currentUrl, location).also { guard.follow(it) }
                     } catch (_: Exception) {
-                        throw ProbeHttpException(status, location.takeIf { it.isNotBlank() }, host, redirects.toString())
+                        throw ProbeHttpException(status, location.takeIf { it.isNotBlank() }, host, redirects.toString(), httpEvidence(connection, status).toString())
                     }
                     redirects.put(JSONObject().put("fromHost", URI(currentUrl).host)
                         .put("location", location).put("toHost", URI(next).host)
@@ -353,7 +376,7 @@ class PickerProbe(context: Context) {
                     currentUrl = next
                     continue
                 }
-                if (status !in 200..299) throw ProbeHttpException(status, privateRedirectTrail = redirects.toString())
+                if (status !in 200..299) throw ProbeHttpException(status, privateRedirectTrail = redirects.toString(), privateHttpEvidence = httpEvidence(connection, status).toString())
                 return readMedia(connection, status, video).put("redirects", redirects)
                     .put("finalHost", URI(currentUrl).host)
                     .put("redirectCount", guard.hops)
@@ -384,6 +407,7 @@ class PickerProbe(context: Context) {
         } else {
             val bytes = connection.inputStream.use { readProbeBytes(it, ProbePolicy.PHOTO_LIMIT) }
             try {
+                checkActive()
                 val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
                 if (bounds.outWidth <= 0 || bounds.outHeight <= 0)
@@ -411,6 +435,211 @@ class PickerProbe(context: Context) {
         .put("age", connection.getHeaderField("Age") ?: JSONObject.NULL)
         .put("cacheControl", connection.getHeaderField("Cache-Control") ?: JSONObject.NULL)
         .put("contentRange", connection.getHeaderField("Content-Range") ?: JSONObject.NULL)
+
+    /** Credential replacement is explicit and never creates/deletes a Picker session. */
+    fun replaceAuthorization(response: JSONObject, receivedAt: Instant): String {
+        checkActive()
+        val token = response.getString("access_token")
+        val seconds = response.getLong("expires_in")
+        require(token.isNotBlank() && seconds > 0 && seconds <= 31_536_000)
+        if (response.has("scope")) require(response.getString("scope").split(' ').contains(
+            "https://www.googleapis.com/auth/photospicker.mediaitems.readonly")) { "Picker scope not granted" }
+        val type = response.optString("token_type")
+        require(type.equals("Bearer", ignoreCase = true)) { "Unexpected OAuth token type" }
+        store.update { saved ->
+            preserveInitialAuthorization(saved)
+            val history = saved.optJSONArray("authorizationHistory") ?: JSONArray()
+            val version = ExpiryProbePolicy.nextIndex(history.length(), ExpiryProbePolicy.MAX_AUTHORIZATIONS) + 1
+            val credential = JSONObject().put("version", version).put("token", token)
+                .put("receivedAt", receivedAt.toString())
+                .put("expiresAt", receivedAt.plusSeconds(seconds).toString())
+                .put("tokenType", type).put("association", "UNVERIFIED")
+                .put("grantedScopesPresent", response.has("scope"))
+                .put("refreshTokenPresent", response.optString("refresh_token").isNotBlank())
+            if (response.has("scope")) credential.put("grantedScopes", response.getString("scope"))
+            if (response.optString("refresh_token").isNotBlank()) credential.put("refreshToken", response.getString("refresh_token"))
+            history.put(credential)
+            saved.put("authorizationHistory", history).put("credentialVersion", version)
+                .put("token", token).put("tokenReceivedAt", receivedAt.toString())
+                .put("tokenIssuedAt", receivedAt.toString()).put("tokenExpiresAt", receivedAt.plusSeconds(seconds).toString())
+                .put("tokenType", type).put("tokenTypePresent", true)
+                .put("grantedScopesPresent", response.has("scope"))
+                .put("refreshTokenPresent", credential.getBoolean("refreshTokenPresent"))
+                .put("credentialAssociation", "UNVERIFIED")
+            saved.remove("grantedScopes"); saved.remove("refreshToken")
+            if (credential.has("grantedScopes")) saved.put("grantedScopes", credential.get("grantedScopes"))
+            if (credential.has("refreshToken")) saved.put("refreshToken", credential.get("refreshToken"))
+            saved.put("lastExpirySummary", "OAuth renovado; sessão e URLs iniciais preservadas. Associação à sessão ainda não comprovada.")
+            checkActive()
+        }
+        return "OAuth renovado; nenhuma sessão criada ou removida. Consulte a mesma sessão para verificar acesso."
+    }
+
+    private fun preserveInitialAuthorization(saved: JSONObject) {
+        if (saved.has("initialAuthorization")) return
+        val initial = JSONObject().put("version", saved.optInt("credentialVersion", 0))
+        mapOf("token" to "token", "tokenReceivedAt" to "receivedAt", "tokenIssuedAt" to "issuedAt",
+            "tokenExpiresAt" to "expiresAt", "tokenType" to "tokenType", "grantedScopes" to "grantedScopes",
+            "refreshToken" to "refreshToken").forEach { (from, to) -> if (saved.has(from)) initial.put(to, saved.get(from)) }
+        saved.put("initialAuthorization", initial)
+    }
+
+    /** Each action is read-only remotely. Its intent is durable before any HTTP request. */
+    fun runExpiryCheck(operation: String, isCancelled: () -> Boolean = { false }, onProgress: (String) -> Unit): String {
+        // The UI-owned signal exists before worker submission, so pre-start cancellation is retained.
+        val cancellation = ExpiryProbeCancellation(isCancelled)
+        check(!cancellation.isCancelled() && !Thread.currentThread().isInterrupted) { "Probe cancelled before start" }
+        val op = ExpiryProbePolicy.operation(operation)
+        check(expiryRun == null) { "Expiry action already active" }
+        val started = Instant.now()
+        val saved = store.update { preserveInitialAuthorization(it) }
+        val initialCredential = saved.getJSONObject("initialAuthorization")
+        val originalToken = op == "initial-token-session"
+        val token = if (originalToken) initialCredential.getString("token") else saved.getString("token")
+        val expiry = if (originalToken) initialCredential.optString("expiresAt") else saved.optString("tokenExpiresAt")
+        val checks = saved.optJSONArray("expiryChecks") ?: JSONArray()
+        val run = ExpiryProbePolicy.nextIndex(checks.length(), ExpiryProbePolicy.MAX_RUNS)
+        val entry = JSONObject().put("operation", op).put("startedAt", started.toString())
+            .put("outcome", "STARTED").put("requests", JSONArray())
+            .put("credentialVersion", if (originalToken) initialCredential.optInt("version", 0) else saved.optInt("credentialVersion", 0))
+            .put("tokenExpectedPhase", ExpiryProbePolicy.phase(started, expiry))
+            .put("sessionExpectedPhase", ExpiryProbePolicy.phase(started, saved.optString("initialExpireTime")))
+        store.update { checks.put(entry); it.put("expiryChecks", checks) }
+        expiryRun = run
+        expiryCancellation = cancellation
+        try {
+            checkActive()
+            val summary = when (op) {
+                "session", "initial-token-session" -> {
+                    val session = poll(token, saved.getString("sessionId"))
+                    if (!originalToken) store.update { it.put("credentialAssociation", "SESSION_ACCESS_CONFIRMED") }
+                    "Sessão: HTTP ${session.getJSONObject("_probeHttp").getInt("status")}; acesso observado com credencial ${entry.getInt("credentialVersion")}."
+                }
+                "initial" -> inspectInitialUrls(saved, token, onProgress)
+                else -> {
+                    inspect(token, saved.getString("sessionId"), onProgress)
+                    val latest = store.read() ?: error("No private probe snapshot")
+                    entry.put("currentMediaChecks", JSONArray(latest.getJSONArray("mediaChecks").toString()))
+                    "Relistagem e bytes atuais executados; consulte os resultados HTTP por requisição. URLs iniciais preservadas."
+                }
+            }
+            checkActive()
+            val requests = store.read()!!.getJSONArray("expiryChecks").getJSONObject(run).getJSONArray("requests")
+            val failed = (0 until requests.length()).count { requests.getJSONObject(it).optString("outcome") != "SUCCESS" }
+            val statusSummary = (0 until requests.length()).mapNotNull {
+                requests.getJSONObject(it).optJSONObject("http")?.optInt("status")?.takeIf { status -> status > 0 }
+            }.groupingBy { it }.eachCount().entries.joinToString { "${it.key} (${it.value})" }.ifEmpty { "nenhum" }
+            val finalSummary = "$summary\nCredencial ${entry.getInt("credentialVersion")}: ${entry.getString("tokenExpectedPhase")}; sessão: ${entry.getString("sessionExpectedPhase")}.\n${requests.length()} requisições lógicas; $failed falhas. HTTP: $statusSummary.\nFases previstas não comprovam expiração; vídeos são prefixos parciais e não há cache local de mídia."
+            checkActive()
+            finishExpiryRun(run, entry, if (failed == 0) "COMPLETED" else "COMPLETED_WITH_FAILURES", finalSummary)
+            return finalSummary
+        } catch (error: Exception) {
+            val cancelled = this.isCancelled()
+            val status = if (error is ProbeHttpException) " HTTP ${error.status}." else ""
+            val summary = "Ensaio $op ${if (cancelled) "interrompido" else "falhou"}.$status Categoria: ${error.javaClass.simpleName}. Evidência privada preservada; nenhuma sessão criada ou excluída."
+            finishExpiryRun(run, entry, if (cancelled) "CANCELLED" else "FAILED", summary)
+            if (cancelled) throw error
+            return summary
+        } finally { expiryRun = null; expiryCancellation = null }
+    }
+
+    private fun inspectInitialUrls(saved: JSONObject, token: String, onProgress: (String) -> Unit): String {
+        val initial = saved.getJSONArray("initialCatalog")
+        check(initial.length() in 1..12) { "Initial catalog unavailable or exceeds diagnostic limit" }
+        val results = JSONArray()
+        var successes = 0
+        for (index in 0 until initial.length()) {
+            checkActive()
+            val item = initial.getJSONObject(index)
+            val video = item.optString("type") == "VIDEO"
+            val result = JSONObject().put("itemIndex", index).put("startedAt", now())
+                .put("urlAgeSeconds", ExpiryProbePolicy.urlAgeSeconds(Instant.now(), item.optString("firstReceivedAt")) ?: JSONObject.NULL)
+            try {
+                if (item.optString("type") !in setOf("PHOTO", "VIDEO")) {
+                    result.put("outcome", "UNSUPPORTED_TYPE")
+                } else if (video && item.optJSONObject("mediaFile")?.optJSONObject("mediaFileMetadata")
+                        ?.optJSONObject("videoMetadata")?.optString("processingStatus") != "READY") {
+                    result.put("outcome", "INITIAL_VIDEO_NOT_READY")
+                } else {
+                    result.put("retrieval", media(ProbePolicy.mediaUrl(item.getString("firstBaseUrl"), video), token, video))
+                    result.put("outcome", "SUCCESS"); successes++
+                }
+            } catch (error: Exception) {
+                result.put("outcome", "FAILED").put("category", error.javaClass.simpleName)
+                if (error is ProbeHttpException) result.put("httpStatus", error.status)
+                if (isCancelled()) throw error
+            } finally {
+                result.put("finishedAt", now()); results.put(result)
+                persistWithoutInterrupt { store.update { it.getJSONArray("expiryChecks").getJSONObject(expiryRun!!).put("initialMediaChecks", results) } }
+            }
+            onProgress("URLs iniciais sem relistagem: ${index + 1}/${initial.length()}, $successes acessíveis.")
+        }
+        val ages = (0 until results.length()).mapNotNull { index ->
+            results.getJSONObject(index).opt("urlAgeSeconds").let { if (it is Number) it.toLong() else null }
+        }
+        val ageSummary = if (ages.isEmpty()) "idade desconhecida" else "idades ${ages.minOrNull()}–${ages.maxOrNull()} segundos"
+        return "URLs iniciais: $successes/${initial.length()} acessíveis, sem relistagem; $ageSummary."
+    }
+
+    private fun finishExpiryRun(run: Int, extra: JSONObject, outcome: String, summary: String): JSONObject {
+        val cancelledBeforePersistence = isCancelled()
+        return persistWithoutInterrupt {
+            store.update { saved ->
+                val record = saved.getJSONArray("expiryChecks").getJSONObject(run)
+                if (extra.has("currentMediaChecks")) record.put("currentMediaChecks", extra.get("currentMediaChecks"))
+                val cancelled = cancelledBeforePersistence || isCancelled()
+                val finalOutcome = if (cancelled) "CANCELLED" else outcome
+                val finalSummary = if (cancelled && outcome != "CANCELLED")
+                    "Medição cancelada; respostas já recebidas preservadas, sem concluir a operação." else summary
+                record.put("finishedAt", now()).put("outcome", finalOutcome).put("summary", finalSummary)
+                saved.put("lastExpirySummary", finalSummary)
+            }
+        }
+    }
+
+    private fun <T> persistWithoutInterrupt(action: () -> T): T {
+        val interrupted = Thread.interrupted()
+        try { return action() } finally { if (interrupted) Thread.currentThread().interrupt() }
+    }
+
+    private fun observedRequest(kind: String, action: () -> JSONObject): JSONObject {
+        val run = expiryRun ?: return action()
+        var index = 0
+        expiryResponseHttp = null
+        store.update {
+            val requests = it.getJSONArray("expiryChecks").getJSONObject(run).getJSONArray("requests")
+            index = ExpiryProbePolicy.nextIndex(requests.length(), ExpiryProbePolicy.MAX_REQUESTS)
+            requests.put(JSONObject().put("kind", kind).put("startedAt", now()).put("outcome", "STARTED"))
+        }
+        try {
+            val response = action()
+            checkActive()
+            store.update {
+                val record = it.getJSONArray("expiryChecks").getJSONObject(run).getJSONArray("requests").getJSONObject(index)
+                record.put("finishedAt", now()).put("outcome", "SUCCESS")
+                val http = response.optJSONObject("_probeHttp") ?: response.optJSONObject("http")
+                if (http != null) record.put("http", http)
+                if (response.has("bytes")) record.put("bytes", response.getLong("bytes"))
+                if (response.has("redirects")) record.put("redirects", response.get("redirects"))
+            }
+            return response
+        } catch (error: Exception) {
+            val cancelled = this.isCancelled()
+            persistWithoutInterrupt { store.update {
+                val record = it.getJSONArray("expiryChecks").getJSONObject(run).getJSONArray("requests").getJSONObject(index)
+                record.put("finishedAt", now()).put("outcome", if (cancelled) "CANCELLED" else "FAILED")
+                    .put("category", error.javaClass.simpleName)
+                if (expiryResponseHttp != null) record.put("http", expiryResponseHttp)
+                if (error is ProbeHttpException) {
+                    record.put("http", error.privateHttpEvidence?.let { value -> JSONObject(value) } ?: JSONObject().put("status", error.status))
+                    if (error.privateRedirectLocation != null) record.put("redirectLocation", error.privateRedirectLocation)
+                    if (error.privateRedirectTrail != null) record.put("redirects", JSONArray(error.privateRedirectTrail))
+                }
+                if (error is ProbeMediaException) record.put("reason", error.reason.name)
+            } }
+            throw error
+        }
+    }
 
     /** Explicit cleanup after G4, cancellation, or discarded sample; success snapshots stay until then. */
     fun cleanup(token: String, sessionId: String): Boolean {

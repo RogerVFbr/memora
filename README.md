@@ -289,3 +289,17 @@ mídia, download completo de vídeos ou publicação. **Cancelar tentativa** lim
 a sessão incompleta; **Limpar sessão e evidência privada** descarta o registro
 preservado quando autorizado ao fim do ensaio. Não limpe o resultado positivo
 antes das observações de expiração de G4.
+
+### Expiração diagnóstica SPK-03
+
+Reutilize o build, instalação `-r` e Activity dos ensaios acima; preserve os dados
+do aplicativo. Com a amostra G3 existente, os botões **SPK-03** executam operações
+separadas: consultar a sessão, testar URLs iniciais sem relistar, relistar/testar
+URLs atuais e consultar com o OAuth original. **Renovar OAuth sem nova seleção**
+abre o consentimento e substitui a credencial ativa, preservando a sessão e as
+âncoras originais. Não use o botão SPK-02 para renovar autorização.
+
+**Histórico de expiração** lê o registro local sem rede. Abrir novamente o app
+não inicia medições. Os [procedimentos e pendências G4](docs/04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
+definem quando medir; não limpe dados, desinstale nem revogue o acesso antes das
+observações naturais. O build não comprova expiração real.
