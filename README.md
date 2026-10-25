@@ -6,7 +6,7 @@ Photo visualization application
 Requer Node.js `^20.19.0` ou `>=22.12.0`, com npm. Na raiz do repositório:
 
 ```sh
-npm ci
+npm --prefix apps ci
 cd apps/prototype
 npm run dev
 ```
@@ -77,20 +77,23 @@ APK de desenvolvimento: `apps/android/app/build/outputs/apk/debug/app-debug.apk`
 (pacote `br.com.memora.dev`). Relatórios ficam em
 `apps/android/app/build/reports/`, incluindo `tests/testDebugUnitTest/index.html`
 e `lint-results-debug.html`. O comando compila os assets de TV e o APK e verifica localmente; instalação
-não faz parte dele. Execute `npm ci` na raiz antes do primeiro build Android.
+não faz parte dele. Execute `npm --prefix apps ci` na raiz antes do primeiro build Android.
 O APK contém a experiência demonstrativa completa, sem laboratório.
 Consulte [host e baseline](docs/02-host-android-e-baseline.md#1-host-e-fronteira)
 para segurança, lifecycle, versões fixadas e limites da validação.
 
 ## Frontend demonstrativo de TV
 
-Os workspaces usam um único `package-lock.json` na raiz. Na raiz do repositório:
+Os workspaces são definidos em `apps/package.json`, com lockfile e dependências
+em `apps/`. `apps/shared/presentation` contém o código compartilhado pelos dois
+frontends; `apps/node_modules` é gerado pelo npm e ignorado pelo Git. Na raiz do
+repositório:
 
 ```sh
-npm ci
-npm run build:prototype
-npm run build:tv
-npm run preview --workspace @memora/tv
+npm --prefix apps ci
+npm --prefix apps run build:prototype
+npm --prefix apps run build:tv
+npm --prefix apps run preview --workspace @memora/tv
 ```
 
 A entrada de TV compilada fica em `apps/tv/dist/`; o preview usa
@@ -104,7 +107,7 @@ o preview avulso exibe desenvolvimento e não instala nada no dispositivo.
 Para verificar estados de reprodução e leitura/gravação das preferências, na raiz:
 
 ```sh
-npm run test:presentation
+npm --prefix apps run test:presentation
 ```
 
 O comando compila os módulos testados para `.local/test-presentation/` e executa
@@ -187,7 +190,7 @@ python3 -m tools.android_release verify builds/0.1.0-alpha.1
 
 A versão corrente vem de `android-release.properties`; ajuste o argumento do
 verificador ao conferir outra entrega ou uma cópia obtida da Release. `build`
-executa `npm ci`, testes da apresentação e build/testes/lint de release; não
+executa `npm --prefix apps ci`, testes da apresentação e build/testes/lint de release; não
 precisa de servidor Vite. `verify` precisa do SDK/JDK, sem acesso ao keystore ou
 à senha. Configuração de assinatura ausente/inconsistente e destino já existente
 causam falha sem substituir arquivos. Os comandos não publicam nem instalam APKs.

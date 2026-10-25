@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.5 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.6 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -412,17 +412,15 @@ O empacotamento demonstrativo local tem implementação própria; consultar
 alterar versão, assinatura ou verificação e o
 [README](../README.md#empacotamento-local-da-release) para os comandos executáveis.
 
-### Layout de repositório [PROPOSTO]
+### Layout de repositório implementado
 
-```text
-/
-├── PRD.md
-├── android/             # Gradle, Kotlin, WebView, bridge, Media3
-├── web/                 # React, TypeScript, Vite, Tailwind, GSAP
-├── docs/                # PoCs, ADRs expandidas e notas
-├── tools/               # Scripts ADB/build/logs
-└── README.md
-```
+Consultar o [host e a fronteira concreta](02-host-android-e-baseline.md#1-host-e-fronteira)
+antes de criar módulos ou reorganizar diretórios. Aplicações e workspaces npm
+ficam em `apps/`, inclusive código compartilhado em `apps/shared/presentation`.
+Configuração npm, lockfile e dependências geradas também ficam em `apps/`, sem
+`node_modules/` ou `packages/` na raiz. Consulte o
+[README](../README.md#frontend-demonstrativo-de-tv) para instalação e comandos.
+Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 
 ---
 

@@ -1,0 +1,17 @@
+{
+  "name": "memora",
+  "private": true,
+  "workspaces": [
+    "prototype",
+    "tv",
+    "shared/presentation"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "build:prototype": "npm run build --workspace @memora/prototype",
+    "build:tv": "npm run build --workspace @memora/tv",
+    "test:presentation": "tsc --module commonjs --target ES2022 --skipLibCheck --outDir ../.local/test-presentation shared/presentation/src/model.ts shared/presentation/src/playback.ts && node --test shared/presentation/test/*.test.cjs"
+  }
+}

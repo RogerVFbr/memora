@@ -60,7 +60,7 @@ sem introduzir diferenças funcionais como variável adicional.
 
 Wordmark `memora.` em minúsculas, acompanhado de três traços que sugerem
 fragmentos de memória. É um estudo vetorial provisório implementado em
-[Icons.tsx](../packages/presentation/src/Icons.tsx), não um logo final nem um pacote de marca.
+[Icons.tsx](../apps/shared/presentation/src/Icons.tsx), não um logo final nem um pacote de marca.
 A marca aparece no laboratório e nos controles; desaparece da apresentação limpa.
 
 O protótipo usa fontes do sistema, sem requisições a fornecedores de fontes.
@@ -71,7 +71,7 @@ testar acentos, numerais e leitura à distância. Não há fonte final aprovada.
 ### Tokens e geometria
 
 Os valores executáveis têm fonte única em
-[styles.css](../packages/presentation/src/styles.css), nos tokens `.app` e `.theme-gallery`:
+[styles.css](../apps/shared/presentation/src/styles.css), nos tokens `.app` e `.theme-gallery`:
 
 | Token | Responsabilidade |
 |---|---|
@@ -159,18 +159,18 @@ validação posterior. Vídeos e Live Photos não estão simulados como reprodu�
 ## 6. Base técnica e reaproveitamento
 
 O projeto é um frontend estático React/TypeScript com Vite. As versões realmente
-instaladas ficam em [package-lock.json](../package-lock.json);
+instaladas ficam em [package-lock.json](../apps/package-lock.json);
 pré-requisitos e comandos ficam no README. Não há backend nem dependência de
 servidor remoto para servir imagens ou fontes durante a experiência.
 
 | Arquivo / camada | Responsabilidade | Possível reaproveitamento |
 |---|---|---|
-| `packages/presentation/src/model.ts` | Tipos e preferências | Catálogo recebido por contrato |
-| `packages/presentation/src/demoCatalog.ts` | Catálogo demonstrativo | Provedor substituível, sem dependência da apresentação para fixtures |
-| `packages/presentation/src/usePresentation.ts` | Estado, reprodução e navegação | Fonte única nas duas entradas |
-| `packages/presentation/src/Presentation.tsx` | Composições, controles e painéis | Compartilhado por browser e TV |
-| `packages/presentation/src/Icons.tsx` e `styles.css` | Ícones, tokens, temas e estilos | Fonte única visual |
-| `packages/presentation/public/media` | Fotografias demonstrativas | Fonte única dos arquivos, servida por ambos os builds |
+| `apps/shared/presentation/src/model.ts` | Tipos e preferências | Catálogo recebido por contrato |
+| `apps/shared/presentation/src/demoCatalog.ts` | Catálogo demonstrativo | Provedor substituível, sem dependência da apresentação para fixtures |
+| `apps/shared/presentation/src/usePresentation.ts` | Estado, reprodução e navegação | Fonte única nas duas entradas |
+| `apps/shared/presentation/src/Presentation.tsx` | Composições, controles e painéis | Compartilhado por browser e TV |
+| `apps/shared/presentation/src/Icons.tsx` e `styles.css` | Ícones, tokens, temas e estilos | Fonte única visual |
+| `apps/shared/presentation/public/media` | Fotografias demonstrativas | Fonte única dos arquivos, servida por ambos os builds |
 | `apps/prototype/src/App.tsx` | Bancada e simuladores | Exclusivo do browser |
 | `apps/tv/src/main.tsx` | Entrada da TV | Apresentação sem bancada |
 
@@ -201,7 +201,7 @@ Fontes técnicas: [Vite — desenvolvimento](https://vite.dev/guide/),
 
 ## 7. Mídia e proveniência
 
-Os arquivos estão em `packages/presentation/public/media`. As quatro fotografias são públicas, demonstrativas e não pertencem ao acervo
+Os arquivos estão em `apps/shared/presentation/public/media`. As quatro fotografias são públicas, demonstrativas e não pertencem ao acervo
 pessoal. Não representam seleções reais do Google Fotos. Não foram atribuídos
 data, localização de captura ou autor sem evidência.
 

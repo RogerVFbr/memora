@@ -17,14 +17,14 @@ evitando conflito de assinatura com a release. A variante debug usa assinatura
 de desenvolvimento; a configuração de versão e a assinatura permanente de
 release estão na [entrega Android](03-entrega-android.md#1-configuração-e-fronteiras).
 
-A I2 concretiza `apps/tv` e `packages/presentation`: o primeiro contém somente a
+A I2 concretiza `apps/tv` e `apps/shared/presentation`: o primeiro contém somente a
 entrada de TV; o segundo contém apresentação, controlador de estado, modelos,
 ícones, estilos e mídia. O catálogo demonstrativo é injetado pelo contrato
 `Catalog`, não importado pela apresentação. `apps/prototype` conserva a bancada
 e os simuladores, consumindo a mesma apresentação. A proveniência das fotografias
 permanece no [documento visual](01-identidade-visual-e-ux.md#7-mídia-e-proveniência).
 
-Os três pacotes são workspaces npm, com dependências e lockfile na raiz. O Gradle
+Os três pacotes são workspaces npm, com configuração, dependências e lockfile em `apps/`. O Gradle
 registra uma tarefa geradora de assets por variante, dependente das fontes e da
 configuração/lockfile, e injeta o `versionName` efetivo no build Vite. A API de
 fontes geradas do AGP determina o diretório final; a linha de execução resolve

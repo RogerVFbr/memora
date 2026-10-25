@@ -61,7 +61,7 @@ engenharia da aplicação, não a conclusão do MVP do PRD.
    com reprodução pausada, preservando os ajustes salvos.
 
 O host está em `apps/android`, a entrada TV em `apps/tv` e a apresentação
-compartilhada em `packages/presentation`, preservando `apps/prototype`. Consulte a
+compartilhada em `apps/shared/presentation`, preservando `apps/prototype`. Consulte a
 [fronteira concreta](../02-host-android-e-baseline.md#1-host-e-fronteira) antes de
 alterar a organização ou o empacotamento.
 
