@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
-> **Status:** proposta inicial aprovada para planejamento; protótipo visual local em avaliação; implementação do MVP ainda não iniciada
-> **Versão:** 0.3 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Status:** protótipo visual aprovado; planejamento da versão demonstrativa instalável aprovado; implementação do MVP ainda não iniciada
+> **Versão:** 0.4 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -337,6 +337,15 @@ isolada em browser com dados mock. Consulte o
 antes de trabalhar em `apps/prototype`. Esse laboratório não implementa a UX
 final do APK, não demonstra viabilidade da integração e não dispensa os gates abaixo.
 
+**Incremento demonstrativo instalável [DECIDIDO]:** antes do MVP integrado,
+validar a experiência embarcada e o pipeline local de entrega com mídia mock.
+Consultar o [plano da primeira versão instalável](plans/01-primeira-versao-instalavel.md#2-recorte-aprovado)
+para o recorte aprovado, a sequência de issues, o versionamento e as evidências
+de instalação/atualização. A entrega é uma exceção delimitada à exploração em
+browser: permite preparar e validar o host e a apresentação demonstrativa no
+dispositivo, preservando os gates de integração Google e a condição de não
+implementar a UX final de acesso ao acervo antes da viabilidade.
+
 **SPK-01 OAuth:** provar um fluxo de autorização legítimo que funcione com o escopo Picker em Fire TV; separar autenticação de `pickerUri`; documentar se requer backend.
 
 **SPK-02 Picker:** selecionar 10 fotos + 2 vídeos, verificar metadados reais, URLs, download e status.
@@ -501,7 +510,7 @@ Perfis múltiplos, instalação/distribuição para outras TVs Android, screensa
 ## 17. Instruções para execução com Codex CLI
 
 1. **Ler este PRD integralmente** antes de gerar código, atribuindo IDs dos requisitos às tarefas.
-2. Começar pelos **spikes SPK-01 a SPK-04**, especialmente OAuth e persistência; não iniciar implementação da UX final antes de decidir viabilidade. A exploração mock em browser segue o recorte da [Fase 0](#fase-0--spike-técnico-gate-de-viabilidade-obrigatório).
+2. Começar pelos **spikes SPK-01 a SPK-04**, especialmente OAuth e persistência; não iniciar implementação da UX final antes de decidir viabilidade. A exploração mock em browser e o incremento demonstrativo instalável seguem os recortes da [Fase 0](#fase-0--spike-técnico-gate-de-viabilidade-obrigatório).
 3. **Não confundir** Android Photo Picker com Google Photos Picker API e nem o QR Code `pickerUri` com OAuth.
 4. Descrever a solução proposta para qualquer bloqueador em `docs/` com evidência oficial, reprodução do teste e resultado.
 5. Não inventar capacidades Google; confrontar docs atuais antes de decisões envolvendo sessão, cache, URLs, álbuns e autenticação.

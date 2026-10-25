@@ -17,6 +17,11 @@ Antes de ampliar o escopo, consulte [PRD §4](00-PRD.md#4-requisitos-funcionais)
 [§11](00-PRD.md#11-estratégia-de-entrega-e-experimentação).
 Os comandos reais de operação ficam no [README](../README.md#protótipo-visual-local).
 
+Para a evolução aprovada do conceito para uma versão demonstrativa no dispositivo,
+consulte o [plano da primeira versão instalável](plans/01-primeira-versao-instalavel.md#2-recorte-aprovado).
+O plano define o novo recorte; a aprovação inicial registrada neste documento
+continua sendo o histórico da exploração no browser.
+
 ## 2. Registro de decisões e hipóteses
 
 | ID | Estado | Definição | Motivo / condição |
