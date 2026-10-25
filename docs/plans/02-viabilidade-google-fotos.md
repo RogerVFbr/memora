@@ -98,7 +98,7 @@ quando suas fronteiras ocorrerem, conforme revisão aprovada da sequência.
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
-| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Em validação | [PR #60](https://github.com/RogerVFbr/memora/pull/60) | [Preparação e amostra](../04-viabilidade-google-fotos.md#9-escala-e-coleções-g5); tamanho da origem ainda desconhecido |
+| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Em validação | [PR #60](https://github.com/RogerVFbr/memora/pull/60) | [Busca guiada por título](../04-viabilidade-google-fotos.md#92-experiência-real-e-busca-por-álbum); nenhum item selecionado, origem/escala pendentes |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
 ### Manutenção e retomada

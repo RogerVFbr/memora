@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.15 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.16 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -151,6 +151,9 @@ O produto deseja escolher **álbuns do Google Fotos** para reprodução. A integ
 3. **Coleção local:** grupo nomeado pela aplicação a partir de uma ou mais seleções; pode ser ativado/desativado no slideshow.
 
 Não prometer “sincronização automática de álbum” no MVP. A POC deve estabelecer se a UX de seleção por álbum no celular permite persistir suficiente informação sem ultrapassar 2.000 itens/sessão.
+A interface documentada usa busca pelo título, sem lista direta de álbuns;
+consultar a [orientação e evidência G5](04-viabilidade-google-fotos.md#92-experiência-real-e-busca-por-álbum)
+antes de orientar a seleção. Essa busca não comprova membership na API.
 
 ### 4.2 Fluxo de interação [PROPOSTO]
 

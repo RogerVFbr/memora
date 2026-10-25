@@ -811,7 +811,8 @@ após G3 aceita, conforme a revisão de sequência aprovada no
 [plano §3](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem).
 G4 permanece em validação, com sua amostra preservada. O proprietário dispõe de
 álbuns grandes, mas ainda não sabe suas quantidades; isso não comprova origem
-acima de 2.000 itens. Confirmar o tamanho e a seleção na UI do Picker antes do aceite.
+acima de 2.000 itens. Confirmar tamanho da origem e quantidade selecionada separadamente antes do aceite;
+seguir a [orientação de busca](#92-experiência-real-e-busca-por-álbum) no Picker.
 
 O ensaio é separado: duas seleções A/B, catálogo mínimo cifrado e nenhuma leitura
 de URL/thumbnail/bytes de mídia. Consultar somente JSON Picker e descartar URLs,
@@ -855,3 +856,22 @@ até a observação de expiração. DELETE confirmado mantém o catálogo mínim
 comparação; apagamento explícito posterior remove arquivo/chave G5. Se o token
 expirar antes da listagem/limpeza, será necessário tratar renovação separada;
 falha ou 404 não comprovam remoção remota.
+
+### 9.2 Experiência real e busca por álbum
+
+O proprietário relatou que o QR abriu a página Google Fotos no navegador do
+celular, exibindo seleção de fotos sem lista de álbuns. Nenhum item foi selecionado
+nessa tentativa. A orientação anterior para procurar uma aba Álbuns foi incorreta.
+
+A [experiência oficial do Picker](https://developers.google.com/photos/picker/guides/picking-experience),
+reconsultada em 2026-10-25, descreve essa página inicial de fotos recentes: álbuns
+e categorias não são mostrados diretamente. A busca admite títulos de álbuns,
+além de outros critérios. Portanto, orientar o usuário a buscar o título e
+conferir os resultados antes de selecionar; não presumir aba, seleção integral
+ou quantidade de origem exibida. A ausência de lista direta não prova ausência
+da busca por álbum nem constitui falha operacional do Picker.
+
+Aguardando a observação da busca no celular. Correspondência dos resultados,
+quantidade de origem, limite e seleção continuam sem comprovação; inventário de
+campos da API ainda depende da seleção. A busca por título não demonstra que a
+API devolve membership nem que haverá sincronização de novas fotos.
