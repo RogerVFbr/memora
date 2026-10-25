@@ -800,4 +800,6 @@ este ensaio quando a fronteira natural tiver passado, preservando o snapshot:
    devem ser ensaios distintos, posteriores à observação, conforme a issue.
 
 O resultado antes/depois ainda falta; G4 permanece em validação, issue aberta e
-contador do plano em 3/6. A próxima etapa é retomar G4; G5 não foi iniciada.
+contador do plano em 3/6. A [sequência revisada aprovada](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem)
+permite G5 durante essa espera, preservando separadamente a amostra G4. Retomar
+as medições G4 quando suas fronteiras ocorrerem.

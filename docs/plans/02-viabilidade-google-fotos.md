@@ -2,6 +2,7 @@
 
 > Data: 2026-10-25 · Estado: aprovado para execução; G1–G3 concluídas; G4 em validação temporal.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
+> Revisão de sequência aprovada em 2026-10-25: executar G5 durante a espera temporal de G4, sem dispensar seus critérios.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
 ## 1. Objetivo e fontes
@@ -46,13 +47,18 @@ acesso/status/bytes autorizados; não comprova reprodução ou codecs.
 | G2 — SPK-01: autorização no Fire TV | Prova real do fluxo apropriado à plataforma e ao escopo, com falhas/cancelamento e fronteira segura | G1 e decisões externas que ela identificar | Prova operacional positiva; bloqueio não libera G3 |
 | G3 — SPK-02: seleção e recuperação | Seleção de 10 fotos + 2 vídeos, paginação real e obtenção controlada de mídia/metadados | G2 aceita; amostra consentida disponível | Seleção e acesso reproduzíveis, com tempos registrados para G4 |
 | G4 — SPK-03: expiração e reabertura | Matriz real de OAuth, URL e sessão; caminho de recuperação e esforço do usuário | G3 aceita | Limites reais demonstrados; não exige resultado de acesso permanente |
-| G5 — SPK-04: escala e coleções | Ensaio com álbum acima do limite por sessão, paginação e verificação de membership | G3 aceita; G4 executada antes por prioridade; acervo consentido suficiente | Limites e semântica demonstrados; falta de amostra não recebe aceite por documentação |
+| G5 — SPK-04: escala e coleções | Ensaio com álbum acima do limite por sessão, paginação e verificação de membership | G3 aceita; acervo consentido suficiente; espera temporal de G4 não bloqueia | Limites e semântica demonstrados; falta de amostra não recebe aceite por documentação |
 | G6 — Decisão de viabilidade | Síntese das evidências e decisão expressa do desenvolvedor sobre continuidade/recorte | G1–G5 com evidência suficiente ou bloqueio conclusivo antecipado | Viável, viável com limitações aprovadas, inviável no recorte ou inconclusivo |
 
-A ordem normal é G1 → G2 → G3 → G4 → G5 → G6. G5 depende tecnicamente de G3;
-G4 recebe prioridade por atacar o risco principal de recorrência. Se uma etapa
-revelar impedimento conclusivo, registrar as dependentes como não executadas e
-levar a evidência a G6, sem fingir conclusão dos spikes não realizados.
+A sequência revisada é G1 → G2 → G3 → medições disponíveis de G4 → G5,
+retomando G4 quando suas fronteiras naturais ocorrerem; G6 depende das evidências
+exigidas. O desenvolvedor aprovou expressamente essa alteração em 2026-10-25
+para não bloquear o avanço pela espera de sete dias observada na sessão. G5
+depende tecnicamente de G3; não exige aceite G4. G4 permanece aberta e sua amostra
+deve ser preservada separadamente das seleções G5. A revisão não dispensa a prova
+de expiração, não declara viabilidade nem autoriza MVP. Se uma etapa revelar
+impedimento conclusivo, registrar as dependentes como não executadas e levar a
+evidência a G6, sem fingir conclusão dos spikes não realizados.
 
 Aprovar este plano autoriza investigar os riscos, não aceita previamente uma
 frequência de reseleção, um backend ou mudança do requisito Google Fotos.
@@ -83,7 +89,8 @@ e não integra o contador das etapas investigativas.
 **Situação em 2026-10-25:** 3 de 6 etapas concluídas. G3 verificou no alvo a amostra
 completa de 10 fotos e 2 vídeos, entregue pelo PR #57. Evidência privada preservada
 para G4 / #45, com instrumentação integrada e medições dentro da validade.
-Expirações naturais ainda pendentes; próxima ação é retomar G4.
+Expirações naturais ainda pendentes; próxima etapa executável é G5, retomando G4
+quando suas fronteiras ocorrerem, conforme revisão aprovada da sequência.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
@@ -91,7 +98,7 @@ Expirações naturais ainda pendentes; próxima ação é retomar G4.
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
-| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
+| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Elegível durante espera de G4; confirmar tamanho de álbum e consentimento da amostra |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
 ### Manutenção e retomada
@@ -116,6 +123,10 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — Desenvolvedor aprovou G5 durante a espera de expiração natural
+  de G4. Critérios preservados; G4 continua aberta, 3/6. Álbuns grandes disponíveis,
+  quantidade ainda não conhecida; confirmar no ensaio sem presumir mais de 2.000.
 
 - 2026-10-25 — G4 / #45: instrumentação e medições dentro da validade pelo
   [PR #58](https://github.com/RogerVFbr/memora/pull/58). [Matriz e retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
