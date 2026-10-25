@@ -121,7 +121,7 @@ injetada. Evidências detalhadas e limitações ficam na issue #8 e no PR respec
 
 ## 5. Controle, persistência e lifecycle da TV
 
-Implementação I3 preparada; **aceite no aparelho ainda pendente** na
+Implementação I3 integrada e APK dev instalado; **aceite no aparelho ainda pendente** na
 [issue #9](https://github.com/RogerVFbr/memora/issues/9). Os comportamentos abaixo
 são o contrato implementado e testado localmente, não observações de hardware.
 
@@ -191,14 +191,16 @@ D-pad nos ajustes, foco, avanço cronometrado, suspensão maior que um intervalo
 retorno pausado, comandos e persistência. Mensagens de tela ligada foram
 conferidas com host simulado; isso não valida a flag Android.
 
-Consulta I3 pela skill `firestick-check` confirmou acesso em leitura, mantendo a
-limitação de foreground do [baseline](#3-baseline-em-leitura). A consulta de
-pacotes não encontrou instalação Memora. Nenhuma instalação, inicialização,
+A instalação dev de I3 foi autorizada expressamente e executada em 2026-10-25,
+após repetir a skill `firestick-check` e conferir o hash do APK validado.
+ADB retornou `Success`; `dumpsys package` confirmou `br.com.memora.dev`,
+`versionName=0.1.0-alpha.1-dev` e `versionCode=1`. O diagnóstico prévio manteve a
+limitação de foreground do [baseline](#3-baseline-em-leitura). Nenhuma abertura,
 key event injetado, suspensão forçada ou alteração de configuração foi executada.
 
-Para aceitar I3, falta instalar o APK de desenvolvimento mediante autorização
-específica e depois obter as autorizações de cada operação necessária no aparelho:
-abrir o app, verificar controle físico/visibilidade/retomada, preferências não
+Para aceitar I3, falta obter autorização específica para abrir o APK instalado
+e, depois, para cada operação modificadora necessária no aparelho. Verificar
+controle físico/visibilidade/retomada, preferências não
 padrão, DOM/resolução, erros e flag de tela ligada. Registrar evidências sanitizadas
 na issue e atualizar a central antes de encerrar. I4 permanece dependente desse
 aceite; não usar o resultado do desktop como substituto.

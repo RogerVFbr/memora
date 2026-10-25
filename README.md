@@ -112,3 +112,16 @@ os testes locais do Node. Na entrada de TV, **esquerda/direita** ajusta a opçã
 em foco e **OK** avança para a seguinte; **cima/baixo** navega entre os ajustes.
 O mapeamento e o estado de validação no controle físico estão no
 [contrato da TV](docs/02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv).
+
+### Instalação de desenvolvimento
+
+Depois de verificar o dispositivo pelo diagnóstico acima e obter a autorização
+específica exigida pelo [AGENTS.md](AGENTS.md#fluxo-de-trabalho-no-repositório),
+substitua `<alvo-adb>` pelo endereço local configurado e execute na raiz:
+
+```sh
+adb -s <alvo-adb> install apps/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Esse comando foi validado para a primeira instalação do pacote de desenvolvimento.
+A abertura do aplicativo é uma operação separada, também sujeita a autorização.
