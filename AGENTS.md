@@ -175,7 +175,8 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   para os cenários de teste e deploy aplicáveis.
 - Antes de acessar ou alterar o Fire Stick, siga as regras de skill e autorização
   em [Fluxo de trabalho no repositório](#fluxo-de-trabalho-no-repositório).
-  A execução local de build não autoriza instalação ou outra alteração no aparelho.
+  A execução local de build não autoriza instalação nem as demais alterações
+  sujeitas a confirmação específica nessa seção.
 
 ## Fluxo de trabalho no repositório
 
@@ -208,13 +209,26 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   capturas e diagnósticos fora dos arquivos versionados.
 - Operações de leitura no Fire Stick estão autorizadas sempre que necessárias,
   sem pedir autorização explícita, desde que não alterem o estado do dispositivo.
-- Nenhuma alteração no Fire Stick pode ser feita sem autorização explícita do
-  desenvolvedor. Antes de cada operação que altere o dispositivo, descreva a
-  ação pretendida, peça autorização novamente e aguarde a resposta; autorizações
-  anteriores não dispensam essa nova confirmação. Isso inclui instalar ou
-  atualizar APKs, desinstalar aplicativos, alterar configurações, gravar ou
-  excluir dados, iniciar ou encerrar aplicativos e reiniciar o dispositivo.
-  Essa regra também se aplica a ações previstas em skills, scripts e testes.
+- Operações normais de execução e validação estão autorizadas dentro do escopo
+  da tarefa, sem nova confirmação: iniciar ou encerrar o aplicativo, navegar,
+  abrir/fechar menus e painéis, enviar teclas do controle, reproduzir, pausar,
+  avançar cenas e colocar o aplicativo em background/retomá-lo. Descreva a ação
+  nos updates e registre resultados pertinentes; não interrompa o teste para
+  pedir aprovação de cada tecla ou transição operacional.
+- Instalar ou atualizar APKs, desinstalar aplicativos e alterar configurações
+  continuam exigindo autorização específica do desenvolvedor antes da operação.
+  Configurações incluem sistema, permissões, conectividade e preferências do
+  aplicativo; navegar até um ajuste não autoriza mudar seu valor.
+- Antes de uma operação protegida, descreva a ação e seu escopo, peça autorização
+  e aguarde a resposta. A autorização não se estende automaticamente à próxima
+  instalação, desinstalação ou mudança de configuração. Manipular diretamente
+  ou excluir dados persistentes/credenciais, limpar dados do aplicativo,
+  reiniciar/restaurar o dispositivo e outras ações destrutivas também exigem
+  autorização específica; os efeitos normais de reprodução e navegação não são
+  tratados como manipulação direta de dados.
+- Skills, scripts e testes devem aplicar essa distinção antes de executar cada
+  operação. A autorização operacional não dispensa o `firestick-check`, as
+  proteções de privacidade ou os critérios de aceite no hardware.
 - Registre no `README.md` somente pré-requisitos e comandos reais introduzidos
   para build, execução, testes e instalação. Não invente comandos nem descreva
   diretórios propostos no PRD como existentes antes de criá-los.
