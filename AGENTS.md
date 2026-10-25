@@ -178,6 +178,20 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   A execução local de build não autoriza instalação nem as demais alterações
   sujeitas a confirmação específica nessa seção.
 
+## Capturas de navegador e artefatos Playwright
+
+- Salve capturas de testes no navegador em `.playwright-cli/screenshots/` ou
+  em outra subpasta de `.playwright-cli/`, sempre ignorada pelo Git. Não crie
+  `output/` nem outra pasta na raiz para esses artefatos.
+- Remova capturas descartáveis assim que cumprirem sua finalidade. Preserve
+  somente as necessárias à evidência ou ao diagnóstico local, mantendo-as em
+  `.playwright-cli/`; não publique imagens automaticamente.
+- Aplique este destino também aos comandos de skills que sugiram outro caminho.
+  Esta é a regra local do Memora; não altere skills globais para acomodá-la.
+- Para capturas do Fire Stick, consulte as regras de privacidade e armazenamento
+  da [firestick-check](.agents/skills/firestick-check/SKILL.md#captura-e-espelhamento)
+  antes de coletar; esta seção trata dos testes de navegador.
+
 ## Fluxo de trabalho no repositório
 
 - Comunique-se em português brasileiro, com decisões e limitações objetivas.

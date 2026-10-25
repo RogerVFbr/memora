@@ -9,7 +9,6 @@ __pycache__/
 *.pyc
 .DS_Store
 /.playwright-cli/
-/output/playwright/
 
 # Android: intermediários e configuração local
 /apps/android/.gradle/

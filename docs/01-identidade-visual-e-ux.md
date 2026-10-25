@@ -253,7 +253,7 @@ Verificações locais executadas em 2026-10-25, com Node.js 22.17.0:
 | Smoke com Playwright/Chromium | Temas e persistência, ajustes e persistência, foco e Tab no painel, coleções vazias e recuperação, estados simulados, três layouts e teclado aprovados |
 | Geometria e mídia no browser | Imagens locais carregadas e limitadas aos slots; viewport de 390 px sem overflow horizontal |
 | Smoke do build estático | Avanço automático em 6 s, suspensão sob menu, movimento reduzido e carregamento de imagens aprovados; sem erros de execução observados |
-| Inspeção visual | Capturas de desktop e painel em janela estreita revisadas; evidências locais ignoradas pelo Git em `output/playwright` |
+| Inspeção visual | Capturas de desktop e painel em janela estreita revisadas; evidências locais conforme a [regra de capturas](../AGENTS.md#capturas-de-navegador-e-artefatos-playwright) |
 | Links Markdown | Caminhos e âncoras locais de PRD, AGENTS, README e deste documento conferidos por script |
 | `git diff --check` | Sem erros após revisão |
 
