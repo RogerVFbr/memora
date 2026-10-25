@@ -1,9 +1,9 @@
 # Plano — primeira versão instalável e validação da entrega
 
-> Data: 2026-10-25 · Objetivo e recorte aprovados; execução ainda não iniciada.
+> Data: 2026-10-25 · Objetivo e recorte aprovados; I1 em revisão.
 > Aprovação: recomendações aceitas pelo desenvolvedor, com artefatos em `builds/`
 > na raiz do repositório e versionamento SemVer.
-> Estado do plano: aprovado para execução; etapas de implementação ainda não iniciadas.
+> Estado do plano: aprovado para execução; I1 em revisão.
 
 ## 1. Objetivo e fontes de verdade
 
@@ -60,11 +60,11 @@ engenharia da aplicação, não a conclusão do MVP do PRD.
    consciente, sem avanço de fila invisível. O retorno reapresenta os controles
    com reprodução pausada, preservando os ajustes salvos.
 
-Proposta inicial de organização: host em `apps/android`, frontend de produção em
-`apps/tv` e apresentação compartilhada em `packages/presentation`, preservando
-`apps/prototype`. Esses caminhos são **propostos, ainda inexistentes**; confirmar
-na primeira issue após avaliar a extração mínima necessária. Não reestruturar o
-repositório inteiro para este incremento.
+O host I1 está em `apps/android`; consulte sua [fronteira concreta](../02-host-android-e-baseline.md#1-host-e-fronteira)
+antes de alterá-lo. Frontend de produção em `apps/tv` e apresentação compartilhada
+em `packages/presentation` continuam **propostos, ainda inexistentes**, preservando
+`apps/prototype`; confirmar na I2 após avaliar a extração mínima necessária.
+Não reestruturar o repositório inteiro para este incremento.
 
 A validação deve registrar WebView efetivo, resolução de renderização, versão do
 sistema, erros e comportamento observado. Não prometer suporte a efeitos ou
@@ -152,7 +152,7 @@ critérios de aceite e validações específicas ficam nas issues vinculadas; n�
 manter uma segunda cópia integral desses textos no repositório.
 
 **Situação em 2026-10-25:** 0 de 6 etapas concluídas. Issues publicadas;
-implementação ainda não iniciada. Próxima etapa: I1, após integração deste plano.
+I1 em revisão; dependência documental integrada pelo PR #14.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -160,7 +160,7 @@ contador das seis etapas de implementação.
 
 | Etapa | Issue de implementação | Depende de | Status | PR / commit integrado | Release | Evidências e pendências |
 |---|---|---|---|---|---|---|
-| I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | A fazer | — | Não se aplica | Toolchain, estrutura e baseline ainda não levantados |
+| I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Em revisão | — | Não se aplica | Build debug, testes e lint aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial, sem Activity em foreground |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | A fazer | — | Não se aplica | Extração e empacotamento do frontend pendentes |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | A fazer | — | Não se aplica | Aceite exige controle físico e lifecycle no WebView real |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
@@ -261,12 +261,13 @@ declarar concluído o SPK-06 sem suas evidências específicas.
 ## 8. Pendências de preparação e estado atual
 
 Objetivo, recorte, temas, entrada, publicação, prova de atualização, diretório de
-artefatos e uso de SemVer estão aprovados. Sem implementação ou build Android
-nesta tarefa. As seis issues estão publicadas e vinculadas na
-[central de progresso](#5-central-de-progresso); nenhuma foi iniciada.
+artefatos e uso de SemVer estão aprovados. O host e o build debug foram preparados na I1. Consulte a
+[central de progresso](#5-central-de-progresso) para o estado atual das seis etapas.
 
-Pendências a resolver nas issues: toolchain e WebView reais, application ID,
-contrato mínimo nativo, localização da persistência, custódia da chave de release,
+Toolchain, identidade de pacote e consultas de plataforma da I1 estão no
+[registro técnico](../02-host-android-e-baseline.md#2-toolchain). Pendências a resolver
+nas etapas seguintes: validação do WebView com Activity visível, contrato mínimo
+nativo, localização da persistência, custódia da chave de release,
 layout de código compartilhado e duração do ensaio. São decisões técnicas ou
 evidências da execução; não bloqueiam este registro do plano.
 

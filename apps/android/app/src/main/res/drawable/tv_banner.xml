@@ -1,0 +1,5 @@
+<!-- TV banner requires 320x180; minSdk 30 never uses legacy vector rasterization. -->
+<vector xmlns:tools="http://schemas.android.com/tools" tools:ignore="VectorRaster" xmlns:android="http://schemas.android.com/apk/res/android" android:width="320dp" android:height="180dp" android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#15201D" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#F5EFDF" android:pathData="M125,115v-45h12v6c6,-10 19,-10 25,0c9,-11 33,-9 33,12v27h-12v-26c0,-10 -15,-10 -15,0v26h-12v-26c0,-10 -19,-10 -19,0v26z" />
+</vector>
