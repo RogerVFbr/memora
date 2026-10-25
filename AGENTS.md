@@ -42,6 +42,10 @@ substitui a leitura integral exigida na seção 17 antes de gerar código.
 
 ## Planejamento e retomada de contexto
 
+- Para criar ou revisar o plano e sua decomposição, use a skill local
+  [plan-work](.agents/skills/plan-work/SKILL.md). Ela orienta a preparação e a
+  entrega do planejamento consultando as regras deste arquivo; a execução das
+  issues pertence à `implement-issue` e ao prompt de retomada abaixo.
 - Antes de implementar uma tarefa ampla, discuta e valide o objetivo e registre
   o plano de trabalho em `docs/plans/`. Cada plano deve indicar seu estado,
   objetivo aprovado, escopo, referências do PRD, etapas, dependências, critérios

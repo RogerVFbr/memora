@@ -1,0 +1,3 @@
+interface:
+  display_name: "Planejar trabalho no Memora"
+  short_description: "Valide o plano e publique issues executáveis"
