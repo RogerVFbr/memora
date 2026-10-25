@@ -828,7 +828,8 @@ pendente. IDs repetidos não demonstram acesso permanente nem membership de álb
 
 ### 9.1 Instrumentação e validação inicial
 
-Activity, core e armazenamento próprios implementados, com limites de 2.000 itens,
+Activity, core e armazenamento próprios implementados pelo
+[PR #60](https://github.com/RogerVFbr/memora/pull/60), com limites de 2.000 itens,
 páginas de 100, 128 páginas, 256 requisições normais e reserva para DELETE,
 2 MiB por corpo JSON e 32 MiB por seleção. Respostas e listagem têm orçamento
 de tempo; atingir limite deixa a travessia incompleta. Cancelamento usa sinal
