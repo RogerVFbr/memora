@@ -1,0 +1,2 @@
+# memora
+Photo visualization application
