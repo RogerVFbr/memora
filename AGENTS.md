@@ -1,104 +1,42 @@
 # Instruções para agentes — Memora
 
-## Fonte de verdade e estado atual
+## Manutenção da documentação
 
-- Leia integralmente [docs/00-PRD.md](docs/00-PRD.md) antes de gerar código.
-  Esse é o caminho real do PRD, inclusive onde o documento menciona `PRD.md`.
-- O PRD está aprovado para planejamento; implementação ainda não iniciada.
-  Ainda não há comandos de build, lint ou testes configurados.
-- Preserve a distinção entre `[DECIDIDO]`, `[PROPOSTO]`, `[VALIDAR]`,
-  `[FUTURO]` e `[BLOQUEADOR]`. Propostas não são decisões e hipóteses precisam
-  de evidência antes de orientar compromissos de arquitetura ou produto.
-- Vincule tarefas e validações aos IDs do PRD: OBJ, FR, NFR, SPK, ADR e riscos.
-  Registre novas decisões, resultados e baselines no PRD e em `docs/`.
+- Ao criar ou atualizar qualquer documentação, verifique se a informação já
+  existe no PRD ou em outro documento do repositório.
+- Mantenha cada informação em uma única fonte de verdade, escolhida conforme
+  o assunto. Nos demais arquivos, substitua a repetição por um link para o
+  arquivo e a seção específica, acompanhado de uma instrução sobre quando
+  consultá-la.
+- Documentos complementares devem acrescentar detalhes próprios e referenciar
+  as definições existentes, sem copiar requisitos, decisões ou procedimentos.
+- Ao mover conteúdo ou renomear seções, atualize as referências afetadas e
+  confira se os links continuam apontando para o ponto correto.
+- Aplique esse procedimento também a futuras documentações e às atualizações
+  deste `AGENTS.md`.
 
-## Produto e limites de escopo
+## Fonte de verdade e consulta ao PRD
 
-- Memora transforma a TV em moldura digital cinematográfica com fotos e vídeos
-  do Google Fotos, composições dinâmicas e operação por controle remoto.
-- Alvo decidido: Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8,
-  baseado em Android 11. Distribuição por APK e instalação local via ADB.
-- Google Fotos é a fonte obrigatória. Não exigir migração para NAS, Drive ou
-  biblioteca local, nem duplicação permanente do acervo. Cache é transitório.
-- Priorize P0: slideshow durante acesso válido, foto individual, dois retratos,
-  mosaico simples, transições, menu D-pad, preferências, cache e recuperação.
-- Vídeos e Live Photos têm prioridade P1; o recorte final depende da POC.
-  Não ampliar o MVP com recursos P2 ou futuros sem definição de escopo.
-- Não introduzir publicação em loja, backend SaaS obrigatório, microserviços,
-  daemon permanente ou screensaver global como requisitos do MVP.
+O [PRD](docs/00-PRD.md) concentra estado do produto, requisitos, decisões,
+hipóteses, riscos e plano de validação. Esse é o caminho real do documento,
+inclusive onde ele menciona `PRD.md`. Este arquivo concentra regras de trabalho
+no repositório; não replique aqui o conteúdo do PRD.
 
-## Gate de viabilidade antes do MVP
+Use o roteiro abaixo para localizar as instruções aplicáveis à tarefa. Ele não
+substitui a leitura integral exigida na seção 17 antes de gerar código.
 
-- Comece por SPK-01 a SPK-04: OAuth compatível com o escopo Picker, seleção,
-  expiração/reacesso e semântica de álbuns/escala. Não iniciar a UX final antes
-  de decidir a viabilidade e registrar uma experiência recorrente aceitável.
-- OAuth da TV e QR Code `pickerUri` são etapas distintas. Não presumir que
-  Device Authorization Grant aceite `photospicker.mediaitems.readonly`.
-- Google Photos Picker API e Android Photo Picker são tecnologias distintas;
-  o componente Android não substitui a integração REST exigida.
-- Não prometer catálogo irrestrito, sincronização automática de álbuns nem
-  acesso permanente a partir de IDs persistentes, catálogo ou cache local.
-- Diferencie álbum do Google Fotos, seleção Picker temporária e coleção local.
-  Trate expiração da sessão, do `baseUrl` e do OAuth separadamente.
-- Valide na documentação oficial atual os limites e políticas antes de decisões
-  sobre OAuth, sessões, URLs, álbuns e retenção. O PRD registra 2.000 itens por
-  sessão e cerca de 60 minutos para `baseUrl`; não tratar como garantias eternas.
-- Registre cada bloqueador em `docs/` com fonte oficial, procedimento reproduzível,
-  resultado e impacto. Não contornar restrições com scraping ou APIs privadas
-  sem decisão expressa e análise de riscos.
-- Execute também SPK-05 e SPK-06 para vídeo/Live Photo e compatibilidade e
-  desempenho no hardware. Mocks não comprovam comportamento real da plataforma.
-
-## Arquitetura e organização
-
-- Decidido: Kotlin nativo e apresentação HTML/CSS/JS em WebView, num APK.
-  Frontend estático incorporado ao aplicativo, sem servidor remoto de renderização.
-- Proposto: React + TypeScript + Vite, Tailwind, GSAP/Flip e React Photo Album;
-  Media3/ExoPlayer para vídeo e Room para catálogo. Justifique adoção conforme POC.
-- Valide WebView/Chromium real antes de fixar Tailwind v4; v3.4 é fallback proposto.
-  Valide codecs e integração de surfaces antes de comprometer o player.
-- Layout proposto: `android/`, `web/`, `docs/` e `tools/`. Esses diretórios de
-  implementação não devem ser descritos como existentes antes de serem criados.
-- Separe connector/autorização, catálogo/preferências, preparação de mídia,
-  orquestração, apresentação e lifecycle. Mantenha uma fonte de verdade de playback.
-- A bridge Kotlin/JS deve ser mínima, tipada, auditável e restrita a origem confiável.
-  Tokens e downloads autenticados ficam no nativo; não expor credenciais ou
-  `baseUrl` autenticado no DOM nem permitir navegação/URLs arbitrárias.
-
-## Reprodução, recursos e experiência de TV
-
-- Preserve os estados do PRD: `NEEDS_AUTH`, `PICKING`, `PREPARING`, `PLAYING`,
-  `MENU_VISIBLE`, `PAUSED`, `SUSPENDED` e `NEEDS_RESELECT`.
-- Implemente foco e navegação D-pad, OK/Menu e Voltar. Após onboarding, a operação
-  cotidiana não deve depender de mouse, teclado ou celular durante sessão válida.
-- Ao suspender a Activity, interrompa player, downloads e requisições dispensáveis.
-  Controle `FLAG_KEEP_SCREEN_ON` conforme reprodução/visibilidade; não inferir
-  presença humana nem desligamento físico da TV a partir dessa flag.
-- Use buffer deslizante, downsampling por slot, limites de RAM/disco e concorrência,
-  deduplicação e descarte LRU. Não baixar a biblioteca inteira.
-- Polling apenas durante seleção Picker pendente, respeitando `pollingConfig`.
-  Use retries limitados, `Retry-After` e backoff com jitter para evitar tempestades.
-- Prefira animações por `transform` e `opacity`. Meça fluidez, memória e latência
-  no Fire Stick antes de fixar metas ou limites quantitativos.
-- Não invente GPS/localização nem fuso de captura. Diferencie relógio atual da TV
-  de data/hora da mídia e indique a origem de qualquer enriquecimento.
-- Registre como questões abertas as escolhas ainda não fechadas no PRD, como
-  reprodução sob menu, áudio, duração padrão e política de crop.
-
-## Segurança e privacidade
-
-- Nunca versione credenciais, tokens, segredos de ambiente ou fotos pessoais.
-  Não embutir client secret confidencial no APK nem capturar senha Google.
-- Use OAuth/PKCE com cliente apropriado e escopo mínimo, após validação do fluxo.
-  Proteja material persistente com criptografia e Android Keystore quando aplicável.
-- Não transmitir tokens por QR Code exposto. Se pareamento exigir serviço remoto,
-  documente e reavalie segurança, custo e deploy antes de aprová-lo.
-- Não registrar fotos, tokens, GPS, `pickerUri` ou URLs de mídia em logs/Logcat.
-  Telemetria deve ser local, desativável e sem upload externo por padrão.
-- Não enviar fotos a servidores próprios. Respeite políticas Google de cache e
-  retenção; ofereça logout, limpeza de dados/cache e reset de seleção.
-- Use mídia sintética ou autorizada em testes; amostras pessoais reais exigem
-  consentimento e permanecem fora de fixtures versionadas e CI.
+| Quando consultar | Ponto do PRD |
+|---|---|
+| Ao iniciar uma tarefa ou interpretar o status e a força de uma afirmação | Cabeçalho e [Legenda e regras de interpretação](docs/00-PRD.md#legenda-e-regras-de-interpretação) |
+| Antes de definir escopo, prioridades, dispositivo-alvo ou critérios de aceite | [§1 — Resumo executivo](docs/00-PRD.md#1-resumo-executivo), [§2 — Problema, motivação e objetivos](docs/00-PRD.md#2-problema-motivação-e-objetivos) e [§4 — Requisitos funcionais](docs/00-PRD.md#4-requisitos-funcionais) |
+| Antes de planejar implementação ou UX final, executar spikes ou avaliar o gate de viabilidade | [§11 — Estratégia de entrega e experimentação](docs/00-PRD.md#11-estratégia-de-entrega-e-experimentação) e [§17 — Instruções para execução com Codex CLI](docs/00-PRD.md#17-instruções-para-execução-com-codex-cli) |
+| Antes de decidir sobre OAuth, Picker, sessões, URLs, limites ou álbuns | [§3.1 — Google Photos Picker API](docs/00-PRD.md#31-google-photos-picker-api), [§3.2 — OAuth e QR Code](docs/00-PRD.md#32-oauth-e-qr-code-bloqueador), [§4.1 — Semântica de álbuns e coleções](docs/00-PRD.md#41-semântica-de-álbuns-e-coleções-validar) e §17, itens 3–5; fontes na [§16](docs/00-PRD.md#16-referências-e-leitura-complementar) |
+| Antes de escolher dependências, organizar módulos/diretórios ou alterar a bridge e o player | [§3.3 — Fire OS e UI](docs/00-PRD.md#33-fire-os-e-ui), [§6 — Arquitetura lógica proposta](docs/00-PRD.md#6-arquitetura-lógica-proposta), [§12 — Estratégia de desenvolvimento, testes e deploy](docs/00-PRD.md#12-estratégia-de-desenvolvimento-testes-e-deploy) e [§13 — ADRs resumidos](docs/00-PRD.md#13-adrs-resumidos) |
+| Antes de alterar navegação, reprodução, lifecycle ou composição visual | [§4.2 — Fluxo de interação](docs/00-PRD.md#42-fluxo-de-interação-proposto), [§7 — Modelo de estados e ciclo de vida](docs/00-PRD.md#7-modelo-de-estados-e-ciclo-de-vida) e [§8 — Algoritmo de apresentação visual](docs/00-PRD.md#8-algoritmo-de-apresentação-visual) |
+| Antes de alterar cache, rede, retries, métricas, desempenho ou custos | [§5 — Requisitos não funcionais](docs/00-PRD.md#5-requisitos-não-funcionais) e [§9 — Cache, política de rede e custos](docs/00-PRD.md#9-cache-política-de-rede-e-custos) |
+| Antes de manipular credenciais, mídia, metadados pessoais, logs ou dados persistentes | [§8.3 — Metadados de apresentação](docs/00-PRD.md#83-metadados-de-apresentação), [§9.2 — Telemetria local mínima](docs/00-PRD.md#92-telemetria-local-mínima), [§10 — Segurança e privacidade](docs/00-PRD.md#10-segurança-e-privacidade) e guardrails da §12 |
+| Ao planejar testes, selecionar amostras ou validar no hardware | §11 (SPK-01 a SPK-06) e §12 (testes, amostras consentidas e QA) |
+| Antes de assumir uma resposta de produto, encerrar uma validação ou registrar uma decisão | [§14 — Registro de riscos e questões abertas](docs/00-PRD.md#14-registro-de-riscos-e-questões-abertas), [§15 — Matriz de rastreabilidade resumida](docs/00-PRD.md#15-matriz-de-rastreabilidade-resumida) e §17 (IDs, evidências, atualização do PRD e baselines) |
 
 ## Gitflow e convenção de branches
 
@@ -124,19 +62,35 @@
 - Referências: [Conventional Branch](https://conventionalbranch.org/) e
   [Gitflow](https://git-flow.sh/workflows/gitflow/).
 
-## Fluxo de trabalho e validação
+## Fluxo de trabalho no repositório
 
 - Comunique-se em português brasileiro, com decisões e limitações objetivas.
-- Antes de editar, leia os arquivos relacionados e confira o Git. Preserve trabalho
-  do usuário e mantenha incrementos pequenos, testáveis e instaláveis por ADB.
+- Antes de editar, leia os arquivos relacionados e confira o Git. Preserve o
+  trabalho existente. Para o fluxo de incrementos e validação, consulte a §17 do PRD.
+- Sempre que a tarefa depender da presença ou conectividade do Fire Stick,
+  leia e execute a skill local
+  [firestick-check](.agents/skills/firestick-check/SKILL.md) para verificar se o
+  dispositivo está disponível, conectado e autorizado via ADB. Faça essa
+  verificação antes de deploy, instalação, testes no hardware ou diagnóstico;
+  não presuma conectividade com base em uma sessão anterior. Mantenha endereço,
+  capturas e diagnósticos fora dos arquivos versionados.
+- Operações de leitura no Fire Stick estão autorizadas sempre que necessárias,
+  sem pedir autorização explícita, desde que não alterem o estado do dispositivo.
+- Nenhuma alteração no Fire Stick pode ser feita sem autorização explícita do
+  desenvolvedor. Antes de cada operação que altere o dispositivo, descreva a
+  ação pretendida, peça autorização novamente e aguarde a resposta; autorizações
+  anteriores não dispensam essa nova confirmação. Isso inclui instalar ou
+  atualizar APKs, desinstalar aplicativos, alterar configurações, gravar ou
+  excluir dados, iniciar ou encerrar aplicativos e reiniciar o dispositivo.
+  Essa regra também se aplica a ações previstas em skills, scripts e testes.
 - Registre no `README.md` somente pré-requisitos e comandos reais introduzidos
-  para build frontend/Gradle, execução, testes e instalação. Não inventar comandos.
-- Quando houver código, valide contratos Google, paginação, estados, limites,
-  cache e retry em Kotlin; composição e eventos do controle no frontend.
-- Use mocks para integração e smoke test no Fire Stick real. Inclua expiração,
-  revogação OAuth, offline/429/5xx, lifecycle, vídeo falho e cache saturado.
+  para build, execução, testes e instalação. Não invente comandos nem descreva
+  diretórios propostos no PRD como existentes antes de criá-los.
+- Mantenha amostras pessoais fora de fixtures versionadas e CI; consulte a §12
+  do PRD antes de selecionar mídia para testes.
 - Para alterações apenas documentais, revise conteúdo e execute `git diff --check`.
   Relate o que mudou, as verificações executadas e o que não pôde ser validado.
 - Não execute ações destrutivas nem publique ou envie alterações ao remoto
   sem autorização do usuário.
-- Atualize este arquivo quando decisões, estrutura ou fluxos do projeto mudarem.
+- Ao mudar regras de trabalho, atualize este arquivo. Ao mudar conteúdo de produto
+  ou técnico, atualize o PRD conforme a §17 e ajuste as referências daqui se necessário.
