@@ -87,7 +87,7 @@ arquitetura/custo e eventual revisão do recorte dependente. G2 não liberada.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
-| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49) | [Ambient: evidências e ação de acesso](../04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api) |
+| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50) | [Ambient: evidências e ação de acesso](../04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | A fazer | — | Depende de G1 e pré-requisitos externos |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
@@ -120,7 +120,8 @@ este plano quando necessário. Não criar um segundo prompt com status fixos.
 - 2026-10-25 — Retomada G1 / #42: investigação do TV Gallery e Ambient corrigiu
   a cobertura inicial; [evidências, candidatura preparada e retomada](../04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api).
   Proprietário confirmou ausência de acesso aprovado; nenhum envio externo,
-  implementação ou ensaio. G1 aberta, 0/6; etapas seguintes não executadas.
+  implementação ou ensaio. Registro pelo [PR #50](https://github.com/RogerVFbr/memora/pull/50).
+  G1 aberta, 0/6; etapas seguintes não executadas.
 
 - 2026-10-25 — G1 / #42: avaliação documental e inventário em leitura realizados;
   [resultado e condições de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata).
