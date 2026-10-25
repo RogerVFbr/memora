@@ -867,7 +867,8 @@ identidade. Não supor acesso indefinido por conseguir refresh. A emissão e ret
 atual e original presentes, sem exibir seus valores. O comportamento de renovação foi medido após expiração do access token atual,
 conforme os resultados abaixo.
 
-Implementação nativa isolada em debug: ação explícita sem navegador/novo consentimento,
+Implementação nativa isolada em debug pelo [PR #64](https://github.com/RogerVFbr/memora/pull/64):
+ação explícita sem navegador/novo consentimento,
 intenção e HTTP privados antes/depois, 64 KiB de resposta, timeouts/budget e
 controle de cancelamento pré-worker. Credencial candidata e sucesso são gravados
 atomicamente; resposta perdida antes de parse/persistência ainda pode ocultar
