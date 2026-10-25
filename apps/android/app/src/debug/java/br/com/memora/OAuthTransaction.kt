@@ -8,7 +8,9 @@ import java.security.SecureRandom
 import java.util.Base64
 
 /** Ephemeral PKCE transaction. No token, verifier or callback is logged or persisted. */
-internal class OAuthTransaction(val clientId: String, private val startedAt: Long) {
+internal class OAuthTransaction(val clientId: String, private val startedAt: Long,
+    private val callbackPath: String = "/oauth2redirect") {
+    init { require(callbackPath in setOf("/oauth2redirect", "/oauth2redirect/scale")) }
     companion object {
         const val SCOPE = "https://www.googleapis.com/auth/photospicker.mediaitems.readonly"
         const val LIFETIME_MS = 300_000L
@@ -20,7 +22,7 @@ internal class OAuthTransaction(val clientId: String, private val startedAt: Lon
     }
     val state = random()
     val verifier = random()
-    val redirect = "com.googleusercontent.apps.${clientId.removeSuffix(".apps.googleusercontent.com")}:/oauth2redirect"
+    val redirect = "com.googleusercontent.apps.${clientId.removeSuffix(".apps.googleusercontent.com")}:$callbackPath"
     private var consumed = false
     val challenge: String = Base64.getUrlEncoder().withoutPadding().encodeToString(
         MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray(Charsets.US_ASCII)))
@@ -43,7 +45,7 @@ internal class OAuthTransaction(val clientId: String, private val startedAt: Lon
         return try {
             val uri = URI(callback)
             if (uri.isOpaque || uri.rawFragment != null || uri.rawAuthority != null ||
-                uri.scheme != URI(redirect).scheme || uri.rawPath != "/oauth2redirect") return Result.Rejected
+                uri.scheme != URI(redirect).scheme || uri.rawPath != callbackPath) return Result.Rejected
             val params = linkedMapOf<String, String>()
             for (pair in (uri.rawQuery ?: "").split('&')) {
                 val parts = pair.split('=', limit = 2)
