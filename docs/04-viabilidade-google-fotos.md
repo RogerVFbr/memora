@@ -804,6 +804,47 @@ contador do plano em 3/6. A [sequência revisada aprovada](plans/02-viabilidade-
 permite G5 durante essa espera, preservando separadamente a amostra G4. Retomar
 as medições G4 quando suas fronteiras ocorrerem.
 
+### 8.3 Observação das fronteiras OAuth e URL
+
+G5 foi concluída sem alterar o snapshot G4; a retomada G4 reutiliza a mesma
+sessão e as âncoras da §7.3. Uma consulta com a credencial original 0 respondeu
+HTTP 200 pouco antes de 23:34 UTC, ainda antes da validade prevista terminar.
+O resultado ficou no histórico privado.
+
+Adicionado às informações locais um contador, sem exibir URLs/IDs, para comparar
+por ID os endereços iniciais e os da última listagem. No aparelho, 0 de 12 eram
+iguais às 23:35 UTC; a última listagem continuava às 22:49:34.999 UTC e a primeira
+URL às 22:41:23.836 UTC. Portanto, o ensaio direto usa endereços iniciais distintos
+dos retornados pela relistagem anterior. Essa diferença não comprova expiração.
+A tela é somente leitura; build, 32 testes e lint aprovados após essa mudança.
+
+Aguardar a passagem natural das fronteiras antes de medir, sem alterar relógio.
+Usar credencial 1 válida como controle da sessão e das URLs; se a URL inicial
+responder 200 após 60 minutos, registrar acesso naquele instante, sem afirmar
+expiração ou permanência. Cache local desabilitado não comprova ausência de cache
+no CDN; Date/Age/Cache-Control complementam a observação privada. Não relistar
+antes da tentativa com os endereços iniciais.
+
+Às 23:39 UTC, após a validade prevista da credencial original 0, o GET da mesma
+sessão com ela recebeu HTTP 401. Imediatamente depois, a credencial 1 ainda
+válida recebeu HTTP 200 para essa sessão. Com o controle 200 anterior da original,
+fica observado o antes/depois OAuth sem excluir sessão ou revogar o grant.
+Esse 401 não foi classificado como expiração da sessão ou das URLs.
+
+Às 23:42 UTC, o teste direto das URLs iniciais, sem relistar, encontrou 0/12
+acessíveis: 12 respostas HTTP 403, com idades entre 3.646 e 3.651 segundos e
+credencial 1 ainda dentro de sua validade. O controle seguinte da mesma sessão
+respondeu HTTP 200. Só então a relistagem e leitura delimitada dos 12 itens
+foram executadas: 15 requisições lógicas (três páginas e 12 leituras), todas
+HTTP 200 e zero falhas, sem nova autorização ou seleção pelo usuário.
+
+Comparado ao acesso inicial 12/12 antes da janela, o resultado demonstra perda
+de acesso daqueles endereços e recuperação pelos endereços novamente retornados
+pela mesma sessão válida. Não atribuir os 403 a expiração da sessão ou OAuth.
+Não generaliza prazo exato universal, ausência de cache remoto ou acesso após
+expireTime. A fronteira da sessão e revogação continuam pendentes; a renovação
+por refresh token ainda será investigada, sem presumir login manual horário.
+
 ## 9. Escala e coleções G5
 
 Iniciada a preparação de [G5 / #46](https://github.com/RogerVFbr/memora/issues/46)
