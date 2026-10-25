@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
-> **Status:** protótipo visual aprovado; planejamento da versão demonstrativa instalável aprovado; implementação do MVP ainda não iniciada
-> **Versão:** 0.4 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
+> **Versão:** 0.5 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -355,6 +355,12 @@ de instalação/atualização. A entrega é uma exceção delimitada à explora�
 browser: permite preparar e validar o host e a apresentação demonstrativa no
 dispositivo, preservando os gates de integração Google e a condição de não
 implementar a UX final de acesso ao acervo antes da viabilidade.
+
+O incremento demonstrativo foi concluído. Consultar a
+[central de progresso e evidências](plans/01-primeira-versao-instalavel.md#5-central-de-progresso)
+antes de usar seus resultados: comprova o ciclo de entrega e atualização no
+recorte local, com limites explícitos. Fornece evidência parcial de plataforma;
+não encerra SPK-06 nem os gates Google e não autoriza iniciar o MVP integrado.
 
 **SPK-01 OAuth:** provar um fluxo de autorização legítimo que funcione com o escopo Picker em Fire TV; separar autenticação de `pickerUri`; documentar se requer backend.
 

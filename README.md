@@ -192,7 +192,6 @@ precisa de servidor Vite. `verify` precisa do SDK/JDK, sem acesso ao keystore ou
 à senha. Configuração de assinatura ausente/inconsistente e destino já existente
 causam falha sem substituir arquivos. Os comandos não publicam nem instalam APKs.
 
-
 ## Publicação e obtenção da release
 
 Requer GitHub CLI autenticado. Após gerar a entrega de fonte integrada, o fluxo
@@ -228,3 +227,15 @@ sanitizados; os quatro anexos permanecem os mesmos:
 ```sh
 gh release edit v0.1.0-alpha.1 --repo RogerVFbr/memora --draft=false --prerelease --notes-file <notas-operacionais.md>
 ```
+
+A atualização da segunda entrega foi validada após baixar e verificar os seus
+quatro anexos pelo mesmo fluxo. Mantendo a instalação e seus dados:
+
+```sh
+adb -s <alvo-adb> install -r .local/release-downloads/0.1.0-alpha.2/memora-0.1.0-alpha.2.apk
+```
+
+A identidade de abertura permanece a mesma. Consulte o resultado da matriz de
+preservação na [issue I6](https://github.com/RogerVFbr/memora/issues/12) antes de
+usá-lo como evidência de compatibilidade; esta entrega preserva o esquema v1 e
+não comprova migrações futuras.

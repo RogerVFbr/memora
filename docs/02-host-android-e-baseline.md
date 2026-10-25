@@ -13,9 +13,9 @@ Projeto Gradle independente em `apps/android`, com uma Activity Kotlin e sem
 Compose ou serviço de fundo. O canal nativo específico está descrito no
 [contrato da TV](#5-controle-persistência-e-lifecycle-da-tv). `br.com.memora` é a identidade
 estável reservada na configuração; debug acrescenta `.dev` e rótulo Memora Dev,
-evitando conflito de assinatura com a futura release. A assinatura persistente
-e a fonte consolidada de metadados de versão serão tratadas em I4; este build
-usa assinatura debug e não é uma release distribuível.
+evitando conflito de assinatura com a release. A variante debug usa assinatura
+de desenvolvimento; a configuração de versão e a assinatura permanente de
+release estão na [entrega Android](03-entrega-android.md#1-configuração-e-fronteiras).
 
 A I2 concretiza `apps/tv` e `packages/presentation`: o primeiro contém somente a
 entrada de TV; o segundo contém apresentação, controlador de estado, modelos,
@@ -56,8 +56,8 @@ ligada. `WebView.onPause()` sozinho não comprova suspensão dos timers JavaScri
 O manifesto declara launcher Android e Leanback, ausência de exigência de toque,
 orientação landscape, banner e ícone locais, backup desabilitado e Activity de
 entrada exportada. A área de renderização e a operação do host foram observadas
-em I3; a descoberta/abertura da identidade de release pelo launcher continua
-no smoke de I5.
+em I3; o aceite posterior da identidade de release pelo launcher está na
+[central do plano](plans/01-primeira-versao-instalavel.md#5-central-de-progresso).
 
 ## 2. Toolchain
 
@@ -242,8 +242,9 @@ configurações do sistema, permissões, conectividade ou outros aplicativos.
 
 O aceite de I3 cobre o recorte demonstrativo: não houve release, upgrade de
 pacote de produção, benchmark de FPS/RAM, sessão prolongada ou integração Google.
-A atualização preservando preferências pertence à I6; a sessão contínua e o
-smoke da identidade de release permanecem em I5. SPK-06 continua parcial.
+As evidências posteriores de atualização, sessão contínua e smoke das releases
+estão na [central do plano](plans/01-primeira-versao-instalavel.md#5-central-de-progresso);
+consulte-a para o estado final de I5/I6. SPK-06 continua parcial.
 Endereço, capturas, logs, port forwarding e diagnósticos brutos ficaram privados.
 Consultar as [autorizações vigentes](../AGENTS.md#fluxo-de-trabalho-no-repositório)
 antes de novas operações.
