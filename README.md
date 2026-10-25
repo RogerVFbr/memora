@@ -100,3 +100,15 @@ tema. A primeira entrada é pausada, com controles visíveis e Cinema acolhedor;
 reabrir preserva os ajustes e mantém a reprodução pausada. Para encerrar, `Ctrl+C`.
 O Gradle gera sua própria cópia dos assets por variante, com a versão do APK;
 o preview avulso exibe desenvolvimento e não instala nada no dispositivo.
+
+Para verificar estados de reprodução e leitura/gravação das preferências, na raiz:
+
+```sh
+npm run test:presentation
+```
+
+O comando compila os módulos testados para `.local/test-presentation/` e executa
+os testes locais do Node. Na entrada de TV, **esquerda/direita** ajusta a opção
+em foco e **OK** avança para a seguinte; **cima/baixo** navega entre os ajustes.
+O mapeamento e o estado de validação no controle físico estão no
+[contrato da TV](docs/02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv).

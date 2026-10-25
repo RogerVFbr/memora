@@ -254,6 +254,11 @@ stateDiagram-v2
 - `SUSPENDED`: cancelar jobs, interromper media player e requisições de fundo; não prometer detectar toda mudança HDMI/TV desligada.
 - `NEEDS_RESELECT`: informar claramente por que o acesso acabou; não tentar contornar autorização do Google.
 
+O incremento demonstrativo concretiza estados e eventos no
+[contrato de lifecycle da TV](02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv).
+Consultar antes de alterar o host ou playback; implementação e testes locais não
+equivalem ao aceite de hardware da etapa I3.
+
 ## 8. Algoritmo de apresentação visual
 
 Para propostas de identidade, menus, foco e exploração no navegador, consulte

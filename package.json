@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build:prototype": "npm run build --workspace @memora/prototype",
-    "build:tv": "npm run build --workspace @memora/tv"
+    "build:tv": "npm run build --workspace @memora/tv",
+    "test:presentation": "tsc --module commonjs --target ES2022 --skipLibCheck --outDir .local/test-presentation packages/presentation/src/model.ts packages/presentation/src/playback.ts && node --test packages/presentation/test/*.test.cjs"
   }
 }
