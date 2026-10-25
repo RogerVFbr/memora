@@ -694,3 +694,25 @@ isso não define duração fixa universal. G4 precisa observar a fronteira real 
 outra janela, preservando a amostra válida que vier a ser aceita. Não substituir
 esse ensaio por mock ou relógio alterado. A sessão da amostra incompleta foi
 limpa após o diagnóstico dos redirects, antes da nova seleção.
+
+### 7.3 Aceite operacional da G3
+
+A nova seleção feita pelo proprietário foi verificada no Fire TV em 2026-10-25:
+10 fotos recuperadas e dois vídeos READY com dois prefixos de até 64 KiB;
+três páginas reais, zero duplicatas e zero metadados mínimos ausentes.
+Foram lidos 1.382.616 bytes, sem falhas, itens não prontos ou hosts bloqueados.
+Isso atende ao aceite diagnóstico da [issue #44](https://github.com/RogerVFbr/memora/issues/44),
+entregue pelo [PR #57](https://github.com/RogerVFbr/memora/pull/57).
+Prefixos de vídeo não demonstram download integral, codec ou reprodução.
+
+O snapshot privado cifrado foi preservado para G4; bytes de mídia não são retidos.
+As âncoras observadas, em UTC, são: expiração OAuth em
+2026-10-25T23:38:40.714Z; expireTime da sessão em
+2026-11-01T22:38:41.914799Z; primeira URL obtida em
+2026-10-25T22:41:23.836Z; última listagem em 2026-10-25T22:41:24.905Z.
+Esses horários orientam a observação real de G4; não comprovam expiração nem
+prazo universal. Preservar sessão e URLs iniciais até esse ensaio.
+
+Permanecem os limites de retenção e política do recorte acima, R-013 para o
+produto final e o risco residual de logs do Fire OS aceito no PRD §10 para
+G3–G5. Não há aprovação nominal do Google nem validação de slideshow neste aceite.
