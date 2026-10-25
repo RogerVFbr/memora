@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.9 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.10 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -59,6 +59,13 @@ Marketplace/publicação Amazon Appstore, suporte a Vega OS, sincronizar cópia 
 ## 3. Descobertas e restrições verificadas
 
 ### 3.1 Google Photos Picker API
+
+**[DECIDIDO]** Manter o caminho original de investigação pela Picker API,
+conforme reafirmado pelo desenvolvedor em 2026-10-25. Ambient não é dependência
+nem condição de passagem desta investigação; Library não amplia o acesso ao
+acervo existente selecionado pelo Picker. Consultar o
+[registro da retomada](04-viabilidade-google-fotos.md#53-g1--retomada-do-caminho-picker)
+para preparação e alternativas OAuth ainda a validar.
 
 - Requer projeto Google Cloud, API habilitada e OAuth 2.0, com escopo `https://www.googleapis.com/auth/photospicker.mediaitems.readonly`.
 - `sessions.create` retorna `pickerUri`, que pode ser mostrado por QR Code no celular para **seleção do conteúdo**. **QR Code do Picker não equivale por si só ao login OAuth da TV.**
