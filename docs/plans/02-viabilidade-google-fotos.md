@@ -81,8 +81,8 @@ A preparação documental é atendida pela [issue #41](https://github.com/RogerV
 e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 0 de 6 etapas concluídas. Caminho Picker reafirmado
-pelo desenvolvedor; G1 em andamento, com projeto/API/consentimento por preparar
-e alternativa OAuth Android por esclarecer. Ambient não bloqueia a retomada;
+pelo desenvolvedor; G1 em andamento. Projeto de teste criado e Picker API
+habilitada; consentimento por configurar e alternativa OAuth Android por esclarecer. Ambient não bloqueia a retomada;
 G2 permanece não liberada até o aceite G1.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
@@ -116,6 +116,10 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — Preparação Cloud de G1 / #42: CLI autenticada pelo proprietário,
+  projeto ativo criado e Picker API habilitada; [resultado e pendências](../04-viabilidade-google-fotos.md#preparação-cloud-executada).
+  Consentimento/cliente pendentes; nenhum acesso a mídia ou aceite operacional.
 
 - 2026-10-25 — Retomada G1 / #42 pelo Picker, por determinação do desenvolvedor.
   [Preparação e candidato OAuth](../04-viabilidade-google-fotos.md#53-g1--retomada-do-caminho-picker)
