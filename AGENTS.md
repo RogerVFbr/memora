@@ -38,29 +38,83 @@ substitui a leitura integral exigida na seção 17 antes de gerar código.
 | Ao planejar testes, selecionar amostras ou validar no hardware | §11 (SPK-01 a SPK-06) e §12 (testes, amostras consentidas e QA) |
 | Antes de assumir uma resposta de produto, encerrar uma validação ou registrar uma decisão | [§14 — Registro de riscos e questões abertas](docs/00-PRD.md#14-registro-de-riscos-e-questões-abertas), [§15 — Matriz de rastreabilidade resumida](docs/00-PRD.md#15-matriz-de-rastreabilidade-resumida) e §17 (IDs, evidências, atualização do PRD e baselines) |
 
-## Gitflow e convenção de branches
+## Desenvolvimento orientado por issues
 
-- Use Gitflow: `main` representa versões estáveis e `develop` integra o trabalho
-  da próxima versão. Sempre trabalhe em uma branch de tarefa, nunca diretamente
-  em `main` ou `develop`.
-- Crie branches de tarefa a partir de `develop`, no formato `<tipo>/<descricao>`,
-  com descrição curta em inglês, minúsculas e palavras separadas por hífen.
-- Convenção de nomes baseada em Conventional Branch, estendida com os tipos
-  usados pelo projeto: `feat/`, `fix/`, `chore/`, `docs/`, `test/`, `refactor/`,
-  `perf/`, `build/` e `ci/`. Use `chore`, não `chroe`.
+1. Defina com o desenvolvedor a tarefa ampla: objetivo, resultado esperado,
+   limites de escopo e relação com os IDs aplicáveis do PRD.
+2. Decomponha a tarefa em issues executáveis, com contexto, escopo, critérios
+   de aceite, dependências e validações previstas. Publique as issues uma a uma
+   no GitHub, mantendo a ordem e os vínculos com a tarefa ampla.
+3. Desenvolva uma issue por vez, em uma branch exclusiva para ela, seguindo a
+   [convenção de branches](#convenção-de-branches-e-integração). Registre o número
+   da issue na descrição do PR e nos commits pertinentes para manter rastreabilidade.
+4. Implemente o escopo da issue, revise o diff e execute as verificações
+   pertinentes. Faça os commits localmente de todas as alterações pertencentes
+   à issue, sem incluir arquivos privados ou trabalho alheio ao escopo.
+5. Após os commits locais, faça push da branch e abra sempre um pull request
+   para `main` no repositório remoto, vinculado à issue. Siga os requisitos de descrição abaixo.
+6. Integre somente após revisão, verificações pertinentes e autorização de merge.
+   Atualize a issue com o resultado e as pendências; só a encerre quando seus
+   critérios de aceite estiverem atendidos. Prossiga então para a próxima issue.
+
+Antes de publicar issues, fazer push ou abrir PR, verifique se há autorização
+na tarefa em andamento. A definição deste fluxo não autoriza publicação ou
+merge por si só. Se permissões ou ferramentas bloquearem uma etapa, informe
+o impedimento e preserve o trabalho local; não substitua o PR por merge direto.
+
+### Descrição obrigatória dos pull requests
+
+Escreva mensagens amplas e explicativas em português brasileiro, suficientes
+para um revisor entender a mudança sem ler a conversa. Inclua:
+
+- **Visão executiva:** problema, objetivo, escopo entregue e ganhos funcionais
+  para o usuário, com exemplo de comportamento antes/depois quando aplicável.
+- **Visão técnica:** solução implementada, componentes afetados, decisões
+  tomadas e suas justificativas, alternativas relevantes e tradeoffs.
+- **Validação:** verificações executadas, resultados, evidências e limitações
+  do que não foi possível validar.
+- **Pendências e riscos:** questões abertas, bloqueadores, impactos conhecidos,
+  mitigação e próximos passos. Declare explicitamente quando não houver.
+- **Rastreabilidade:** issue atendida, critérios de aceite e referências aos
+  requisitos, decisões e documentos aplicáveis, sem duplicar suas definições.
+
+Mantenha título e descrição coerentes com a implementação final. Ao mudar o
+escopo, atualize ambos e registre trabalho restante em issues relacionadas.
+
+## Convenção de branches e integração
+
+- `main` é a única branch permanente de integração. Não usamos `develop`
+  nem Gitflow. Todo PR deve ter `main` como destino no repositório remoto.
+- Sempre trabalhe em uma branch específica da issue, nunca diretamente em
+  `main`. Crie a branch a partir de `main` atualizada com o remoto, no formato
+  `<tipo>/<descricao>`, com descrição curta em inglês, minúsculas e palavras
+  separadas por hífen.
+- Convenção de nomes baseada em Conventional Branch, com os tipos usados
+  pelo projeto: `feat/`, `fix/`, `chore/`, `docs/`, `test/`, `refactor/`,
+  `perf/` e `build/`. Use `chore`, não `chroe`.
 - Exemplos: `feat/portrait-pair`, `fix/picker-timeout`, `docs/oauth-spike`,
   `test/cache-eviction` e `chore/gradle-setup`.
-- Integre branches de tarefa em `develop` por pull request, após revisão e
-  verificações pertinentes. Criar a branch não autoriza automaticamente merge
-  ou envio ao remoto.
-- Prepare versões em `release/<versao>`, a partir de `develop`; ao concluir a
-  release autorizada, integre em `main` e `develop` e marque `main` com tag `vX.Y.Z`.
-- Correções urgentes de versão publicada usam `hotfix/<descricao>`, a partir de
-  `main`, com integração em `main` e `develop` após validação e autorização.
+- Para commits, publicação e integração, siga o
+  [fluxo orientado por issues](#desenvolvimento-orientado-por-issues), inclusive
+  para correções urgentes e preparação de versões.
 - Antes de trocar de branch, confira alterações pendentes e preserve o trabalho
   existente; não faça stash, descarte ou commit automático de arquivos do usuário.
-- Referências: [Conventional Branch](https://conventionalbranch.org/) e
-  [Gitflow](https://git-flow.sh/workflows/gitflow/).
+- Referência: [Conventional Branch](https://conventionalbranch.org/).
+
+## Build, validação e publicação locais
+
+- Não haverá esteira de CI/CD. Não crie workflows de build, testes ou deploy
+  no GitHub Actions nem em outro executor remoto.
+- Execute builds e verificações sempre localmente. A publicação dos artefatos
+  e o deploy/instalação no Fire Stick também devem partir da máquina local
+  com conectividade ao dispositivo; push ou merge não disparam deploy automático.
+- Antes de abrir ou integrar um PR, registre na descrição os comandos locais
+  realmente executados, seus resultados e o que ficou sem validação. Consulte
+  a [§12 do PRD](docs/00-PRD.md#12-estratégia-de-desenvolvimento-testes-e-deploy)
+  para os cenários de teste e deploy aplicáveis.
+- Antes de acessar ou alterar o Fire Stick, siga as regras de skill e autorização
+  em [Fluxo de trabalho no repositório](#fluxo-de-trabalho-no-repositório).
+  A execução local de build não autoriza instalação ou outra alteração no aparelho.
 
 ## Fluxo de trabalho no repositório
 
@@ -86,7 +140,7 @@ substitui a leitura integral exigida na seção 17 antes de gerar código.
 - Registre no `README.md` somente pré-requisitos e comandos reais introduzidos
   para build, execução, testes e instalação. Não invente comandos nem descreva
   diretórios propostos no PRD como existentes antes de criá-los.
-- Mantenha amostras pessoais fora de fixtures versionadas e CI; consulte a §12
+- Mantenha amostras pessoais fora de fixtures versionadas; consulte a §12
   do PRD antes de selecionar mídia para testes.
 - Para alterações apenas documentais, revise conteúdo e execute `git diff --check`.
   Relate o que mudou, as verificações executadas e o que não pôde ser validado.
