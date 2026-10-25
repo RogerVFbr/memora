@@ -1,9 +1,9 @@
 # Plano — primeira versão instalável e validação da entrega
 
-> Data: 2026-10-25 · Objetivo e recorte aprovados; I1 integrada; próximas etapas pendentes.
+> Data: 2026-10-25 · Objetivo e recorte aprovados; I1 e I2 integradas; próximas etapas pendentes.
 > Aprovação: recomendações aceitas pelo desenvolvedor, com artefatos em `builds/`
 > na raiz do repositório e versionamento SemVer.
-> Estado do plano: aprovado para execução; I1 integrada; próximas etapas pendentes.
+> Estado do plano: aprovado para execução; I1 e I2 integradas; próximas etapas pendentes.
 
 ## 1. Objetivo e fontes de verdade
 
@@ -150,8 +150,8 @@ Esta seção é a fonte de verdade do progresso consolidado. Escopo detalhado,
 critérios de aceite e validações específicas ficam nas issues vinculadas; não
 manter uma segunda cópia integral desses textos no repositório.
 
-**Situação em 2026-10-25:** 1 de 6 etapas concluídas. I1 integrada e aceita
-no recorte da issue #7. I2 / #8 em revisão.
+**Situação em 2026-10-25:** 2 de 6 etapas concluídas. I1 e I2 integradas e aceitas.
+Próxima etapa: I3 / #9.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -160,7 +160,7 @@ contador das seis etapas de implementação.
 | Etapa | Issue de implementação | Depende de | Status | PR / commit integrado | Release | Evidências e pendências |
 |---|---|---|---|---|---|---|
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
-| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Em revisão | — | Não se aplica | Builds, assets no APK e smoke estático/browser aprovados; hardware permanece em I3 |
+| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware permanece em I3 |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | A fazer | — | Não se aplica | Aceite exige controle físico e lifecycle no WebView real |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
@@ -209,6 +209,11 @@ usadas em I3 não substituem o aceite da primeira identidade de release em I5.
   [baseline técnico](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial,
   com repetição de foreground/renderização pendente para a validação real em I3.
   Sem release ou instalação nesta etapa. Próxima etapa I2 / #8 não iniciada.
+
+- **2026-10-25 — I2 / #8:** apresentação compartilhada e frontend TV integrados pelo
+  [PR #23](https://github.com/RogerVFbr/memora/pull/23), com builds e smoke estático
+  aprovados. [Evidências e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790).
+  Sem instalação; próxima etapa I3 / #9.
 
 ## 6. Pipeline de publicação e validação
 
