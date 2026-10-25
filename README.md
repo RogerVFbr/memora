@@ -55,3 +55,27 @@ Acrescente `--screenshot` para salvar uma captura em diretório temporário fora
 do repositório. A saída do diagnóstico e as imagens são privadas: não publique
 esses resultados no Git nem em issues. Procedimento completo na
 [skill firestick-check](.agents/skills/firestick-check/SKILL.md).
+
+## Host Android local
+
+Requer JDK 17 (`JAVA_HOME`), [Android SDK](https://developer.android.com/studio#command-line-tools-only)
+(`ANDROID_HOME`), plataforma
+`platforms;android-35` e Build Tools `35.0.0`. Instale os pacotes com
+`cmdline-tools/19.0/bin/sdkmanager --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0"`
+e aceite as licenças do SDK. O Gradle Wrapper baixa a distribuição fixada;
+a primeira execução também requer acesso aos repositórios Google/Maven Central.
+Não é necessário instalar Gradle globalmente ou executar o frontend.
+
+Na raiz, com as variáveis apontando às instalações locais:
+
+```sh
+apps/android/gradlew -p apps/android assembleDebug testDebugUnitTest lintDebug
+```
+
+APK de desenvolvimento: `apps/android/app/build/outputs/apk/debug/app-debug.apk`
+(pacote `br.com.memora.dev`). Relatórios ficam em
+`apps/android/app/build/reports/`, incluindo `tests/testDebugUnitTest/index.html`
+e `lint-results-debug.html`. O comando compila e verifica localmente; instalação
+não faz parte dele. A página desta etapa é apenas um baseline estático.
+Consulte [host e baseline](docs/02-host-android-e-baseline.md#1-host-e-fronteira)
+para segurança, lifecycle, versões fixadas e limites da validação.
