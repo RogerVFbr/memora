@@ -871,7 +871,9 @@ conferir os resultados antes de selecionar; não presumir aba, seleção integra
 ou quantidade de origem exibida. A ausência de lista direta não prova ausência
 da busca por álbum nem constitui falha operacional do Picker.
 
-Aguardando a observação da busca no celular. Correspondência dos resultados,
+O proprietário confirmou que a busca exibiu o álbum ou fotos dele; ainda não
+separou essas duas apresentações. Aguardando identificar controles de seleção
+em lote, sem exigir marcação manual de milhares de itens. Correspondência exata,
 quantidade de origem, limite e seleção continuam sem comprovação; inventário de
 campos da API ainda depende da seleção. A busca por título não demonstra que a
 API devolve membership nem que haverá sincronização de novas fotos.
