@@ -414,3 +414,46 @@ Audience (externo em teste) e Data Access conforme o roteiro acima, antes de cri
 o cliente. Não há fluxo suportado da CLI confirmado nesta etapa para automatizar
 essa configuração de Google Auth Platform; não usar comandos de IAP como substituto.
 Sem sessão Picker criada, mídia acessada ou teste no Fire Stick.
+
+
+### 5.4 G1 — Candidato Android preparado para SPK-01
+
+Em 2026-10-25, proprietário concluiu o consentimento no Console: escopo Picker
+salvo, audiência External/Testing e um usuário de teste cadastrado, conforme
+capturas apresentadas nesta sessão. Cliente Android criado para a variante dev,
+com pacote e SHA-1 conferidos contra o APK local por `aapt dump badging` e
+`apksigner verify --print-certs`. Advanced settings exibiu **Enable custom URI
+scheme** e proprietário criou o cliente com essa opção marcada. Essa observação
+resolve a dúvida sobre existência da opção neste projeto, não demonstra OAuth.
+
+Exportação JSON validada localmente: bloco `installed`, client ID com formato
+Google, projeto correspondente à configuração CLI, endpoints Google; sem client
+secret. Arquivo ignorado em `.local/google/oauth-android-dev.json`, com permissão
+600. Pacote, certificado e opção de URI não constam no JSON; evidência desses
+campos é a tela do Console, conferida com APK, não a exportação. Não versionar ID,
+JSON, e-mail, captura de conta ou token.
+
+Desenho do ensaio: cliente Android público; navegador externo na própria TV;
+retorno por esquema exclusivo derivado do client ID e caminho `/oauth2redirect`;
+PKCE S256, `state` aleatório, validade curta e transação consumida uma única vez.
+Verifier, código e tokens somente em Kotlin, em memória durante o ensaio; perda
+de processo exige recomeçar. Nenhum secret, backend, JS ou QR transportando tokens.
+Cancelar, expirar ou receber callback inesperado deve terminar sem requisição de
+token. Uma chamada mínima de criar/remover sessão vazia verifica o escopo, sem
+abrir Picker nem selecionar mídia. URL e ID da sessão não entram em logs.
+
+A exceção do anúncio Google vinculada na §5.3 e a opção real do Console justificam
+um experimento delimitado, sem declarar suporte operacional. Fricção de login na
+TV e retorno via navegador são riscos do ensaio. Sem infraestrutura contratada,
+o candidato não cria custo de hospedagem; nenhuma garantia de custo de outros
+caminhos foi aprovada. Renovação/persistência e acervo ficam nos gates seguintes.
+
+Avaliação de uso para esta passagem: o ensaio de autorização não implementa uma
+galeria nem obtém fotos; a restrição de produto da §5.1 não impede preparar esse
+ensaio isolado. A conformidade da apresentação e retenção continua a esclarecer
+antes de obter/usar mídia em G3. Não usar esta conclusão de desenho como aprovação
+Google do slideshow ou como autorização de acesso permanente.
+
+G1 atende desenho/inventário e permite preparar SPK-01 nesse limite. G2 só recebe
+aceite após autorização efetiva e operação mínima no Fire TV, testes negativos e
+verificação de privacidade. Não declarar positivo pelo JSON ou pelo build.
