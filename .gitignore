@@ -18,3 +18,8 @@ __pycache__/
 /apps/android/local.properties
 *.jks
 *.keystore
+
+# Workspaces frontend
+node_modules/
+dist/
+*.tsbuildinfo

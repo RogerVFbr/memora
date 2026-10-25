@@ -60,7 +60,7 @@ sem introduzir diferenças funcionais como variável adicional.
 
 Wordmark `memora.` em minúsculas, acompanhado de três traços que sugerem
 fragmentos de memória. É um estudo vetorial provisório implementado em
-[Icons.tsx](../apps/prototype/src/Icons.tsx), não um logo final nem um pacote de marca.
+[Icons.tsx](../packages/presentation/src/Icons.tsx), não um logo final nem um pacote de marca.
 A marca aparece no laboratório e nos controles; desaparece da apresentação limpa.
 
 O protótipo usa fontes do sistema, sem requisições a fornecedores de fontes.
@@ -71,7 +71,7 @@ testar acentos, numerais e leitura à distância. Não há fonte final aprovada.
 ### Tokens e geometria
 
 Os valores executáveis têm fonte única em
-[styles.css](../apps/prototype/src/styles.css), nos tokens `.app` e `.theme-gallery`:
+[styles.css](../packages/presentation/src/styles.css), nos tokens `.app` e `.theme-gallery`:
 
 | Token | Responsabilidade |
 |---|---|
@@ -159,17 +159,20 @@ validação posterior. Vídeos e Live Photos não estão simulados como reprodu�
 ## 6. Base técnica e reaproveitamento
 
 O projeto é um frontend estático React/TypeScript com Vite. As versões realmente
-instaladas ficam em [package-lock.json](../apps/prototype/package-lock.json);
+instaladas ficam em [package-lock.json](../package-lock.json);
 pré-requisitos e comandos ficam no README. Não há backend nem dependência de
 servidor remoto para servir imagens ou fontes durante a experiência.
 
 | Arquivo / camada | Responsabilidade | Possível reaproveitamento |
 |---|---|---|
-| `src/model.ts` | Tipos de foto/cena, catálogo demonstrativo, preferências e armazenamento | Separar tipos e substituir catálogo por dados autorizados |
-| `src/App.tsx` | Orquestração mock, composição, navegação, painéis e bancada | Extrair componentes e conectar eventos à camada nativa |
-| `src/Icons.tsx` | Marca provisória e ícones vetoriais locais | Manter linguagem iconográfica após aprovação |
-| `src/styles.css` | Tokens, temas, composição, foco, responsividade e movimento | Migrar valores aprovados para o design system final |
-| `public/media` | Fotografias de demonstração locais | Fixtures públicas para comparação visual |
+| `packages/presentation/src/model.ts` | Tipos e preferências | Catálogo recebido por contrato |
+| `packages/presentation/src/demoCatalog.ts` | Catálogo demonstrativo | Provedor substituível, sem dependência da apresentação para fixtures |
+| `packages/presentation/src/usePresentation.ts` | Estado, reprodução e navegação | Fonte única nas duas entradas |
+| `packages/presentation/src/Presentation.tsx` | Composições, controles e painéis | Compartilhado por browser e TV |
+| `packages/presentation/src/Icons.tsx` e `styles.css` | Ícones, tokens, temas e estilos | Fonte única visual |
+| `packages/presentation/public/media` | Fotografias demonstrativas | Fonte única dos arquivos, servida por ambos os builds |
+| `apps/prototype/src/App.tsx` | Bancada e simuladores | Exclusivo do browser |
+| `apps/tv/src/main.tsx` | Entrada da TV | Apresentação sem bancada |
 
 O contrato inicial de cena contém ID, título, subtítulo, layout, fotos e ID da
 coleção. Foto contém ID, referência local, texto alternativo e dimensões.
@@ -186,11 +189,11 @@ galeria não foram instalados; as candidatas do
 [PRD §8.2](00-PRD.md#82-motion--styling) permanecem propostas para o produto.
 Evita-se antecipar dependências antes de demonstrar uma necessidade concreta.
 
-Não transportar o mock como está para o APK. Primeiro separar bancada e
-apresentação, definir a fonte única de estado de playback e validar os contratos
-da [fronteira nativa](00-PRD.md#62-decisões-de-fronteira-importantes).
-O build atual serve a navegadores modernos; `build.target` e possíveis polyfills
-precisam ser definidos a partir do WebView medido, não do sucesso no desktop.
+A I2 separa bancada e apresentação, mantendo a aparência como exploração visual.
+Antes de alterar o empacotamento ou a fronteira com o host, consulte o
+[registro técnico](02-host-android-e-baseline.md#1-host-e-fronteira).
+A validação no browser não comprova navegação física, lifecycle nem efeitos no
+WebView real; esses critérios permanecem na etapa I3 do plano.
 
 Fontes técnicas: [Vite — desenvolvimento](https://vite.dev/guide/),
 [Vite — build e compatibilidade](https://vite.dev/guide/build.html),
@@ -198,7 +201,7 @@ Fontes técnicas: [Vite — desenvolvimento](https://vite.dev/guide/),
 
 ## 7. Mídia e proveniência
 
-As quatro fotografias são públicas, demonstrativas e não pertencem ao acervo
+Os arquivos estão em `packages/presentation/public/media`. As quatro fotografias são públicas, demonstrativas e não pertencem ao acervo
 pessoal. Não representam seleções reais do Google Fotos. Não foram atribuídos
 data, localização de captura ou autor sem evidência.
 

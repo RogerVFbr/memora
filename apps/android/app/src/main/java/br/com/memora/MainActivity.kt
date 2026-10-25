@@ -1,5 +1,6 @@
 package br.com.memora
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream
 class MainActivity : Activity() {
     private lateinit var webView: WebView
 
+    @SuppressLint("SetJavaScriptEnabled") // Only packaged, allowlisted content; no native bridge.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val loader = WebViewAssetLoader.Builder()
@@ -21,8 +23,9 @@ class MainActivity : Activity() {
             .build()
         webView = WebView(this).apply {
             settings.apply {
-                // I1 only renders static HTML; enable JS only when I2 requires it.
-                javaScriptEnabled = false
+                // React runs only from the packaged local origin.
+                javaScriptEnabled = true
+                domStorageEnabled = true
                 allowFileAccess = false
                 allowContentAccess = false
                 blockNetworkLoads = true

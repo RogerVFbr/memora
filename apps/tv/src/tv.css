@@ -1,0 +1,5 @@
+html, body, #root { width: 100%; height: 100%; overflow: hidden; }
+.tv-app.app { padding: 0; width: 100%; height: 100%; max-width: none; min-height: 0; }
+.tv-app .tv-stage { height: 100%; width: 100%; min-height: 0; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+.tv-app .drawer { min-height: 0; }
+.tv-storage-error { position: absolute; top: 5%; left: 5%; max-width: 60%; background: var(--surface); padding: 1rem; }

@@ -1,3 +1,11 @@
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.OutputDirectory
+
+abstract class BuildTvAssets : Exec() {
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+}
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -37,3 +45,23 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 dependencyLocking { lockAllConfigurations() }
+
+// Generate isolated assets per variant; Gradle owns the frontend build dependency.
+androidComponents.onVariants { variant ->
+    val buildTv = tasks.register<BuildTvAssets>("buildTv${variant.name.replaceFirstChar { it.uppercase() }}") {
+        val checkout = rootDir.parentFile.parentFile
+        workingDir(checkout)
+        outputDirectory.set(layout.buildDirectory.dir("generated/tvAssets/${variant.name}"))
+        inputs.files(fileTree(checkout.resolve("packages/presentation")) { exclude("node_modules/**") })
+        inputs.files(fileTree(checkout.resolve("apps/tv")) { exclude("node_modules/**", "dist/**") })
+        inputs.files(checkout.resolve("package.json"), checkout.resolve("package-lock.json"))
+        val version = variant.outputs.single().versionName.get()
+        inputs.property("appVersion", version)
+        environment("VITE_APP_VERSION", version)
+        doFirst {
+            // AGP assigns the generated source directory after task registration.
+            commandLine("npm", "run", "build", "--workspace", "@memora/tv", "--", "--outDir", outputDirectory.get().asFile.absolutePath)
+        }
+    }
+    variant.sources.assets?.addGeneratedSourceDirectory(buildTv, BuildTvAssets::outputDirectory)
+}
