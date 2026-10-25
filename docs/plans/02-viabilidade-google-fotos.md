@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; G1–G3 concluídas; G4 em validação temporal; G5 em validação da amostra.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1–G3 concluídas; G4 em validação temporal; G5 concluída.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Revisão de sequência aprovada em 2026-10-25: executar G5 durante a espera temporal de G4, sem dispensar seus critérios.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
@@ -86,11 +86,12 @@ aplicar o AGENTS.md; a aprovação do plano não amplia a autonomia do Memora.
 A preparação documental é atendida pela [issue #41](https://github.com/RogerVFbr/memora/issues/41)
 e não integra o contador das etapas investigativas.
 
-**Situação em 2026-10-25:** 3 de 6 etapas concluídas. G3 verificou no alvo a amostra
+**Situação em 2026-10-25:** 4 de 6 etapas concluídas. G3 verificou no alvo a amostra
 completa de 10 fotos e 2 vídeos, entregue pelo PR #57. Evidência privada preservada
 para G4 / #45, com instrumentação integrada e medições dentro da validade.
-Expirações naturais ainda pendentes; próxima etapa executável é G5, retomando G4
-quando suas fronteiras ocorrerem, conforme revisão aprovada da sequência.
+G5 concluiu investigação de limite, paginação e comparação, sem validar
+transferência no máximo. Próxima ação: retomar medições G4 quando suas fronteiras
+ocorrerem; G6 aguarda evidências suficientes.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
@@ -98,7 +99,7 @@ quando suas fronteiras ocorrerem, conforme revisão aprovada da sequência.
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
-| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Em validação | [PR #60](https://github.com/RogerVFbr/memora/pull/60) | [Busca guiada por título](../04-viabilidade-google-fotos.md#92-experiência-real-e-busca-por-álbum); nenhum item selecionado, origem/escala pendentes |
+| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Concluída | [PR #60](https://github.com/RogerVFbr/memora/pull/60), [PR #61](https://github.com/RogerVFbr/memora/pull/61), [PR #62](https://github.com/RogerVFbr/memora/pull/62) | [Aceite investigativo, limites e limpeza](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
 ### Manutenção e retomada
@@ -123,6 +124,10 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G5 / #46 concluída: [negativa de limite e duas amostras positivas](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5)
+  com comparação e limpeza confirmadas. 4/6; G4 preservada para observação real,
+  sem aceite por simulação nem início de G6.
 
 - 2026-10-25 — G5 / #46: [instrumentação isolada e preparação da amostra](../04-viabilidade-google-fotos.md#91-instrumentação-e-validação-inicial)
   pelo [PR #60](https://github.com/RogerVFbr/memora/pull/60); 32 testes/lint, OAuth
