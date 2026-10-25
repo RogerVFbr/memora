@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 
@@ -10,16 +11,29 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+val releaseVersion = Properties().apply {
+    rootDir.parentFile.parentFile.resolve("android-release.properties").inputStream().use { load(it) }
+}
+
 android {
     namespace = "br.com.memora"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     defaultConfig {
-        applicationId = "br.com.memora"
+        applicationId = releaseVersion.getProperty("applicationId")
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-alpha.1"
+        versionCode = releaseVersion.getProperty("versionCode").toInt()
+        versionName = releaseVersion.getProperty("versionName")
+    }
+    signingConfigs {
+        create("release") {
+            storeFile = providers.environmentVariable("MEMORA_KEYSTORE_FILE").orNull?.let { file(it) }
+            storePassword = providers.environmentVariable("MEMORA_SIGNING_PASSWORD").orNull
+            keyAlias = providers.environmentVariable("MEMORA_KEY_ALIAS").orNull
+            keyPassword = providers.environmentVariable("MEMORA_SIGNING_PASSWORD").orNull
+            storeType = "PKCS12"
+        }
     }
     buildTypes {
         debug {
@@ -27,7 +41,10 @@ android {
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Memora Dev")
         }
-        release { resValue("string", "app_name", "Memora") }
+        release {
+            resValue("string", "app_name", "Memora")
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -54,13 +71,17 @@ androidComponents.onVariants { variant ->
         outputDirectory.set(layout.buildDirectory.dir("generated/tvAssets/${variant.name}"))
         inputs.files(fileTree(checkout.resolve("packages/presentation")) { exclude("node_modules/**") })
         inputs.files(fileTree(checkout.resolve("apps/tv")) { exclude("node_modules/**", "dist/**") })
-        inputs.files(checkout.resolve("package.json"), checkout.resolve("package-lock.json"))
+        inputs.files(checkout.resolve("package.json"), checkout.resolve("package-lock.json"), checkout.resolve("android-release.properties"))
         val version = variant.outputs.single().versionName.get()
         inputs.property("appVersion", version)
         environment("VITE_APP_VERSION", version)
+        // Frontend tooling has no use for the native signing credentials.
+        environment.remove("MEMORA_SIGNING_PASSWORD")
+        environment.remove("MEMORA_KEYSTORE_FILE")
+        environment.remove("MEMORA_KEY_ALIAS")
         doFirst {
             // AGP assigns the generated source directory after task registration.
-            commandLine("npm", "run", "build", "--workspace", "@memora/tv", "--", "--outDir", outputDirectory.get().asFile.absolutePath)
+            commandLine("npm", "run", "build", "--workspace", "@memora/tv", "--", "--outDir", outputDirectory.get().asFile.absolutePath, "--emptyOutDir")
         }
     }
     variant.sources.assets?.addGeneratedSourceDirectory(buildTv, BuildTvAssets::outputDirectory)

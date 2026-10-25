@@ -23,3 +23,8 @@ __pycache__/
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Entregas e material de assinatura
+/builds/
+*.p12
+*.pfx

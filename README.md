@@ -154,3 +154,40 @@ adb -s <alvo-adb> shell input keyevent 85
 Os exemplos enviam, respectivamente, Menu e Play/Pause. Consulte o
 [contrato da TV](docs/02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv)
 para estados, evidências e limites dos testes.
+
+## Empacotamento local da release
+
+Requer os pré-requisitos Android/Node acima e Python 3.9+. No macOS, a custódia
+usa o Acesso às Chaves. Prepare a identidade somente uma vez, com um diretório
+privado de backup em outro volume e fora do repositório:
+
+```sh
+python3 -m tools.android_signing prepare --backup-dir /Volumes/<volume>/.memora-signing-backup
+python3 -m tools.android_signing check
+```
+
+A ferramenta gera o keystore fora do Git e registra apenas o fingerprint público.
+Consulte [custódia](docs/03-entrega-android.md#2-custódia-aprovada) antes de restaurar
+uma identidade existente ou cuidar do backup da senha. Não gere outra chave para
+atualizar uma aplicação já assinada.
+
+Na raiz, valide os contratos da entrega:
+
+```sh
+python3 -m unittest discover -s tools/tests -v
+```
+
+Com `JAVA_HOME` e `ANDROID_HOME` configurados, use um checkout limpo de fonte já
+integrada em `origin/main` para gerar e conferir os quatro entregáveis:
+
+```sh
+python3 -m tools.android_release build
+python3 -m tools.android_release verify builds/0.1.0-alpha.1
+```
+
+A versão corrente vem de `android-release.properties`; ajuste o argumento do
+verificador ao conferir outra entrega ou uma cópia obtida da Release. `build`
+executa `npm ci`, testes da apresentação e build/testes/lint de release; não
+precisa de servidor Vite. `verify` precisa do SDK/JDK, sem acesso ao keystore ou
+à senha. Configuração de assinatura ausente/inconsistente e destino já existente
+causam falha sem substituir arquivos. Os comandos não publicam nem instalam APKs.
