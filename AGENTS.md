@@ -113,6 +113,16 @@ impedimento e preserve o trabalho; não substitua o PR por merge direto nem
 contorne proteções do repositório. Encerre issues com aceite operacional somente
 após as evidências exigidas, mesmo que o código já tenha sido integrado.
 
+### Registro na issue antes do merge
+
+Antes de fazer merge de um PR que encerra uma issue, publique comentários na
+própria issue com quaisquer desvios e observações relevantes da entrega,
+incluindo decisões, limitações de validação, riscos e pendências aplicáveis.
+O registro apenas na descrição ou nos comentários do PR não substitui esse
+comentário na issue. Confira se os comentários estão publicados e atualizados
+antes de integrar; se o registro necessário não puder ser publicado, não faça
+o merge que encerraria a issue.
+
 ### Descrição obrigatória dos pull requests
 
 Escreva mensagens amplas e explicativas em português brasileiro, suficientes
