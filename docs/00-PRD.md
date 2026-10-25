@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.8 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.9 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -100,11 +100,11 @@ antes de escolher o target do frontend. Essas consultas não encerram SPK-06.
 
 ### 3.4 Evidências empíricas de aplicativos similares
 
-- **TV Gallery for Google Photos:** testado no próprio Fire TV; autenticação/conexão, seleção e visualização de vários álbuns funcionaram para o usuário; apresentação limitada a uma foto por vez, sem vídeos segundo descrição do autor. Solução de referência de UX, não prova de arquitetura interna.
+- **TV Gallery for Google Photos:** testado no próprio Fire TV; autenticação/conexão, seleção e visualização de vários álbuns funcionaram para o usuário; apresentação limitada a uma foto por vez, sem vídeos segundo descrição do autor. Solução de referência de UX; a [investigação de sua abordagem](04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api) distingue declarações públicas e inferência sobre Ambient, sem comprovar arquitetura interna.
 - **PhotoGuru:** instalado, versão observada 7.5.0.52507; lista de provedores não exibia Google Fotos, inclusive no menu de adicionar pastas. Não adotar como dependência.
 - **PixFolio:** oferece efeitos e vídeos, mas modelo comercial e comportamento de obtenção/cache não atendem claramente ao objetivo.
 - **Pixette e semelhantes:** mais ricos visualmente, mas sem integração nativa direta ao Google Fotos em condições desejadas.
-- **Google Photos Ambient API:** conceitualmente adequada para TVs, porém acesso de parceiros; não incluir como dependência do MVP pessoal sem elegibilidade confirmada.
+- **Google Photos Ambient API:** conceitualmente adequada para TVs, com acesso condicionado ao programa de parceiros. Consultar a [avaliação e ação de acesso](04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api) antes de escolhê-la; não é dependência aprovada do MVP.
 
 ---
 
@@ -466,7 +466,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
 | R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
-| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação G1 e condições de retomada](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata); sem liberação de dados reais |
+| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação G1 e alternativa Ambient condicionada a acesso](04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api); sem liberação de dados reais |
 
 ### Perguntas de produto ainda abertas (não bloqueiam redigir este PRD)
 

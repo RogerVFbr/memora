@@ -37,8 +37,10 @@ comportamento da conta de teste. Reconsultar antes de decisões de implementaç�
 
 ## 3. Desenho e condições de autorização
 
-A [avaliação G1](#51-g1--enquadramento-e-arquitetura-candidata) compara os caminhos
-e registra condições de passagem. Nenhuma arquitetura está aprovada para implantação.
+A [avaliação inicial G1](#51-g1--enquadramento-e-arquitetura-candidata) compara
+caminhos Picker. A [retomada Ambient](#52-g1--tv-gallery-e-acesso-à-ambient-api)
+corrige a cobertura e define o impedimento atual. Nenhuma arquitetura está
+aprovada para implantação.
 
 Para cada candidato registrar tipo de cliente, componentes executados em cada
 dispositivo, posse das credenciais/tokens, redirect, associação à TV, consentimento,
@@ -86,6 +88,11 @@ Método: releitura do PRD, host, README, fontes oficiais da §2 e fontes adicion
 abaixo; inspeção do código versionado e consultas ADB somente em leitura.
 Não houve login, acesso a mídia, criação de cliente/projeto ou instalação.
 
+Esta análise inicial trata dos caminhos Picker e não esgota as alternativas
+Google Fotos. Para o resultado vigente após investigar o TV Gallery, consultar
+a [retomada Ambient](#52-g1--tv-gallery-e-acesso-à-ambient-api). As leituras de
+hardware abaixo pertencem à primeira avaliação; não foram repetidas na retomada.
+
 #### Enquadramento e dúvida impeditiva
 
 O uso concreto é apresentar continuamente seleções pessoais na TV, com pares de
@@ -114,7 +121,7 @@ Se a resposta excluir o recorte, levar a evidência a G6 antes dos ensaios depen
 | TV / Limited Input | APK solicita códigos; celular autoriza no Google; TV recebe tokens por polling, sem callback próprio | Descartado para Picker pela lista oficial de escopos; login básico não concede o escopo necessário. |
 | Android / Google Identity Services | Activity Kotlin e cliente Android associado ao pacote/certificado; resolução de consentimento pela API Android, sem callback HTTP próprio; tokens nativos | Guia depende de `play-services-auth`; serviço não encontrado no alvo. Não há prova de suporte ao Fire OS sem GMS. Navegador instalado não supre essa dependência. |
 | Desktop / PKCE | Processo desktop abre navegador, recebe código em loopback e guarda tokens localmente | Válido somente como controle de bancada desktop; não adotar esse cliente no APK. Loopback Android foi descontinuado. |
-| Web verdadeiro + pareamento | Navegador do celular → Google → callback HTTPS registrado no serviço; troca e custódia no servidor; APK pareado por canal autenticado | Único candidato descrito aqui com separação plausível do OAuth no Fire OS sem GMS, mas não aprovado: exige serviço real, revisão de associação à TV e decisão específica de custo/privacidade. Não equivale a embutir cliente web no APK. |
+| Web verdadeiro + pareamento | Navegador do celular → Google → callback HTTPS registrado no serviço; troca e custódia no servidor; APK pareado por canal autenticado | Candidato Picker da avaliação inicial, não aprovado: exige serviço real, revisão de associação à TV e decisão específica de custo/privacidade. Não equivale a embutir cliente web no APK. |
 
 Fontes adicionais consultadas na mesma data:
 [Android authorization](https://developer.android.com/identity/authorization),
@@ -188,7 +195,7 @@ categoria `android.intent.category.BROWSABLE` e `https://example.com`, e
 `pm path com.google.android.gms`, sempre via `adb -s <alvo> shell`. Nenhuma dessas
 consultas inicia Activity; não usar `am start` em outro aplicativo nesta etapa.
 
-#### Resultado e condição de retomada
+#### Resultado inicial e condição de retomada
 
 A investigação produziu mapa e inventário, mas não satisfez a passagem para G2:
 R-013 continua sem esclarecimento e não há caminho aprovado de autorização e
@@ -198,3 +205,112 @@ proprietário sobre investigar infraestrutura/fronteira de dados/custo. Depois,
 confirmar configurações externas em ambiente privado e revisar a passagem.
 Sem resposta ou solução justificável, levar os impedimentos à decisão G6 em
 retomada expressamente autorizada. Nenhuma etapa seguinte executada aqui.
+
+
+### 5.2 G1 — TV Gallery e acesso à Ambient API
+
+Retomada da [issue #42](https://github.com/RogerVFbr/memora/issues/42) em 2026-10-25,
+a pedido do desenvolvedor, para aprofundar a referência já testada no Fire Stick.
+O proprietário confirmou nesta retomada: **não possui acesso aprovado à Ambient
+API**. Não foi inspecionado um projeto Cloud nem se presumiu inexistência dele.
+Esta seção atualiza a conclusão inicial da §5.1, preservada como histórico.
+
+#### Evidências públicas e grau de certeza
+
+| Fonte consultada em 2026-10-25 | Evidência / limite |
+|---|---|
+| [TV Gallery — site do desenvolvedor](https://anytv.app/gallery/) | Descreve QR ou `google.com/device`, escolha de álbuns no Google Fotos e leitura direta de fotos pela TV. Não nomeia a API. |
+| [TV Gallery — privacidade, §1.1/1.2/1.4/7](https://anytv.app/gallery/privacy/) | Declara intermediário OAuth próprio para login, refresh e revogação; credencial confidencial no servidor, códigos/tokens processados transitoriamente, tokens persistidos somente na TV e mídia direta do Google. Não é auditoria independente da implementação. |
+| [Ambient — visão geral](https://developers.google.com/photos/ambient/guides/about) | Oferece integração de slideshow em TVs e molduras; usa autorização para dispositivos. |
+| [Ambient — configuração](https://developers.google.com/photos/ambient/guides/configure-your-app) | Cliente TV/Limited Input; exemplo com `photosambient.mediaitems`, `state` contendo `requestId` e `displayName`; fluxo com celular, sem callback web do Memora. |
+| [Programa de parceiros — seção Ambient](https://developers.google.com/photos/partner-program/overview#ambient-api) | Aceitação no programa é pré-requisito de acesso à Ambient; para lançamento, há revisões OAuth e de integração. A disponibilidade geral de Picker/Library não se estende à Ambient. |
+| [Ambient — fluxo](https://developers.google.com/photos/ambient/guides/get-started) e [devices REST](https://developers.google.com/photos/ambient/reference/rest/v1/devices) | Registro de dispositivo, `settingsUri`, fontes selecionadas e polling. Não transportar para esse modelo a semântica de sessão Picker. |
+| [Ambient — listagem REST](https://developers.google.com/photos/ambient/reference/rest/v1/mediaItems/list) | Fontes específicas ou seleção curada; limite publicado de 240 requisições/dispositivo/dia e páginas de até 100 itens. Ausência de próximo token não assegura esgotamento do acervo. |
+| [Diretrizes UX Ambient](https://developers.google.com/photos/support/ambient-ux-guidelines) | Diretrizes beta próprias para conexão, identificação da conta, desconexão, seleção e apresentação. Não é autorização individual para o Memora. |
+
+**Inferência:** registro de dispositivo, seleção de fontes no Google Fotos e fluxo
+OAuth tornam Ambient uma explicação fortemente compatível com o TV Gallery.
+Não encontramos declaração nominal da API pelo autor, código ou captura de rede
+que confirme endpoints/escopos. Não afirmar que sua integração é Picker nem que
+sua aprovação se transfere ao Memora. Não acessamos o APK, dados ou tráfego dele.
+
+#### Correção da avaliação e arquitetura candidata
+
+A afirmação de que o fluxo TV não suporta **Picker** continua válida. Ela não
+impede o fluxo **Ambient**, cujo guia específico documenta outro escopo. A ausência
+de GMS ou de navegador na TV não é, por si, impedimento a esse fluxo REST: a
+interação Google acontece no celular. Não precisamos trocar clientes por Desktop.
+
+O candidato passa a ser, condicionado ao acesso e à decisão de infraestrutura:
+
+| Componente | Responsabilidade e custódia propostas |
+|---|---|
+| Kotlin no Fire TV | Iniciar/consultar fluxo de dispositivo, controlar expiração/cancelamento, guardar tokens criptografados com chave local; criar registro Ambient e obter mídia. React recebe somente estado e referências locais seguras. |
+| Celular / páginas Google | Autenticar e consentir; configurar fontes do dispositivo pelo fluxo oficial. QR não transporta tokens Google. Retorno ao usuário no fluxo Google; sem redirect HTTPS de código OAuth para um site Memora. |
+| Intermediário OAuth Memora, se necessário | Encaminhar somente operações OAuth permitidas para endpoints fixos e proteger a credencial que exigir custódia confidencial; não armazenar tokens/códigos nem encaminhar fotos. Implementação sujeita às condições do cliente aprovado; a arquitetura do terceiro não prova aceitação automática pelo Google. |
+| Google Photos Ambient | Registrar dispositivo/fontes, servir listagem e bytes à camada nativa da TV. Sem servidor próprio no caminho de mídia. |
+
+O intermediário precisa de HTTPS, validação estrita de payload/operação/cliente,
+limites de uso, timeouts e exclusão de corpos, códigos e tokens dos logs; não pode
+ser um proxy aberto. Vinculação de autorização e dispositivo deve respeitar o
+fluxo aprovado e ser testada contra troca de transação, repetição e conta errada.
+A necessidade exata de secret/intermediário deve ser confirmada nas condições do
+cliente e onboarding, antes de escrever código ou expor um endpoint.
+
+Esse desenho não exige mudar NFR-009, pois fotos não passam pelo intermediário.
+Ainda depende dele nos eventos de autorização/refresh/revogação; não é promessa
+de operação independente de servidor nem de acesso perpétuo. Não selecionamos
+hospedagem, preço ou retenção de logs operacionais. R$ 0/mês e estabilidade não
+foram demonstrados. Custos/implantação serão apresentados para decisão específica
+após esclarecer elegibilidade, sem contratação ou deploy nesta investigação.
+
+A Ambient documenta expressamente a categoria de slideshow do produto. Portanto,
+não tratar a dúvida de galeria genérica do caminho Picker como uma proibição
+conclusiva dessa alternativa. Políticas e revisão do recorte ainda se aplicam;
+para esta rota, o primeiro impedimento comprovado é acesso ao programa.
+
+#### Ação externa preparada
+
+O [formulário oficial de interesse](https://services.google.com/fb/forms/photospartnerprogram/),
+ligado pelo programa, foi lido, sem preenchimento ou envio. Solicita identificação,
+contato, empresa/site, tamanho/localização da equipe, linguagem, caso de uso e
+previsão de dispositivos; há opção de acesso para molduras/screensavers.
+O texto introdutório ainda menciona Library/quota; usar a regra específica Ambient
+do programa para interpretar a elegibilidade, sem presumir liberação automática.
+A página não esclarece aceitação de desenvolvedor individual com uso pessoal,
+nem garante prazo, aprovação ou isenção. Não inventar empresa/site comercial.
+
+Rascunho do campo de caso de uso, para o proprietário revisar e usar na candidatura:
+
+> Memora is a personal, non-commercial Android application for one Amazon Fire TV
+> Stick 4K Max. It aims to display user-selected Google Photos sources as a
+> remote-controlled slideshow with portrait pairs, mosaics and transitions.
+> A local demonstration works; Google Photos integration is not implemented.
+> We would like to request Ambient API access and confirm whether an individual
+> developer with this personal-use scope is eligible. The proposed design keeps
+> photos flowing directly from Google to the TV, uses transient local caching,
+> and keeps tokens out of the presentation layer. If required, a minimal OAuth
+> intermediary would protect confidential credentials without retaining tokens
+> or proxying media. Please clarify onboarding, client credential requirements,
+> permitted caching, and the review process for this scope.
+
+Complementos conhecidos: integração nativa Kotlin/HTTP, interface React/TypeScript;
+alvo inicial de um dispositivo próprio. Nome, contato, site e classificação do
+proponente devem ser fornecidos pelo proprietário conforme a realidade.
+Nenhum dado de contato ou identificação pessoal foi incluído no rascunho público.
+Nenhum envio, contato com Google/Klebo ou aceitação de termos foi realizado.
+
+#### Resultado vigente e retomada
+
+G1 continua sem passagem para G2. Primeiro, o proprietário deve solicitar acesso
+ou esclarecimento de elegibilidade pelo canal oficial acima e trazer resposta
+sanitizada; não enviar credenciais. Se já houver projeto, verificar privadamente
+se foi autorizado para Ambient: simplesmente habilitar Picker não atende.
+Após acesso confirmado, decidir cliente/custódia/intermediário e seu custo;
+revisar explicitamente o recorte das issues dependentes, hoje centradas em Picker,
+antes de executá-las por Ambient. O limite de 2.000 e sessões Picker não pode ser
+copiado como aceite Ambient. Nenhuma dessas mudanças de escopo foi aplicada aqui.
+
+Se o acesso for recusado ou permanecer indisponível, registrar o resultado e
+levar a decisão ao desenvolvedor, sem chamar isso de falha técnica do Fire TV.
+Não executar G2, implantar serviço ou tentar endpoints privados para contornar.
