@@ -88,8 +88,8 @@ São versões da aplicação Android; `0.1.0` no pacote atual do protótipo não
 representa uma release Android existente. Antes de reservar uma versão, conferir
 tags, releases e eventual instalação prévia. Ajustar os valores se já utilizados.
 
-Manter a versão em uma fonte de configuração versionada, definida na implementação;
-derivar dela nome visível e metadados de entrega. O contador Android é inteiro
+A versão tem fonte única em [android-release.properties](../../android-release.properties);
+nome visível e metadados de entrega são derivados dessa configuração. O contador Android é inteiro
 monotônico por entrega instalável e não deve depender da comparação textual dos
 rótulos SemVer. Release posterior precisa de código superior ao instalado.
 
@@ -126,7 +126,7 @@ origem, horário UTC, versões das ferramentas e identificação pública do
 certificado. Não incluir caminhos privados, credenciais nem diagnósticos pessoais.
 Registrar checksum do APK assinado final; a cópia publicada deve ter os mesmos bytes.
 
-Adicionar `/builds/` ao `.gitignore` na issue de empacotamento. APKs são anexos da
+`/builds/` está no `.gitignore` desde a implementação do empacotamento. APKs são anexos da
 Release, não arquivos de código versionados. Evidências técnicas brutas continuam
 privadas conforme os guardrails existentes.
 
@@ -134,8 +134,8 @@ privadas conforme os guardrails existentes.
 
 Escolher application ID estável antes da primeira instalação e registrar a escolha
 na configuração do aplicativo. Usar a mesma identidade de pacote e certificado
-de assinatura nas duas entregas. Preparar chave persistente de release e backup
-seguro, fora de Git e dos anexos; definir sua custódia antes de publicar a primeira.
+de assinatura nas duas entregas. Consultar a [custódia implementada](../03-entrega-android.md#2-custódia-aprovada)
+antes de assinar ou recuperar a chave persistente e seu backup.
 Não usar chave debug efêmera para a sequência de releases.
 
 A segunda entrega deve trazer incremento de versão/código verificável na UI e nos
@@ -151,7 +151,7 @@ critérios de aceite e validações específicas ficam nas issues vinculadas; n�
 manter uma segunda cópia integral desses textos no repositório.
 
 **Situação em 2026-10-25:** 3 de 6 etapas concluídas. I1, I2 e I3 integradas e aceitas.
-Próxima etapa: I4 / #10.
+I4 / #10 em revisão; empacotamento final aguarda integração.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -162,7 +162,7 @@ contador das seis etapas de implementação.
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware registrado em I3 |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Concluída | [#25](https://github.com/RogerVFbr/memora/pull/25) / [e8f21b4](https://github.com/RogerVFbr/memora/commit/e8f21b4427dcac7fd7022e337d6b3e93af2ad8eb) | Não se aplica | [Aceite de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv): controle/foco, configurações persistentes, reabertura, suspensão/retomada e flag real aprovados; limites na [issue #9](https://github.com/RogerVFbr/memora/issues/9) |
-| I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
+| I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | Em revisão | — | Não se aplica | Pipeline, assinatura permanente, backup e build release validados; entrega final será gerada de fonte integrada |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
 | I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | A fazer | — | A produzir | Exige upgrade real e matriz de preferências antes/depois |
 
@@ -217,7 +217,8 @@ usadas em I3 não substituem o aceite da primeira identidade de release em I5.
   Sem instalação; próxima etapa I3 / #9.
 
 - **2026-10-25 — I3 / #9:** código do [PR #25](https://github.com/RogerVFbr/memora/pull/25)
-  instalado e validado no WebView real. [Registro de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv)
+  instalado e validado no WebView real, com aceite consolidado no
+  [PR #29](https://github.com/RogerVFbr/memora/pull/29). [Registro de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv)
   e [resultados/limitações na issue](https://github.com/RogerVFbr/memora/issues/9).
   Preferências não padrão sobreviveram à reabertura com processo novo; nenhuma release
   ou atualização de produção executada. Próxima etapa I4 / #10.

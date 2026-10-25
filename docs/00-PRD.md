@@ -401,6 +401,11 @@ Perfis múltiplos, instalação/distribuição para outras TVs Android, screensa
 - QA: baixa conexão, interrupção Wi-Fi, fechar/retomar app, cancelar Picker, sessão expirada, OAuth revogado, vídeo falho, cache saturado, controle Back/Menu/OK.
 - Guardrails: nunca usar credenciais reais em fixtures/commits/CI, nem logs sensíveis.
 
+O empacotamento demonstrativo local tem implementação própria; consultar
+[entrega Android](03-entrega-android.md#1-configuração-e-fronteiras) antes de
+alterar versão, assinatura ou verificação e o
+[README](../README.md#empacotamento-local-da-release) para os comandos executáveis.
+
 ### Layout de repositório [PROPOSTO]
 
 ```text
