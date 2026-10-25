@@ -589,3 +589,130 @@ Próxima etapa técnica é G3 / #44. Antes de obter mídia real, permanecem as
 condições de amostra consentida e esclarecimento de enquadramento/retenção R-013
 já registradas no PRD/G1; esta conclusão de OAuth não as remove. Nenhuma seleção,
 G3, refresh/persistência ou validação de acesso recorrente foi iniciada nesta rodada.
+
+
+## 7. Seleção e recuperação diagnóstica G3
+
+Retomada de [#44](https://github.com/RogerVFbr/memora/issues/44) em 2026-10-25,
+com G2 integrada/aceita. O desenvolvedor confirmou dispor e autorizar 10 fotos e
+2 vídeos para recuperar bytes/metadados privadamente no Fire Stick, com escolha
+pelo próprio Picker. Estendeu explicitamente o risco residual OAuth aos ensaios
+G3–G5; alcance no [PRD §10](00-PRD.md#10-segurança-e-privacidade).
+
+### Recorte e retenção antes de operar
+
+Ensaio de recebimento/exportação temporária iniciado pelo proprietário, sem
+exibição de galeria/slideshow. A [política Photos](https://developers.google.com/photos/support/api-policy)
+contempla armazenamento/exportação e o [guia Picker](https://developers.google.com/photos/picker/guides/media-items)
+documenta a obtenção dos itens selecionados. Isso esclarece a passagem para esse
+recorte técnico; R-013 continua aberto para a apresentação final e sua retenção.
+Não é aprovação nominal Google do Memora ou dispensa de políticas.
+
+Tokens, sessão/expiração, IDs/URLs e metadados mínimos para G4 serão guardados
+somente em arquivo privado cifrado pelo Android Keystore, excluído de backup.
+Nenhum byte de foto/vídeo será retido: leitura limitada em streaming e descarte.
+Preservar a sessão positiva até o ensaio real de expiração de G4; limpeza explícita
+ao concluir a investigação ou a pedido do proprietário. Se o ensaio for abandonado,
+remover sessão/dados privados; não transformar esse registro em catálogo permanente.
+Evidências públicas limitam-se a contagens, status, tempos/durações sem IDs/URLs.
+
+QR nativo contém somente o `pickerUri` necessário à seleção, nunca token OAuth;
+fica restrito à tela de diagnóstico protegida e não é publicado em capturas/chat.
+O proprietário usa a mesma conta de teste no celular e seleciona a amostra.
+A biblioteca ZXing Core 3.5.3 é dependência apenas debug para gerar QR localmente,
+sem serviço externo; fontes na [biblioteca](https://github.com/zxing/zxing) e
+[release fixada](https://github.com/zxing/zxing/releases/tag/zxing-3.5.3).
+Paginação real com pageSize5; fotos com resolução delimitada; vídeos READY só têm
+acesso parcial aos primeiros bytes, explicitamente separado de download completo
+ou playback. Resultados positivos/negativos serão acrescentados após execução.
+
+
+### 7.1 Preparação e validação parcial
+
+Código nativo debug implementado com separação SPK-01/SPK-02, QR local, polling
+somente em foreground e prazo original não renovável. Core HTTP usa endpoints
+fixos, sem redirects de API; tratamento restrito de redirects de mídia está no
+[registro da primeira amostra](#72-primeira-amostra-e-ajustes-de-recuperação).
+Foto recebe verificação de tipo/dimensões e teto de 8 MiB; vídeo READY recebe
+leitura parcial de até 64 KiB. Respostas e catálogo têm limites, sem retry infinito.
+`ProbeStore` usa AES-256-GCM/AAD, chave Android Keystore e escrita atômica; backup
+Android permanece desabilitado. URLs iniciais, OAuth/expiry e histórico de sessão
+são preservados separadamente para G4.
+
+Revisão por subagentes e agente principal corrigiu duas classes de risco antes
+do uso de mídia: histórico original de expiração/URLs não é sobrescrito e
+cancelamento durante criação aguarda o resultado limitado em vez de interromper
+a leitura e afirmar limpeza sem ID. Resultado remoto incerto não é anunciado
+como removido; falha de rede/limpeza preserva evidência. Perda simultânea de
+resposta e armazenamento impede garantia de rastreio remoto: limite explícito do
+ensaio, sem promessa de limpeza quando não confirmada.
+
+Build debug, 16 testes e lint aprovados. Testes cobrem OAuth/origem local existentes,
+polling/deadline/background, paginação/ciclos/duplicatas, origem de mídia e limites
+de leitura. Não são ensaios reais de HTTP 401/403/429/5xx. Manifesto/recursos release
+gerados e dependência ZXing restrita às configurações debug, sem cliente ou
+Activity de ensaio em release.
+
+No Fire TV, `firestick-check` retornou `ok`, instalação `-r` e abertura aprovadas.
+Sessão real incompleta foi criada sem selecionar itens; arquivo privado cifrado
+confirmado por envelope, sem marcadores de token/URI em texto claro. Cancelamento
+pelo app confirmou DELETE e remoção do arquivo local. Não foi feito acesso a mídia
+nessa negativa. Outra sessão foi aberta para a amostra e QR confirmado pela UI;
+seleção pessoal ainda depende do proprietário. Não dar aceite a G3 por esse código.
+
+
+### 7.2 Primeira amostra e ajustes de recuperação
+
+A primeira seleção retornou 11 itens: 9 fotos e 2 vídeos, em 3 páginas reais,
+sem duplicatas e sem ausência dos metadados técnicos mínimos observados. As
+9 fotos foram recuperadas e identificadas; ambos os vídeos eram READY, mas
+retornaram HTTP 302 bloqueado pela política inicial. Não recebeu aceite por faltar
+uma foto e não haver bytes dos vídeos comprovados naquele momento.
+
+Corrigida somente a recuperação de mídia: até três redirects manuais, HTTPS
+Googleusercontent validado, sem credenciais de URL/porta/fragmento; URL assinada
+pode conter query. Bearer só vai no pedido original, nunca no destino do redirect.
+Loops e hosts desconhecidos continuam bloqueados. API JSON segue sem redirects.
+Trilha/Location só no snapshot cifrado; mensagem de erro não inclui capability.
+Também adicionados revalidação da mesma sessão e informações de horários/contagens
+lidas do snapshot sem rede; restauração não inicia polling ou inspeção automática.
+Cancelar revalidação preserva evidência; descarte é ação explícita separada.
+
+Rebuild, 19 testes e lint aprovados após os ajustes. Reinstalação sem limpeza
+restaurou a evidência por Keystore no aparelho. Na primeira revalidação, nove
+fotos e o prefixo de um vídeo foram recuperados; o outro sofreu
+SocketTimeoutException, sem HTTP de erro e sem bloqueio de host. Diagnóstico lido
+privadamente do snapshot, sem repetir a rede apenas para descobrir a causa.
+Na tentativa controlada seguinte, nove fotos e os dois prefixos de vídeo foram
+recuperados (1.653.896 bytes no total), sem falhas HTTP/redirect ou rede. Não houve
+retry automático. A seleção seguiu incompleta por conter nove fotos, não dez.
+Cancelar o resultado preservou o arquivo privado; a ação explícita Limpar
+confirmou DELETE e remoção local antes da nova seleção.
+
+As respostas reais dessa sessão indicaram expireTime sete dias após criação;
+isso não define duração fixa universal. G4 precisa observar a fronteira real em
+outra janela, preservando a amostra válida que vier a ser aceita. Não substituir
+esse ensaio por mock ou relógio alterado. A sessão da amostra incompleta foi
+limpa após o diagnóstico dos redirects, antes da nova seleção.
+
+### 7.3 Aceite operacional da G3
+
+A nova seleção feita pelo proprietário foi verificada no Fire TV em 2026-10-25:
+10 fotos recuperadas e dois vídeos READY com dois prefixos de até 64 KiB;
+três páginas reais, zero duplicatas e zero metadados mínimos ausentes.
+Foram lidos 1.382.616 bytes, sem falhas, itens não prontos ou hosts bloqueados.
+Isso atende ao aceite diagnóstico da [issue #44](https://github.com/RogerVFbr/memora/issues/44),
+entregue pelo [PR #57](https://github.com/RogerVFbr/memora/pull/57).
+Prefixos de vídeo não demonstram download integral, codec ou reprodução.
+
+O snapshot privado cifrado foi preservado para G4; bytes de mídia não são retidos.
+As âncoras observadas, em UTC, são: expiração OAuth em
+2026-10-25T23:38:40.714Z; expireTime da sessão em
+2026-11-01T22:38:41.914799Z; primeira URL obtida em
+2026-10-25T22:41:23.836Z; última listagem em 2026-10-25T22:41:24.905Z.
+Esses horários orientam a observação real de G4; não comprovam expiração nem
+prazo universal. Preservar sessão e URLs iniciais até esse ensaio.
+
+Permanecem os limites de retenção e política do recorte acima, R-013 para o
+produto final e o risco residual de logs do Fire OS aceito no PRD §10 para
+G3–G5. Não há aprovação nominal do Google nem validação de slideshow neste aceite.

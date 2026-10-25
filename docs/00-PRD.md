@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.13 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.14 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -341,15 +341,22 @@ Google Photos Picker API disponibilizada sem preço por requisição informado n
 - Usuário pode revogar acesso via Conta Google; aplicação oferece logout, limpeza de dados/cache e reset de seleção.
 - Localização e horário de captura podem ser incompletos; informações inferidas recebem indicação.
 - Avaliar política de Google Photos API User Data/Developer Policy para cache, retenção e visualização de conteúdo após sessão.
-- **[DECIDIDO — somente SPK-01]** Em 2026-10-25, o desenvolvedor aceitou o risco
+- **[DECIDIDO — ensaios SPK-01 a SPK-04]** Em 2026-10-25, o desenvolvedor aceitou e estendeu aos ensaios G3–G5 o risco
   residual de código temporário OAuth na URI registrada pelo sistema Fire OS,
-  com PKCE e código consumido. O aceite de logs deste ensaio abrange os logs
+  com PKCE e código consumido. O aceite de logs desses ensaios abrange os logs
   controlados pelo Memora; não autoriza registrar tokens, verifier ou códigos
   nesses logs, nem expor credenciais ao React/QR/artefatos versionados. Não é
   aceitação automática para MVP, persistência ou outras arquiteturas. Consultar
   a [evidência e limites](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2)
   antes de reutilizar essa decisão.
-- **[VALIDAR] Enquadramento do uso:** a [política Photos](https://developers.google.com/photos/support/api-policy), consultada em 2026-10-25, restringe substitutos do Google Fotos, incluindo galerias genéricas. Avaliar o uso específico do Memora antes de testar dados reais; não concluir permissão ou proibição do projeto apenas pela descrição de moldura digital.
+- **[DECIDIDO — recorte diagnóstico G3–G5]** O desenvolvedor autorizou recuperar
+  bytes e metadados de amostra escolhida por ele no Picker para teste privado.
+  O recorte é recebimento/exportação temporária e diagnóstico, sem galeria ou
+  slideshow de mídia pessoal. A política Photos contempla armazenamento/exportação;
+  isso justifica esse ensaio delimitado, não aprova o produto final. Consultar o
+  [protocolo G3](04-viabilidade-google-fotos.md#7-seleção-e-recuperação-diagnóstica-g3)
+  para retenção mínima, proteção e limpeza antes de operar a amostra.
+- **[VALIDAR] Enquadramento da apresentação final:** a [política Photos](https://developers.google.com/photos/support/api-policy), consultada em 2026-10-25, restringe substitutos do Google Fotos, incluindo galerias genéricas. Avaliar o uso específico antes de implementar/exibir a galeria com mídia real; ensaios diagnósticos limitados seguem o recorte acima. Não concluir permissão ou proibição do produto apenas pela descrição de moldura digital.
 
 ---
 
@@ -481,7 +488,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
 | R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
-| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação de enquadramento G1](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) e [condições de mídia após G2](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem liberação de dados reais |
+| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 para distinguir diagnóstico autorizado de apresentação final; dúvidas de produto exigem esclarecimento, [avaliação de enquadramento G1](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) e [condições de mídia após G2](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); diagnóstico limitado conforme §10 não encerra esse risco |
 
 Risco residual do ensaio SPK-01: código OAuth temporário observado em logs do
 sistema Fire OS. Tratamento e alcance da aceitação ficam exclusivamente na

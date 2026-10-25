@@ -75,6 +75,7 @@ android {
 }
 dependencies {
     implementation("androidx.webkit:webkit:1.12.1")
+    debugImplementation("com.google.zxing:core:3.5.3")
     testImplementation("junit:junit:4.13.2")
 }
 dependencyLocking { lockAllConfigurations() }
