@@ -74,6 +74,6 @@ Arquivos extras ou links simbólicos no pacote de entrega são recusados.
 
 Isso verifica consistência e proveniência registrada, não promete build
 reproduzível byte a byte ou atestação remota. A publicação, obtenção do anexo e
-a instalação real continuam em I5; a preservação no upgrade, em I6. Consulte a
+a instalação real foram validadas em I5; a preservação no upgrade, em I6. Consulte a
 [central](plans/01-primeira-versao-instalavel.md#5-central-de-progresso) para o
 estado e as evidências finais de cada etapa.

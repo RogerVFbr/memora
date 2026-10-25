@@ -1,9 +1,9 @@
 # Plano — primeira versão instalável e validação da entrega
 
-> Data: 2026-10-25 · Objetivo e recorte aprovados; I1 a I5 concluídas; I6 pendente.
+> Data: 2026-10-25 · Objetivo e recorte aprovados; seis etapas concluídas.
 > Aprovação: recomendações aceitas pelo desenvolvedor, com artefatos em `builds/`
 > na raiz do repositório e versionamento SemVer.
-> Estado do plano: aprovado para execução; I1 a I5 concluídas; I6 pendente.
+> Estado do plano: concluído; entrega e aceite operacional das seis etapas comprovados.
 
 ## 1. Objetivo e fontes de verdade
 
@@ -150,8 +150,9 @@ Esta seção é a fonte de verdade do progresso consolidado. Escopo detalhado,
 critérios de aceite e validações específicas ficam nas issues vinculadas; não
 manter uma segunda cópia integral desses textos no repositório.
 
-**Situação em 2026-10-25:** 5 de 6 etapas concluídas. I1 a I5 integradas e aceitas.
-I6 / #12 em andamento: incremento de versão em preparação; upgrade ainda pendente.
+**Situação em 2026-10-25:** 6 de 6 etapas concluídas e aceitas. As duas pré-releases
+foram publicadas após validação no alvo; atualização preservou as seis preferências.
+Nenhuma próxima etapa neste plano. Fora dele, retomar a Fase 0 do PRD antes do MVP.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -164,7 +165,7 @@ contador das seis etapas de implementação.
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Concluída | [#25](https://github.com/RogerVFbr/memora/pull/25) / [e8f21b4](https://github.com/RogerVFbr/memora/commit/e8f21b4427dcac7fd7022e337d6b3e93af2ad8eb) | Não se aplica | [Aceite de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv): controle/foco, configurações persistentes, reabertura, suspensão/retomada e flag real aprovados; limites na [issue #9](https://github.com/RogerVFbr/memora/issues/9) |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | Concluída | [#30](https://github.com/RogerVFbr/memora/pull/30) / [ff18814](https://github.com/RogerVFbr/memora/commit/ff188147383e0bb2d28fdfa816e6cb77ea1e6a61) | Não se aplica | Entrega assinada em `builds/0.1.0-alpha.1/`; verificação completa, corrupção e recusa de sobrescrita aprovadas; [evidências na issue #10](https://github.com/RogerVFbr/memora/issues/10) |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | Concluída | [#34](https://github.com/RogerVFbr/memora/pull/34) — registro de aceite | [v0.1.0-alpha.1](https://github.com/RogerVFbr/memora/releases/tag/v0.1.0-alpha.1) | Anexo baixado, primeira instalação, smoke e sessão de 10 minutos aprovados; [evidências e limites](https://github.com/RogerVFbr/memora/issues/11#issuecomment-6402727904); próxima etapa I6 |
-| I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | Em andamento | — | A produzir | Matriz não padrão registrada na alpha.1; preparando alpha.2; upgrade e aceite ainda pendentes |
+| I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | Concluída | [#35](https://github.com/RogerVFbr/memora/pull/35) / [652bda5](https://github.com/RogerVFbr/memora/commit/652bda5be0ac22b6a2408c3af77833b7a1149e62); aceite [#36](https://github.com/RogerVFbr/memora/pull/36) | [v0.1.0-alpha.2](https://github.com/RogerVFbr/memora/releases/tag/v0.1.0-alpha.2) | Anexo baixado e aplicado com `install -r`, sem limpeza; 6/6 preferências preservadas e smoke aprovado; [evidências e limites](https://github.com/RogerVFbr/memora/issues/12#issuecomment-6402811612) |
 
 ### Como manter o progresso
 
@@ -234,6 +235,14 @@ usadas em I3 não substituem o aceite da primeira identidade de release em I5.
   [resultados e limitações](https://github.com/RogerVFbr/memora/issues/11#issuecomment-6402727904).
   Registro integrado pelo [PR #34](https://github.com/RogerVFbr/memora/pull/34). Próxima etapa I6 / #12.
 
+- **2026-10-25 — I6 / #12:** [alpha.2](https://github.com/RogerVFbr/memora/releases/tag/v0.1.0-alpha.2)
+  gerada da fonte integrada pelo [PR #35](https://github.com/RogerVFbr/memora/pull/35),
+  obtida dos anexos e aplicada sobre alpha.1 sem desinstalar ou limpar dados.
+  Seis preferências preservadas, nova versão e smoke aprovados;
+  [resultados e limites](https://github.com/RogerVFbr/memora/issues/12#issuecomment-6402811612).
+  Aceite consolidado pelo [PR #36](https://github.com/RogerVFbr/memora/pull/36).
+  Incremento concluído; nenhuma etapa seguinte neste plano.
+
 ## 6. Pipeline de publicação e validação
 
 Para cada entrega, construir localmente a partir de um commit integrado, com
@@ -288,13 +297,13 @@ declarar concluído o SPK-06 sem suas evidências específicas.
 
 Objetivo, recorte, temas, entrada, publicação, prova de atualização, diretório de
 artefatos e uso de SemVer estão aprovados. O host e o build debug foram preparados na I1. Consulte a
-[central de progresso](#5-central-de-progresso) para o estado atual das seis etapas.
+[central de progresso](#5-central-de-progresso) para o estado final das seis etapas.
 
 Toolchain, identidade de pacote, apresentação compartilhada, contrato nativo,
 persistência e evidências de plataforma estão no
-[registro técnico](../02-host-android-e-baseline.md#1-host-e-fronteira). Pendências
-na etapa seguinte: publicação e aceite da atualização preservando preferências
-(I6). Para empacotar e recuperar a assinatura, consultar
+[registro técnico](../02-host-android-e-baseline.md#1-host-e-fronteira). Não há pendências
+impeditivas neste incremento; os limites das validações estão nas issues da central.
+Para empacotar outra versão ou recuperar a assinatura, consultar
 [entrega Android](../03-entrega-android.md#1-configuração-e-fronteiras).
 
 
