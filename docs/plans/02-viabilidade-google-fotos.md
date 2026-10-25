@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; etapas não iniciadas.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1 bloqueada após avaliação inicial.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
@@ -80,13 +80,14 @@ aplicar o AGENTS.md; a aprovação do plano não amplia a autonomia do Memora.
 A preparação documental é atendida pela [issue #41](https://github.com/RogerVFbr/memora/issues/41)
 e não integra o contador das etapas investigativas.
 
-**Situação em 2026-10-25:** 0 de 6 etapas concluídas. Pesquisa documental inicial
-realizada; implementação e testes Google não iniciados. Após a integração do
-planejamento, primeira etapa elegível G1.
+**Situação em 2026-10-25:** 0 de 6 etapas concluídas. G1 investigada, com
+impedimentos de enquadramento e arquitetura ainda abertos;
+implementação e testes Google não iniciados. Retomar G1 após esclarecimento
+oficial e decisão específica de arquitetura; G2 não liberada.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
-| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | A fazer | — | Depende da integração documental do planejamento |
+| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49) | [Avaliação e ação de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | A fazer | — | Depende de G1 e pré-requisitos externos |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
@@ -115,6 +116,11 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G1 / #42: avaliação documental e inventário em leitura realizados;
+  [resultado e condições de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata).
+  Sem conformidade ou fluxo operacional comprovados; etapa bloqueada, contador
+  mantido em 0/6. G2 não iniciada. Registro pelo [PR #49](https://github.com/RogerVFbr/memora/pull/49), vinculado na própria issue.
 
 - 2026-10-25: pesquisa das fontes oficiais e preparação do rascunho. Nenhuma
   configuração externa, implementação ou validação Google executada.
