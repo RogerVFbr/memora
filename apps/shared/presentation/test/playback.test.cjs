@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { initialPlayback, playbackReducer, isRunning, keepAwake } = require('../../../.local/test-presentation/playback.js');
+const { initialPlayback, playbackReducer, isRunning, keepAwake } = require('../../../../.local/test-presentation/playback.js');
 
 test('suspension cancels playback intent and resume never autoplays', () => {
   let state = playbackReducer(initialPlayback(true), {type:'command',command:'play'});

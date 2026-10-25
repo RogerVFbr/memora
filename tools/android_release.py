@@ -243,8 +243,8 @@ def build(signing_config=DEFAULT_CONFIG):
     tools = tools_metadata()
     env = os.environ.copy()
     env.update(MEMORA_KEYSTORE_FILE=config['keystore'], MEMORA_KEY_ALIAS=config['alias'], MEMORA_SIGNING_PASSWORD=secret)
-    run(['npm', 'ci'])
-    run(['npm', 'run', 'test:presentation'])
+    run(['npm', '--prefix', 'apps', 'ci'])
+    run(['npm', '--prefix', 'apps', 'run', 'test:presentation'])
     run([ROOT / 'apps/android/gradlew', '-p', ROOT / 'apps/android', '--no-daemon', 'clean',
          'assembleRelease', 'testReleaseUnitTest', 'lintRelease'], env=env, secret=secret)
     if git('status', '--porcelain') or git('rev-parse', 'HEAD') != commit:

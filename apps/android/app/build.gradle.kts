@@ -67,11 +67,11 @@ dependencyLocking { lockAllConfigurations() }
 androidComponents.onVariants { variant ->
     val buildTv = tasks.register<BuildTvAssets>("buildTv${variant.name.replaceFirstChar { it.uppercase() }}") {
         val checkout = rootDir.parentFile.parentFile
-        workingDir(checkout)
+        workingDir(checkout.resolve("apps"))
         outputDirectory.set(layout.buildDirectory.dir("generated/tvAssets/${variant.name}"))
-        inputs.files(fileTree(checkout.resolve("packages/presentation")) { exclude("node_modules/**") })
+        inputs.files(fileTree(checkout.resolve("apps/shared/presentation")) { exclude("node_modules/**") })
         inputs.files(fileTree(checkout.resolve("apps/tv")) { exclude("node_modules/**", "dist/**") })
-        inputs.files(checkout.resolve("package.json"), checkout.resolve("package-lock.json"), checkout.resolve("android-release.properties"))
+        inputs.files(checkout.resolve("apps/package.json"), checkout.resolve("apps/package-lock.json"), checkout.resolve("android-release.properties"))
         val version = variant.outputs.single().versionName.get()
         inputs.property("appVersion", version)
         environment("VITE_APP_VERSION", version)

@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { createDefaults, loadPreferences, savePreferences } = require('../../../.local/test-presentation/model.js');
+const { createDefaults, loadPreferences, savePreferences } = require('../../../../.local/test-presentation/model.js');
 
 const catalog={scenes:[],collections:[{id:'one',name:'One',description:'Demo',cover:{id:'p',src:'p.jpg',alt:'photo',width:10,height:10}}]};
 const memory=new Map();
