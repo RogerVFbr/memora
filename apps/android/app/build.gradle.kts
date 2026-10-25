@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 import java.util.Properties
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
@@ -14,6 +15,19 @@ plugins {
 val releaseVersion = Properties().apply {
     rootDir.parentFile.parentFile.resolve("android-release.properties").inputStream().use { load(it) }
 }
+
+// Only the public Android client ID is embedded, and only in the debug variant.
+val oauthFile = rootDir.parentFile.parentFile.resolve(".local/google/oauth-android-dev.json")
+val oauthClientId = if (oauthFile.isFile) {
+    val root = JsonSlurper().parse(oauthFile) as Map<*, *>
+    val client = root["installed"] as? Map<*, *>
+    require(client != null && !client.containsKey("client_secret")) { "Expected a public Android OAuth client" }
+    (client["client_id"] as? String).orEmpty().also {
+        require(it.matches(Regex("[a-zA-Z0-9-]+\\.apps\\.googleusercontent\\.com"))) { "Invalid Android OAuth client ID" }
+    }
+} else ""
+val oauthScheme = if (oauthClientId.isEmpty()) "br.com.memora.dev.unconfigured" else
+    "com.googleusercontent.apps." + oauthClientId.removeSuffix(".apps.googleusercontent.com")
 
 android {
     namespace = "br.com.memora"
@@ -38,6 +52,8 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".dev"
+            resValue("string", "oauth_spike_client_id", oauthClientId)
+            manifestPlaceholders["oauthSpikeScheme"] = oauthScheme
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Memora Dev")
         }

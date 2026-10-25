@@ -457,3 +457,47 @@ Google do slideshow ou como autorização de acesso permanente.
 G1 atende desenho/inventário e permite preparar SPK-01 nesse limite. G2 só recebe
 aceite após autorização efetiva e operação mínima no Fire TV, testes negativos e
 verificação de privacidade. Não declarar positivo pelo JSON ou pelo build.
+
+
+## 6. Ensaio OAuth nativo de desenvolvimento
+
+Implementação de SPK-01 / [#43](https://github.com/RogerVFbr/memora/issues/43),
+conforme desenho da [G1](#54-g1--candidato-android-preparado-para-spk-01).
+Comandos executáveis têm fonte no [README](../README.md#ensaio-oauth-picker-de-desenvolvimento).
+
+`OAuthSpikeActivity` e `OAuthTransaction` existem somente em `src/debug`. A tela
+nativa é aberta explicitamente por ADB, sem trocar o launcher demonstrativo.
+Gradle lê a configuração privada e deriva esquema de retorno do client ID;
+incorpora somente o ID público no debug. Exportação confidencial é rejeitada;
+sem arquivo local, a tela informa falta de configuração. A Activity fixa o
+navegador Amazon verificado no alvo para evitar handlers de players genéricos.
+Não há ponte com React ou relaxamento da política de rede do WebView.
+
+PKCE S256 e `state` aleatórios por transação; callback exige esquema/caminho exatos,
+sem authority/fragmento ou parâmetros duplicados, estado correspondente e uso único.
+Tentativa expira em cinco minutos (limite do ensaio, não validade Google);
+cancelamento e perda de processo não restauram verifier. A UI usa FLAG_SECURE e
+não mostra códigos/tokens. HTTP nativo usa HTTPS fixo, sem redirects, timeouts de
+15 segundos e respostas limitadas; não há polling ou retry automático. Tokens
+existem só na memória da tarefa, sem refresh/persistência nesta prova.
+
+Após código aceito, troca token e cria/remove sessão vazia automaticamente, sem
+abrir Picker nem ler itens. O sucesso requer ambas as respostas de sessão; se
+limpeza falhar ou rede interromper após criação, permanece pendência: não chamar
+essa tentativa de aceite completo. Estado do ensaio e mensagens são locais e não
+persistentes. Cancelamento invalida resultado; requisição já em voo pode terminar
+até o timeout e a limpeza da sessão criada é trabalho necessário. O aplicativo
+não registra corpos/URLs/códigos em logs; navegador e logs do sistema Android
+exigem cuidado e não são exportados automaticamente.
+
+Verificações locais executadas: build debug, sete testes (cinco de OAuth e dois
+existentes de origem local), lint debug e geração de manifesto/recursos release.
+Inspeção dos manifestos confirmou Activity/rede só em debug, ausentes em release.
+Testes cobrem PKCE, associação, replay, origem errada, duplicatas, cancelamento,
+negativa e expiração. Não equivalem à prova de autorização do Google.
+
+Hardware: diagnóstico desta retomada retornou parcial, somente foreground
+indisponível em repouso; identidade/conectividade autorizadas. Instalação `-r`
+concluiu e a abertura da tela foi confirmada pelo proprietário após despertar a
+TV. Não houve limpeza de preferências, instalação de outro pacote ou mudança
+global. A autorização efetiva ainda está em validação; G3 não está liberada.
