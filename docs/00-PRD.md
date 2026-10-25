@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.6 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.7 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -334,6 +334,7 @@ Google Photos Picker API disponibilizada sem preço por requisição informado n
 - Usuário pode revogar acesso via Conta Google; aplicação oferece logout, limpeza de dados/cache e reset de seleção.
 - Localização e horário de captura podem ser incompletos; informações inferidas recebem indicação.
 - Avaliar política de Google Photos API User Data/Developer Policy para cache, retenção e visualização de conteúdo após sessão.
+- **[VALIDAR] Enquadramento do uso:** a [política Photos](https://developers.google.com/photos/support/api-policy), consultada em 2026-10-25, restringe substitutos do Google Fotos, incluindo galerias genéricas. Avaliar o uso específico do Memora antes de testar dados reais; não concluir permissão ou proibição do projeto apenas pela descrição de moldura digital.
 
 ---
 
@@ -361,6 +362,11 @@ O incremento demonstrativo foi concluído. Consultar a
 antes de usar seus resultados: comprova o ciclo de entrega e atualização no
 recorte local, com limites explícitos. Fornece evidência parcial de plataforma;
 não encerra SPK-06 nem os gates Google e não autoriza iniciar o MVP integrado.
+
+O [plano de viabilidade Google](plans/02-viabilidade-google-fotos.md) foi
+aprovado para execução; consultar sua central para andamento e evidências.
+Seu [registro de fontes e evidências](04-viabilidade-google-fotos.md) distingue
+pesquisa documental de testes ainda não realizados.
 
 **SPK-01 OAuth:** provar um fluxo de autorização legítimo que funcione com o escopo Picker em Fire TV; separar autenticação de `pickerUri`; documentar se requer backend.
 
@@ -460,6 +466,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
 | R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
+| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, sem presumir conformidade pelo funcionamento técnico |
 
 ### Perguntas de produto ainda abertas (não bloqueiam redigir este PRD)
 

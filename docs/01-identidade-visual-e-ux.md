@@ -1,8 +1,9 @@
 # Memora — identidade visual e laboratório de experiência
 
-> Data: 2026-10-25 · Estado: conceito em avaliação, protótipo local implementado.
-> A aprovação desta etapa autoriza explorar e testar a experiência no navegador;
-> não aprova uma identidade definitiva nem a implementação da UX final no APK.
+> Data: 2026-10-25 · Estado: protótipo aprovado; identidade final em aberto.
+> Este documento registra a exploração inicial no navegador. A evolução para a
+> demonstração instalável tem recorte e aceite no plano referenciado abaixo;
+> isso não aprova a UX final de acesso Google nem encerra os gates do PRD.
 
 ## 1. Papel deste documento
 
