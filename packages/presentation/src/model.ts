@@ -18,6 +18,7 @@ export function loadPreferences(storageKey: string, catalog: Catalog): Preferenc
     const value = JSON.parse(localStorage.getItem(storageKey) || 'null');
     if (!value || value.version !== 1) return { ...defaults };
     const p = value.preferences;
+    if (!p || typeof p !== 'object' || Array.isArray(p)) return defaults;
     return {
       theme: p.theme === 'gallery' ? 'gallery' : 'cinema',
       fit: p.fit === 'cover' ? 'cover' : 'contain',
@@ -29,6 +30,16 @@ export function loadPreferences(storageKey: string, catalog: Catalog): Preferenc
   } catch { return { ...defaults }; }
 }
 export function savePreferences(preferences: Preferences, storageKey: string): boolean {
-  try { localStorage.setItem(storageKey, JSON.stringify({ version: 1, preferences })); return true; }
+  try {
+    const previous = localStorage.getItem(storageKey);
+    if (previous) {
+      try {
+        const parsed = JSON.parse(previous);
+        if (parsed && typeof parsed.version === 'number' && parsed.version > 1) return false;
+      } catch { /* Malformed data may be replaced by validated defaults. */ }
+    }
+    localStorage.setItem(storageKey, JSON.stringify({ version: 1, preferences }));
+    return true;
+  }
   catch { return false; }
 }

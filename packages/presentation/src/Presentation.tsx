@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Brand, Icon } from './Icons';
+import { Choice } from './Choice';
 import type { Catalog, Photo, Preferences } from './model';
 import type { PresentationController } from './usePresentation';
 
@@ -9,8 +10,8 @@ function PhotoSlot({ photo, fit }: { photo: Photo; fit: Preferences['fit'] }) {
   return <div className="photo-slot">{failed ? <span className="asset-error">Imagem indisponível</span> : <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} style={{ objectFit: fit }} draggable={false} onError={() => setFailed(true)} />}</div>;
 }
 
-export function Presentation({ state, catalog, version, unavailable }: {
-  state: PresentationController; catalog: Catalog; version?: string; unavailable?: ReactNode;
+export function Presentation({ state, catalog, version, unavailable, remote = false }: {
+  state: PresentationController; catalog: Catalog; version?: string; unavailable?: ReactNode; remote?: boolean;
 }) {
   const { scenes, collections } = catalog;
   const { preferences, update, playing, menu, setMenu, panel, setIndex, stage, dock, drawer,
@@ -42,9 +43,9 @@ export function Presentation({ state, catalog, version, unavailable }: {
           {panel ? <div className="drawer-scrim"><aside className="drawer" ref={drawer} role="dialog" aria-modal="true" aria-labelledby="drawer-title">
             <header><div><p className="eyebrow">DO SEU JEITO</p><h2 id="drawer-title">{panel === 'collections' ? 'Suas coleções' : 'Ajustes da apresentação'}</h2></div><button className="icon-button" aria-label="Fechar painel" onClick={closePanel}><Icon name="close" /></button></header>
             {panel === 'collections' ? <><p className="drawer-description">Escolha o que faz parte deste momento.</p><div className="collection-list">{collections.map(collection => <button key={collection.id} className="collection-card" aria-pressed={preferences.activeCollections.includes(collection.id)} onClick={() => { update('activeCollections', preferences.activeCollections.includes(collection.id) ? preferences.activeCollections.filter(id => id !== collection.id) : [...preferences.activeCollections, collection.id]); setIndex(0); }}><img src={collection.cover.src} alt="" /><span><strong>{collection.name}</strong><small>{collection.description}</small><small>Seleção local · demonstração</small></span><span className="collection-check">{preferences.activeCollections.includes(collection.id) ? <Icon name="check" /> : null}</span></button>)}</div><p className="drawer-note">Ativar uma coleção inclui suas cenas na apresentação. As coleções são demonstrativas, sem sincronização com álbuns do Google.</p></> : <div className="settings-list">
-              <label className="setting-row"><span><strong>Aparência</strong><small>Direção visual da apresentação</small></span><select aria-label="Aparência" value={preferences.theme} onChange={e => update('theme', e.target.value as Preferences['theme'])}><option value="cinema">Cinema acolhedor</option><option value="gallery">Galeria neutra</option></select></label>
-              <label className="setting-row"><span><strong>Tempo por cena</strong><small>Um ritmo para suas memórias</small></span><select value={preferences.duration} onChange={e => update('duration', Number(e.target.value))}><option value={6}>6 segundos</option><option value={12}>12 segundos</option><option value={20}>20 segundos</option></select></label>
-              <label className="setting-row"><span><strong>Enquadramento</strong><small>{preferences.fit === 'contain' ? 'Preserva a fotografia inteira' : 'Preenche o espaço com recorte'}</small></span><select value={preferences.fit} onChange={e => update('fit', e.target.value as Preferences['fit'])}><option value="contain">Preservar</option><option value="cover">Preencher</option></select></label>
+              <label className="setting-row"><span><strong>Aparência</strong><small>Direção visual da apresentação</small></span><Choice label="Aparência" remote={remote} value={preferences.theme} onChange={value => update('theme', value)} options={[{value:'cinema',label:'Cinema acolhedor'},{value:'gallery',label:'Galeria neutra'}]} /></label>
+              <label className="setting-row"><span><strong>Tempo por cena</strong><small>Um ritmo para suas memórias</small></span><Choice label="Tempo por cena" remote={remote} value={preferences.duration} onChange={value => update('duration', value)} options={[6,12,20].map(value => ({value,label:`${value} segundos`}))} /></label>
+              <label className="setting-row"><span><strong>Enquadramento</strong><small>{preferences.fit === 'contain' ? 'Preserva a fotografia inteira' : 'Preenche o espaço com recorte'}</small></span><Choice label="Enquadramento" remote={remote} value={preferences.fit} onChange={value => update('fit', value)} options={[{value:'contain',label:'Preservar'},{value:'cover',label:'Preencher'}]} /></label>
               <button className="setting-row toggle-row" role="switch" aria-checked={preferences.metadata} onClick={() => update('metadata', !preferences.metadata)}><span><strong>Informações na tela</strong><small>Título e contexto da imagem</small></span><span className="switch"><i /></span></button>
               <button className="setting-row toggle-row" role="switch" aria-checked={preferences.motion} onClick={() => update('motion', !preferences.motion)}><span><strong>Movimento suave</strong><small>Respeita a preferência de movimento reduzido</small></span><span className="switch"><i /></span></button>
               <p className="drawer-note">Preferências demonstrativas salvas neste dispositivo.</p>

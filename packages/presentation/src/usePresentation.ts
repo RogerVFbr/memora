@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+/// <reference path="./host.d.ts" />
+import { useEffect, useReducer, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { initialPlayback, playbackReducer, isRunning as playbackIsRunning, keepAwake } from './playback';
 import { createDefaults, loadPreferences, savePreferences } from './model';
 import type { Catalog, Panel, Preferences, Scenario } from './model';
 
@@ -7,13 +9,15 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
   const { scenes } = catalog;
   const [preferences, setPreferences] = useState(() => loadPreferences(storageKey, catalog));
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [menu, setMenu] = useState(true);
-  const [panel, setPanel] = useState<Panel>(null);
+  const [playback, dispatch] = useReducer(playbackReducer, !document.hidden, initialPlayback);
+  const { playing, menu, panel, visible } = playback;
+  function setPlaying(value: boolean | 'toggle') { dispatch({ type: 'playing', value }); }
+  function setMenu(value: boolean | 'toggle') { dispatch({ type: 'menu', value }); }
+  function setPanel(value: Panel) { dispatch({ type: 'panel', value }); }
   const [scenario, setScenario] = useState<Scenario>('ready');
   const [storageAvailable, setStorageAvailable] = useState(true);
   const [fullscreenError, setFullscreenError] = useState('');
-  const [visible, setVisible] = useState(!document.hidden);
+  const nativeVisible = useRef(true);
   const stage = useRef<HTMLDivElement>(null);
   const dock = useRef<HTMLDivElement>(null);
   const drawer = useRef<HTMLElement>(null);
@@ -23,7 +27,8 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
   const activeScenes = scenes.filter(s => preferences.activeCollections.includes(s.collectionId));
   const scene = activeScenes[index % Math.max(activeScenes.length, 1)] || scenes[0];
   const effectiveScenario = scenario === 'ready' && activeScenes.length === 0 ? 'empty' : scenario;
-  const isRunning = playing && !menu && !panel && visible && effectiveScenario === 'ready';
+  const isRunning = playbackIsRunning(playback, effectiveScenario === 'ready');
+  const shouldKeepAwake = keepAwake(playback, effectiveScenario === 'ready');
 
   function update<K extends keyof Preferences>(key: K, value: Preferences[K]) {
     setPreferences(p => ({ ...p, [key]: value }));
@@ -41,7 +46,7 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
     setPanel(null);
   }
   function closeMenu() { setMenu(false); stage.current?.focus(); }
-  function start() { setPlaying(p => !p); closeMenu(); }
+  function start() { setPlaying('toggle'); closeMenu(); }
   function reset() {
     setPreferences(createDefaults(catalog)); setScenario('ready'); setIndex(0);
     setPlaying(false); setMenu(true); setPanel(null); setFullscreenError('');
@@ -56,10 +61,36 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
 
   useEffect(() => { setStorageAvailable(savePreferences(preferences, storageKey)); }, [preferences, storageKey]);
   useEffect(() => {
-    const onVisibility = () => setVisible(!document.hidden);
+    const onVisibility = () => dispatch({ type: 'visibility', visible: nativeVisible.current && !document.hidden });
+    const onNativeVisibility = (event: Event) => {
+      const value: unknown = (event as CustomEvent).detail;
+      if (typeof value !== 'boolean') return;
+      nativeVisible.current = value;
+      onVisibility();
+    };
     document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
+    window.addEventListener('memora:visibility', onNativeVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('memora:visibility', onNativeVisibility);
+    };
   }, []);
+  useEffect(() => {
+    window.MemoraHost?.postMessage(shouldKeepAwake ? 'awake:1' : 'awake:0');
+    return () => window.MemoraHost?.postMessage('awake:0');
+  }, [shouldKeepAwake]);
+  useEffect(() => {
+    const onCommand = (event: Event) => {
+      const command: unknown = (event as CustomEvent).detail;
+      if (typeof command !== 'string' || !['menu', 'back', 'toggle', 'play', 'pause'].includes(command)) return;
+      if (command === 'back' && panel) restoreFocus.current = true;
+      if (['play', 'pause', 'toggle'].includes(command) && effectiveScenario !== 'ready') return;
+      dispatch({ type: 'command', command });
+      if (['play', 'pause', 'toggle'].includes(command) || (command === 'back' && !panel)) stage.current?.focus();
+    };
+    window.addEventListener('memora:command', onCommand);
+    return () => window.removeEventListener('memora:command', onCommand);
+  }, [panel, effectiveScenario]);
   useEffect(() => {
     if (!isRunning) return;
     const id = window.setTimeout(() => setIndex(i => (i + 1) % activeScenes.length), preferences.duration * 1000);
@@ -77,7 +108,7 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
       }
     }
     else if (menu && effectiveScenario === 'ready') dock.current?.querySelector<HTMLButtonElement>('[data-primary]')?.focus();
-  }, [panel, menu, effectiveScenario]);
+  }, [panel, menu, effectiveScenario, visible]);
   useEffect(() => {
     if (effectiveScenario !== 'ready' && !panel) stage.current?.focus();
   }, [effectiveScenario, panel]);
@@ -91,11 +122,12 @@ export function usePresentation(catalog: Catalog, storageKey: string) {
       return;
     }
     if (key === 'Enter' && element === stage.current && effectiveScenario === 'ready') {
-      event.preventDefault(); setMenu(m => !m); return;
+      event.preventDefault(); setMenu('toggle'); return;
     }
     if (key === ' ' && !panel && (element === stage.current)) {
-      event.preventDefault(); setPlaying(p => !p); return;
+      event.preventDefault(); setPlaying('toggle'); return;
     }
+    if (event.defaultPrevented) return;
     if (key === 'Tab' && panel) {
       const elements = Array.from(drawer.current?.querySelectorAll<HTMLElement>('button, select, input') || []);
       const current = elements.indexOf(element);

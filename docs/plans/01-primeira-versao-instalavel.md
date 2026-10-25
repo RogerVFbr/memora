@@ -151,7 +151,7 @@ critérios de aceite e validações específicas ficam nas issues vinculadas; n�
 manter uma segunda cópia integral desses textos no repositório.
 
 **Situação em 2026-10-25:** 2 de 6 etapas concluídas. I1 e I2 integradas e aceitas.
-Próxima etapa: I3 / #9.
+I3 / #9 em validação; aceite de hardware pendente.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -161,7 +161,7 @@ contador das seis etapas de implementação.
 |---|---|---|---|---|---|---|
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware permanece em I3 |
-| I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | A fazer | — | Não se aplica | Aceite exige controle físico e lifecycle no WebView real |
+| I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Em validação | — | Não se aplica | Código e testes locais preparados; [aceite de hardware pendente](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv), começando por instalação autorizada |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
 | I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | A fazer | — | A produzir | Exige upgrade real e matriz de preferências antes/depois |
