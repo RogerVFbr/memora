@@ -30,8 +30,8 @@ configuração/lockfile, e injeta o `versionName` efetivo no build Vite. A API d
 fontes geradas do AGP determina o diretório final; a linha de execução resolve
 esse caminho no início da tarefa. Não há cópia manual nem dependência de Vite
 em execução. Ambos os frontends usam `base: './'` e target `chrome150`, escolhido
-a partir da consulta de WebView abaixo; compatibilidade no aparelho continua
-pendente de observação. O CSS nativo foi preservado, sem Tailwind ou polyfills
+a partir da consulta de WebView abaixo; os comportamentos observados no aparelho
+estão nas [evidências de I3](#5-controle-persistência-e-lifecycle-da-tv). O CSS nativo foi preservado, sem Tailwind ou polyfills
 adicionais. A entrada de TV ocupa o viewport, inclui o seletor de tema em Ajustes
 e inicia pausada com controles visíveis. A UI mostra a versão injetada no APK.
 
@@ -55,8 +55,9 @@ ligada. `WebView.onPause()` sozinho não comprova suspensão dos timers JavaScri
 
 O manifesto declara launcher Android e Leanback, ausência de exigência de toque,
 orientação landscape, banner e ícone locais, backup desabilitado e Activity de
-entrada exportada. Launcher, área útil/tela inteira, controle físico e efeitos
-visuais ainda exigem teste real; não foram instalados nem iniciados APKs nesta etapa.
+entrada exportada. A área de renderização e a operação do host foram observadas
+em I3; a descoberta/abertura da identidade de release pelo launcher continua
+no smoke de I5.
 
 ## 2. Toolchain
 
@@ -82,7 +83,8 @@ e [Gradle 8.11.1](https://docs.gradle.org/8.11.1/release-notes.html).
 
 ## 3. Baseline em leitura
 
-A skill `firestick-check` confirmou conexão ADB autorizada e identidade esperada
+Na consulta inicial de I1, a skill `firestick-check` confirmou conexão ADB
+autorizada e identidade esperada
 Amazon / AFTKRT / karat. Resultado **parcial**: o dispositivo estava em repouso,
 e a consulta não retornou Activity em primeiro plano. Nenhuma ação foi executada
 para despertar, abrir aplicativo ou alterar o aparelho. O diagnóstico bruto
@@ -97,8 +99,9 @@ permanece em arquivo temporário privado fora do Git.
 | Viewport WebView, observado em I3 via DevTools em leitura | 960 × 540 CSS; devicePixelRatio 2 |
 | Container queries CSS, observado em I3 | `CSS.supports('container-type', 'inline-size')` verdadeiro |
 
-Esses dados identificam a plataforma consultada; não comprovam resolução do DOM,
-saída HDMI 4K, suporte a efeitos CSS, FPS ou consumo de memória da aplicação.
+Os dados caracterizam a plataforma e a renderização observadas; não comprovam
+saída HDMI 4K, compatibilidade de todo efeito CSS, FPS ou consumo combinado de
+memória nativa/renderer.
 O pacote WebView pode ser atualizado pelo sistema: repetir a consulta na validação
 real. A ausência de foreground da consulta inicial I1 foi superada em I3 após
 a abertura autorizada e o despertar manual pelo desenvolvedor: o diagnóstico
@@ -112,8 +115,9 @@ Build debug, dois testes da política de navegação e lint foram aprovados.
 A inspeção com `aapt dump badging` confirmou pacote de desenvolvimento, SDKs,
 launcher e Leanback; `unzip -l` confirmou HTML/CSS no APK; `apksigner verify
 --verbose` confirmou assinatura debug válida (v2). Resultados detalhados e
-comandos executados ficam na issue e no PR de I1. Validação em hardware limita-se às
-consultas acima: não há aceite de instalação, launcher, D-pad ou lifecycle.
+comandos executados ficam na issue e no PR de I1. Naquela entrega, a validação
+em hardware limitou-se às consultas em leitura; as evidências operacionais
+posteriores estão na seção de I3 abaixo.
 
 A I2 foi verificada também com `npm ci`, builds dos dois frontends e smoke
 Playwright do laboratório e dos arquivos estáticos extraídos do APK. Foram

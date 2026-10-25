@@ -160,7 +160,7 @@ contador das seis etapas de implementação.
 | Etapa | Issue de implementação | Depende de | Status | PR / commit integrado | Release | Evidências e pendências |
 |---|---|---|---|---|---|---|
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
-| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware permanece em I3 |
+| I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware registrado em I3 |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Concluída | [#25](https://github.com/RogerVFbr/memora/pull/25) / [e8f21b4](https://github.com/RogerVFbr/memora/commit/e8f21b4427dcac7fd7022e337d6b3e93af2ad8eb) | Não se aplica | [Aceite de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv): controle/foco, configurações persistentes, reabertura, suspensão/retomada e flag real aprovados; limites na [issue #9](https://github.com/RogerVFbr/memora/issues/9) |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
@@ -207,7 +207,8 @@ usadas em I3 não substituem o aceite da primeira identidade de release em I5.
 - **2026-10-25 — I1 / #7:** host Android integrado pelo [PR #21](https://github.com/RogerVFbr/memora/pull/21),
   build debug e verificações locais aprovados. [Registro de aceite e limitações](https://github.com/RogerVFbr/memora/issues/7#issuecomment-6401346065);
   [baseline técnico](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial,
-  com repetição de foreground/renderização pendente para a validação real em I3.
+  com repetição de foreground/renderização então pendente e posteriormente
+  registrada no aceite I3.
   Sem release ou instalação nesta etapa. Próxima etapa I2 / #8 não iniciada.
 
 - **2026-10-25 — I2 / #8:** apresentação compartilhada e frontend TV integrados pelo
@@ -277,12 +278,12 @@ Objetivo, recorte, temas, entrada, publicação, prova de atualização, diretó
 artefatos e uso de SemVer estão aprovados. O host e o build debug foram preparados na I1. Consulte a
 [central de progresso](#5-central-de-progresso) para o estado atual das seis etapas.
 
-Toolchain, identidade de pacote e consultas de plataforma da I1 estão no
-[registro técnico](../02-host-android-e-baseline.md#2-toolchain). Pendências a resolver
-nas etapas seguintes: validação do WebView com Activity visível, contrato mínimo
-nativo, localização da persistência, custódia da chave de release,
-duração do ensaio e validação da apresentação compartilhada no hardware. São decisões técnicas ou
-evidências da execução; não bloqueiam este registro do plano.
+Toolchain, identidade de pacote, apresentação compartilhada, contrato nativo,
+persistência e evidências de plataforma estão no
+[registro técnico](../02-host-android-e-baseline.md#1-host-e-fronteira). Pendências
+nas etapas seguintes: custódia da chave de release, comandos de entrega,
+duração do ensaio contínuo, publicação e aceite das duas identidades de release.
+
 
 Aprovar este plano não equivale à comprovação dos gates Google. Antes de ampliar
 o acervo demonstrativo para conteúdo real, retomar a
