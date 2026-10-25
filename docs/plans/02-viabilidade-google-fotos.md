@@ -99,7 +99,7 @@ ocorrerem; G6 aguarda evidências suficientes.
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55), [PR #56](https://github.com/RogerVFbr/memora/pull/56) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | Concluída | [PR #57](https://github.com/RogerVFbr/memora/pull/57) | [Aceite operacional e âncoras temporais](../04-viabilidade-google-fotos.md#73-aceite-operacional-da-g3) |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58) | [Matriz e condição de retomada](../04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4); fronteiras naturais ainda pendentes |
-| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Concluída | [PR #60](https://github.com/RogerVFbr/memora/pull/60), [PR #61](https://github.com/RogerVFbr/memora/pull/61) | [Aceite investigativo, limites e limpeza](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) |
+| G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Concluída | [PR #60](https://github.com/RogerVFbr/memora/pull/60), [PR #61](https://github.com/RogerVFbr/memora/pull/61), [PR #62](https://github.com/RogerVFbr/memora/pull/62) | [Aceite investigativo, limites e limpeza](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
 
 ### Manutenção e retomada
