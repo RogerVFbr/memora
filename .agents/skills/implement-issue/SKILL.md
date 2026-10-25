@@ -69,6 +69,11 @@ use o ponto de base da issue após os commits; não apresente diff vazio como
 revisão de alterações ainda não commitadas. Esta skill não depende de `tdd`,
 `code-review`, ferramentas de delegação ou outra skill de implementação.
 
+Antes do merge do PR que encerra a issue, cumpra o
+[registro de desvios e observações na própria issue](../../../AGENTS.md#registro-na-issue-antes-do-merge)
+e confira se os comentários relevantes foram efetivamente publicados e estão
+atualizados. Não deixe esse registro somente no PR ou para depois do merge.
+
 Use a [descrição obrigatória de PR](../../../AGENTS.md#descrição-obrigatória-dos-pull-requests)
 e verifique o destino e o commit final antes de integrar. Conclua o merge quando
 a revisão e as verificações permitirem, sem pedir novamente uma autorização já
