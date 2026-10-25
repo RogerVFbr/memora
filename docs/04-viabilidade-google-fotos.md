@@ -393,5 +393,24 @@ projeto/API/consentimento e verificar o candidato Android com retorno próprio,
 resolvendo sua documentação contraditória. Só depois escolher cliente e autorizar
 a prova operacional de G2 conforme o gate existente. Nenhum prazo/frequência de
 reseleção foi aceito; sessões e expiração continuam sendo ensaios G3/G4.
-Esta entrega registra direção e preparação; não comprova OAuth no Fire TV,
+O registro de direção não comprova OAuth no Fire TV,
 não cria código/infraestrutura e não encerra #42.
+
+
+#### Preparação Cloud executada
+
+Ainda em 2026-10-25, após autenticação local feita pelo proprietário, Google Cloud
+CLI 590.0.1 instalada via Homebrew foi usada para criar um projeto exclusivo de
+teste, com nome visível **Memora Testes**, e habilitar Photos Picker API.
+`projects describe` retornou `ACTIVE`; `services list --enabled`, filtrado para
+`photospicker.googleapis.com`, confirmou o serviço habilitado. A configuração
+local da CLI chama-se `memora`; identificadores de projeto/conta e credenciais
+não entram no registro versionado. Não houve vinculação de faturamento ou deploy.
+
+O login da CLI autoriza administrar Cloud; não é a autorização Picker do usuário
+no aplicativo. Consentimento, usuário de teste, declaração do escopo e cliente
+OAuth ainda não foram configurados/verificados. Próxima ação: concluir Branding,
+Audience (externo em teste) e Data Access conforme o roteiro acima, antes de criar
+o cliente. Não há fluxo suportado da CLI confirmado nesta etapa para automatizar
+essa configuração de Google Auth Platform; não usar comandos de IAP como substituto.
+Sem sessão Picker criada, mídia acessada ou teste no Fire Stick.
