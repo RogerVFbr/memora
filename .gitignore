@@ -1,0 +1,10 @@
+# Configuração e diagnósticos privados deste computador
+/.local/
+.env
+.env.*
+!.env.example
+adbkey
+adbkey.pub
+__pycache__/
+*.pyc
+.DS_Store
