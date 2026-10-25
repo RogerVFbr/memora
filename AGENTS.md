@@ -34,10 +34,38 @@ substitui a leitura integral exigida na seção 17 antes de gerar código.
 | Antes de escolher dependências, organizar módulos/diretórios ou alterar a bridge e o player | [§3.3 — Fire OS e UI](docs/00-PRD.md#33-fire-os-e-ui), [§6 — Arquitetura lógica proposta](docs/00-PRD.md#6-arquitetura-lógica-proposta), [§12 — Estratégia de desenvolvimento, testes e deploy](docs/00-PRD.md#12-estratégia-de-desenvolvimento-testes-e-deploy) e [§13 — ADRs resumidos](docs/00-PRD.md#13-adrs-resumidos) |
 | Antes de alterar navegação, reprodução, lifecycle ou composição visual | [§4.2 — Fluxo de interação](docs/00-PRD.md#42-fluxo-de-interação-proposto), [§7 — Modelo de estados e ciclo de vida](docs/00-PRD.md#7-modelo-de-estados-e-ciclo-de-vida) e [§8 — Algoritmo de apresentação visual](docs/00-PRD.md#8-algoritmo-de-apresentação-visual) |
 | Ao explorar identidade, menus, foco e composições no protótipo local | [Identidade visual — decisões e hipóteses](docs/01-identidade-visual-e-ux.md#2-registro-de-decisões-e-hipóteses), [base técnica](docs/01-identidade-visual-e-ux.md#6-base-técnica-e-reaproveitamento) e [recorte de validação](docs/01-identidade-visual-e-ux.md#8-tarefa-executável-e-critérios-de-revisão); consultar antes de editar `apps/prototype` ou consolidar escolhas visuais |
+| Ao planejar ou executar a primeira versão demonstrativa instalável e sua entrega | [Plano — recorte aprovado](docs/plans/01-primeira-versao-instalavel.md#2-recorte-aprovado), [SemVer, assinatura e artefatos](docs/plans/01-primeira-versao-instalavel.md#4-semver-assinatura-e-artefatos) e [central de progresso](docs/plans/01-primeira-versao-instalavel.md#5-central-de-progresso); consultar antes de implementar, gerar ou publicar essas entregas |
 | Antes de alterar cache, rede, retries, métricas, desempenho ou custos | [§5 — Requisitos não funcionais](docs/00-PRD.md#5-requisitos-não-funcionais) e [§9 — Cache, política de rede e custos](docs/00-PRD.md#9-cache-política-de-rede-e-custos) |
 | Antes de manipular credenciais, mídia, metadados pessoais, logs ou dados persistentes | [§8.3 — Metadados de apresentação](docs/00-PRD.md#83-metadados-de-apresentação), [§9.2 — Telemetria local mínima](docs/00-PRD.md#92-telemetria-local-mínima), [§10 — Segurança e privacidade](docs/00-PRD.md#10-segurança-e-privacidade) e guardrails da §12 |
 | Ao planejar testes, selecionar amostras ou validar no hardware | §11 (SPK-01 a SPK-06) e §12 (testes, amostras consentidas e QA) |
 | Antes de assumir uma resposta de produto, encerrar uma validação ou registrar uma decisão | [§14 — Registro de riscos e questões abertas](docs/00-PRD.md#14-registro-de-riscos-e-questões-abertas), [§15 — Matriz de rastreabilidade resumida](docs/00-PRD.md#15-matriz-de-rastreabilidade-resumida) e §17 (IDs, evidências, atualização do PRD e baselines) |
+
+## Planejamento e retomada de contexto
+
+- Antes de implementar uma tarefa ampla, discuta e valide o objetivo e registre
+  o plano de trabalho em `docs/plans/`. Cada plano deve indicar seu estado,
+  objetivo aprovado, escopo, referências do PRD, etapas, dependências, critérios
+  de conclusão e uma central de progresso com as issues vinculadas.
+- Decomponha o plano aprovado em issues executáveis e publique-as no GitHub.
+  O plano concentra decisões e progresso consolidado; cada issue concentra seu
+  escopo detalhado, aceite e resultados. Não duplique essas definições.
+- Conclua a entrega documental do planejamento pelo fluxo por issues antes da
+  troca de contexto. Assuntos documentais e regras de trabalho também precisam
+  de issue, verificações e integração; não devem permanecer apenas na conversa.
+- Para retomar em uma nova janela, use o
+  [prompt de próxima etapa](docs/prompts/implementar-proxima-etapa.md).
+  Mantenha nele instruções de recuperação das fontes, sem copiar status, versões
+  ou números de próxima issue que possam ficar obsoletos.
+- Na retomada, siga o plano indicado pelo desenvolvedor. Sem indicação, selecione
+  o único plano aprovado com etapas pendentes. Se houver mais de um, esclareça
+  qual executar antes de escolher a issue. Não escolha apenas pela data do arquivo.
+- Confira Git, plano, issues e PRs atuais antes de iniciar trabalho. Retome uma
+  etapa em andamento ou aguardando revisão/validação antes de iniciar outra;
+  na ausência dela, escolha a primeira cujas dependências tenham entrega e aceite
+  comprovados. Uma nova janela não implica nova branch nem nova implementação.
+- Cada retomada pelo prompt executa uma única etapa até sua conclusão ou até
+  uma dependência, autorização específica ou impedimento externo exigir ação
+  do desenvolvedor. Não execute a fila inteira sem solicitação expressa.
 
 ## Desenvolvimento orientado por issues
 
@@ -54,14 +82,32 @@ substitui a leitura integral exigida na seção 17 antes de gerar código.
    à issue, sem incluir arquivos privados ou trabalho alheio ao escopo.
 5. Após os commits locais, faça push da branch e abra sempre um pull request
    para `main` no repositório remoto, vinculado à issue. Siga os requisitos de descrição abaixo.
-6. Integre somente após revisão, verificações pertinentes e autorização de merge.
+6. Integre após revisão e verificações pertinentes, observando a autorização
+   permanente definida abaixo e eventuais restrições expressas na tarefa.
    Atualize a issue com o resultado e as pendências; só a encerre quando seus
-   critérios de aceite estiverem atendidos. Prossiga então para a próxima issue.
+   critérios de aceite estiverem atendidos. Para selecionar outra etapa, siga
+   o escopo da tarefa e as regras de retomada de contexto acima.
+   Quando houver plano associado, atualize nele o progresso e as referências de
+   evidência a cada issue concluída. Para a primeira versão instalável, siga a
+   [manutenção da central de progresso](docs/plans/01-primeira-versao-instalavel.md#como-manter-o-progresso).
 
-Antes de publicar issues, fazer push ou abrir PR, verifique se há autorização
-na tarefa em andamento. A definição deste fluxo não autoriza publicação ou
-merge por si só. Se permissões ou ferramentas bloquearem uma etapa, informe
-o impedimento e preserve o trabalho local; não substitua o PR por merge direto.
+### Autorização permanente para conclusão de trabalho
+
+Por decisão expressa do desenvolvedor, o fluxo normal de tarefas do Memora
+autoriza publicar issues do plano aprovado e, ao concluir e validar cada assunto
+ou issue, fazer commits, push, atualizar a issue e seus comentários, abrir PR
+para `main` e realizar o merge após revisão e verificações pertinentes. Essa
+autorização inclui entregas documentais e não exige nova confirmação a cada
+operação de Git/GitHub, salvo restrição expressa do desenvolvedor na tarefa.
+
+Conduza o ciclo até a integração e o registro do resultado; não pare apenas no
+commit local ou na abertura do PR. Esta autorização não dispensa critérios de
+aceite, não autoriza incluir trabalho alheio ao escopo nem altera as
+[regras específicas do Fire Stick](#fluxo-de-trabalho-no-repositório).
+Se permissões, revisão ou verificações impedirem a integração, informe o
+impedimento e preserve o trabalho; não substitua o PR por merge direto nem
+contorne proteções do repositório. Encerre issues com aceite operacional somente
+após as evidências exigidas, mesmo que o código já tenha sido integrado.
 
 ### Descrição obrigatória dos pull requests
 
@@ -120,6 +166,10 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
 ## Fluxo de trabalho no repositório
 
 - Comunique-se em português brasileiro, com decisões e limitações objetivas.
+- Para implementar ou retomar uma issue existente, use a skill local
+  [implement-issue](.agents/skills/implement-issue/SKILL.md). Ela orienta a execução
+  consultando este arquivo e o plano associado; sua invocação não amplia o escopo
+  nem as autorizações da tarefa. Não a use para criar ou decompor issues.
 - Para esclarecer uma ideia ou testar as decisões de uma tarefa antes de
   decompô-la em issues, use opcionalmente a skill local
   [grill-me](.agents/skills/grill-me/SKILL.md), com a dependência
@@ -158,7 +208,8 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   do PRD antes de selecionar mídia para testes.
 - Para alterações apenas documentais, revise conteúdo e execute `git diff --check`.
   Relate o que mudou, as verificações executadas e o que não pôde ser validado.
-- Não execute ações destrutivas nem publique ou envie alterações ao remoto
-  sem autorização do usuário.
+- Não execute ações destrutivas sem autorização específica do usuário. Para
+  publicação e integração, aplique a
+  [autorização permanente de conclusão](#autorização-permanente-para-conclusão-de-trabalho).
 - Ao mudar regras de trabalho, atualize este arquivo. Ao mudar conteúdo de produto
   ou técnico, atualize o PRD conforme a §17 e ajuste as referências daqui se necessário.

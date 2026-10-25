@@ -1,0 +1,3 @@
+interface:
+  display_name: "Implementar issue do Memora"
+  short_description: "Execute uma issue e mantenha o plano atualizado"
