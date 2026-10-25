@@ -1,6 +1,6 @@
 ---
 name: plan-work
-description: Planeje uma tarefa ampla do Memora, esclareça decisões abertas, registre o plano em docs/plans e publique suas issues após validar o recorte com o desenvolvedor. Use para criar ou revisar um plano de trabalho e sua decomposição; executar uma issue ou retomar implementação pertence à implement-issue.
+description: Planeje uma tarefa ampla do Memora, esclareça decisões abertas, registre o plano em docs/plans e publique suas issues somente após validação explícita do plano pelo desenvolvedor. Use para criar ou revisar um plano de trabalho e sua decomposição; executar uma issue ou retomar implementação pertence à implement-issue.
 ---
 
 # Planejar trabalho no Memora
@@ -38,10 +38,8 @@ decisões ainda abertas que mudem o plano. Dê recomendações e explique o impa
 das alternativas. Não reabra decisões consolidadas sem evidência nova nem exija
 outra entrevista quando o recorte já estiver aprovado na tarefa.
 
-Registre propostas como propostas. A autorização permanente de Git/GitHub não
-aprova o escopo de um novo plano: antes de publicar suas issues de implementação,
-obtenha a validação das decisões em aberto. Uma resposta pendente não é aprovação.
-Enquanto aguarda, avance na pesquisa e no rascunho que não dependam dessa decisão.
+Registre propostas como propostas e mantenha decisões pendentes identificadas
+até sua resolução com o desenvolvedor.
 
 ## Preparar plano e decomposição
 
@@ -63,10 +61,26 @@ precisa; critérios de código e de operação devem distinguir evidência já o
 daquela que só existirá após instalação, publicação ou uso real. Hipóteses
 bloqueadoras recebem investigação explícita, não promessa de implementação.
 
+## Validação obrigatória antes de publicar
+
+Antes de criar qualquer issue decorrente do plano no GitHub, apresente o plano
+ao desenvolvedor e aguarde sua validação explícita. Até essa validação, mantenha
+a decomposição e os textos das issues como rascunhos locais; não os publique,
+mesmo como rascunho no tracker.
+
+Registre no plano a validação recebida, sua data e o escopo aprovado. A autorização
+permanente de Git/GitHub, a aprovação genérica de uma ideia e a ausência de
+resposta não substituem a validação do plano. Enquanto aguarda, avance apenas na
+pesquisa e nos rascunhos que não dependam das decisões pendentes.
+
+Se o plano já foi explicitamente validado na tarefa, use essa aprovação sem pedir
+nova confirmação. Se houver mudança material de escopo, sequência ou aceite,
+valide a alteração antes de publicar novas issues afetadas por ela.
+
 ## Publicar e consolidar
 
-Com o recorte validado, publique as issues uma a uma pelo fluxo autorizado no
-AGENTS.md, preservando ordem e vínculos. Registre imediatamente os números e
+Com a validação do plano registrada, publique as issues uma a uma pelo fluxo
+autorizado no AGENTS.md, preservando ordem e vínculos. Registre imediatamente os números e
 URLs retornados na central do plano. Em caso de publicação parcial ou resposta
 incerta, confira o GitHub antes de repetir; retome pelos itens faltantes sem
 duplicar os que já existem. Informe o que foi publicado e o que ainda falta.
