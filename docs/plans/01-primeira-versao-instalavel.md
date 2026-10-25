@@ -160,7 +160,7 @@ contador das seis etapas de implementação.
 
 | Etapa | Issue de implementação | Depende de | Status | PR / commit integrado | Release | Evidências e pendências |
 |---|---|---|---|---|---|---|
-| I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Em revisão | — | Não se aplica | Build debug, testes e lint aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial, sem Activity em foreground |
+| I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Em revisão | [#21](https://github.com/RogerVFbr/memora/pull/21) | Não se aplica | Build debug, testes e lint aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial, sem Activity em foreground |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | A fazer | — | Não se aplica | Extração e empacotamento do frontend pendentes |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | A fazer | — | Não se aplica | Aceite exige controle físico e lifecycle no WebView real |
 | I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | A fazer | — | Não se aplica | Custódia da chave e comandos de entrega pendentes |
