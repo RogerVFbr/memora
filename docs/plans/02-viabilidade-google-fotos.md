@@ -87,7 +87,7 @@ oficial e decisão específica de arquitetura; G2 não liberada.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
-| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | Ver entrega vinculada na issue | [Avaliação e ação de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) |
+| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Bloqueada | [PR #49](https://github.com/RogerVFbr/memora/pull/49) | [Avaliação e ação de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | A fazer | — | Depende de G1 e pré-requisitos externos |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
@@ -120,7 +120,7 @@ este plano quando necessário. Não criar um segundo prompt com status fixos.
 - 2026-10-25 — G1 / #42: avaliação documental e inventário em leitura realizados;
   [resultado e condições de retomada](../04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata).
   Sem conformidade ou fluxo operacional comprovados; etapa bloqueada, contador
-  mantido em 0/6. G2 não iniciada. PR de registro vinculado na própria issue.
+  mantido em 0/6. G2 não iniciada. Registro pelo [PR #49](https://github.com/RogerVFbr/memora/pull/49), vinculado na própria issue.
 
 - 2026-10-25: pesquisa das fontes oficiais e preparação do rascunho. Nenhuma
   configuração externa, implementação ou validação Google executada.
