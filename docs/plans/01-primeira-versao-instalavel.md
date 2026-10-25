@@ -1,9 +1,9 @@
 # Plano — primeira versão instalável e validação da entrega
 
-> Data: 2026-10-25 · Objetivo e recorte aprovados; I1, I2 e I3 concluídas; próximas etapas pendentes.
+> Data: 2026-10-25 · Objetivo e recorte aprovados; I1 a I4 concluídas; próximas etapas pendentes.
 > Aprovação: recomendações aceitas pelo desenvolvedor, com artefatos em `builds/`
 > na raiz do repositório e versionamento SemVer.
-> Estado do plano: aprovado para execução; I1, I2 e I3 concluídas; próximas etapas pendentes.
+> Estado do plano: aprovado para execução; I1 a I4 concluídas; próximas etapas pendentes.
 
 ## 1. Objetivo e fontes de verdade
 
@@ -110,7 +110,7 @@ Salvar os **artefatos entregáveis** em
 `/Volumes/ACASISHD1/repos/memora/builds/<semver>/`.
 Em scripts, resolver a raiz do checkout e usar `builds/`, sem fixar o caminho
 absoluto deste computador. Caches e intermediários podem permanecer nos diretórios
-normais das ferramentas. Estrutura planejada, ainda não produzida:
+normais das ferramentas. Estrutura produzida pelo pipeline local:
 
 ```text
 builds/
@@ -150,8 +150,8 @@ Esta seção é a fonte de verdade do progresso consolidado. Escopo detalhado,
 critérios de aceite e validações específicas ficam nas issues vinculadas; não
 manter uma segunda cópia integral desses textos no repositório.
 
-**Situação em 2026-10-25:** 3 de 6 etapas concluídas. I1, I2 e I3 integradas e aceitas.
-I4 / #10 em revisão; empacotamento final aguarda integração.
+**Situação em 2026-10-25:** 4 de 6 etapas concluídas. I1 a I4 integradas e aceitas.
+Próxima etapa: I5 / #11.
 
 A preparação documental deste plano, da skill e do prompt de retomada é atendida
 pela [issue #13](https://github.com/RogerVFbr/memora/issues/13); não integra o
@@ -162,7 +162,7 @@ contador das seis etapas de implementação.
 | I1 — Host Android e baseline | [#7](https://github.com/RogerVFbr/memora/issues/7) | Integração do plano | Concluída | [#21](https://github.com/RogerVFbr/memora/pull/21) / [58efcf4](https://github.com/RogerVFbr/memora/commit/58efcf4d2b2e01230dc997103e8ad381b785eb17) | Não se aplica | Build limpo, dois testes, lint e inspeção do APK aprovados; [baseline em leitura](../02-host-android-e-baseline.md#3-baseline-em-leitura) parcial com ação de resolução; sem instalação ou aceite de hardware |
 | I2 — Apresentação compartilhada e embarcada | [#8](https://github.com/RogerVFbr/memora/issues/8) | I1 / #7 | Concluída | [#23](https://github.com/RogerVFbr/memora/pull/23) / [2cf9aef](https://github.com/RogerVFbr/memora/commit/2cf9aefc7431696cc0df8bf00bf89b8090b13d4f) | Não se aplica | [Verificações e limitações](https://github.com/RogerVFbr/memora/issues/8#issuecomment-6401455790); hardware registrado em I3 |
 | I3 — Controle, persistência e lifecycle | [#9](https://github.com/RogerVFbr/memora/issues/9) | I2 / #8 | Concluída | [#25](https://github.com/RogerVFbr/memora/pull/25) / [e8f21b4](https://github.com/RogerVFbr/memora/commit/e8f21b4427dcac7fd7022e337d6b3e93af2ad8eb) | Não se aplica | [Aceite de hardware](../02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv): controle/foco, configurações persistentes, reabertura, suspensão/retomada e flag real aprovados; limites na [issue #9](https://github.com/RogerVFbr/memora/issues/9) |
-| I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | Em revisão | — | Não se aplica | Pipeline, assinatura permanente, backup e build release validados; entrega final será gerada de fonte integrada |
+| I4 — Empacotamento, assinatura e SemVer | [#10](https://github.com/RogerVFbr/memora/issues/10) | I3 / #9 | Concluída | [#30](https://github.com/RogerVFbr/memora/pull/30) / [ff18814](https://github.com/RogerVFbr/memora/commit/ff188147383e0bb2d28fdfa816e6cb77ea1e6a61) | Não se aplica | Entrega assinada em `builds/0.1.0-alpha.1/`; verificação completa, corrupção e recusa de sobrescrita aprovadas; [evidências na issue #10](https://github.com/RogerVFbr/memora/issues/10) |
 | I5 — Primeira instalação da release | [#11](https://github.com/RogerVFbr/memora/issues/11) | I4 / #10 | A fazer | — | A produzir | Exige obtenção do anexo, instalação e smoke no hardware |
 | I6 — Atualização preservando preferências | [#12](https://github.com/RogerVFbr/memora/issues/12) | I5 / #11 | A fazer | — | A produzir | Exige upgrade real e matriz de preferências antes/depois |
 
@@ -223,6 +223,11 @@ usadas em I3 não substituem o aceite da primeira identidade de release em I5.
   Preferências não padrão sobreviveram à reabertura com processo novo; nenhuma release
   ou atualização de produção executada. Próxima etapa I4 / #10.
 
+- **2026-10-25 — I4 / #10:** pipeline integrado pelo [PR #30](https://github.com/RogerVFbr/memora/pull/30);
+  quatro entregáveis alpha.1 gerados de `ff18814` e verificados, com chave permanente
+  e backup sob custódia aprovada. [Resultados e limites](https://github.com/RogerVFbr/memora/issues/10).
+  Sem publicação ou instalação nesta etapa. Próxima etapa I5 / #11.
+
 ## 6. Pipeline de publicação e validação
 
 Para cada entrega, construir localmente a partir de um commit integrado, com
@@ -282,8 +287,9 @@ artefatos e uso de SemVer estão aprovados. O host e o build debug foram prepara
 Toolchain, identidade de pacote, apresentação compartilhada, contrato nativo,
 persistência e evidências de plataforma estão no
 [registro técnico](../02-host-android-e-baseline.md#1-host-e-fronteira). Pendências
-nas etapas seguintes: custódia da chave de release, comandos de entrega,
-duração do ensaio contínuo, publicação e aceite das duas identidades de release.
+nas etapas seguintes: duração do ensaio contínuo, publicação e aceite das duas
+identidades de release. Para empacotar e recuperar a assinatura, consultar
+[entrega Android](../03-entrega-android.md#1-configuração-e-fronteiras).
 
 
 Aprovar este plano não equivale à comprovação dos gates Google. Antes de ampliar
