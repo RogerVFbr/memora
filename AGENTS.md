@@ -119,6 +119,19 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
 ## Fluxo de trabalho no repositório
 
 - Comunique-se em português brasileiro, com decisões e limitações objetivas.
+- Para esclarecer uma ideia ou testar as decisões de uma tarefa antes de
+  decompô-la em issues, use opcionalmente a skill local
+  [grill-me](.agents/skills/grill-me/SKILL.md), com a dependência
+  [grilling](.agents/skills/grilling/SKILL.md). Consulte primeiro o roteiro do
+  PRD acima, as issues e o código pertinente; pergunte apenas o que permanecer
+  em aberto no escopo combinado. Não reabra decisões consolidadas sem nova
+  evidência. Separe decisões discutíveis de hipóteses que exigem experimentos;
+  a entrevista não substitui os gates de validação do PRD. Ao concluir,
+  registre decisões aprovadas conforme a seção de manutenção da documentação.
+  Se não houver ferramenta `Skill`, leia e siga diretamente a dependência.
+  Ambas foram importadas sem alterações de `mattpocock/skills`, commit
+  `5beb35b040e3de97e54fa9e386d7e42d15c295c2`, caminhos
+  `skills/productivity/grill-me` e `skills/productivity/grilling`.
 - Antes de editar, leia os arquivos relacionados e confira o Git. Preserve o
   trabalho existente. Para o fluxo de incrementos e validação, consulte a §17 do PRD.
 - Sempre que a tarefa depender da presença ou conectividade do Fire Stick,
