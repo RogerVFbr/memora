@@ -126,3 +126,31 @@ adb -s <alvo-adb> install apps/android/app/build/outputs/apk/debug/app-debug.apk
 Esse comando foi validado para a primeira instalação do pacote de desenvolvimento.
 Antes de executar e validar o aplicativo, consulte as
 [autorizações vigentes do Fire Stick](AGENTS.md#fluxo-de-trabalho-no-repositório).
+O comando validado para iniciar o APK de desenvolvimento é:
+
+```sh
+adb -s <alvo-adb> shell am start -n br.com.memora.dev/br.com.memora.MainActivity
+```
+
+Você pode acompanhar a execução na TV, usando a entrada HDMI do Fire Stick.
+Se o aparelho estiver em repouso, desperte-o pelo controle. Os testes de
+navegação podem ser realizados manualmente no controle enquanto os diagnósticos
+consultam o aplicativo em leitura.
+
+No teste de reabertura com processo novo, encerre o aplicativo antes de iniciá-lo
+novamente com o comando acima:
+
+```sh
+adb -s <alvo-adb> shell am force-stop br.com.memora.dev
+```
+
+Exemplos de teclas usados na validação operacional:
+
+```sh
+adb -s <alvo-adb> shell input keyevent 82
+adb -s <alvo-adb> shell input keyevent 85
+```
+
+Os exemplos enviam, respectivamente, Menu e Play/Pause. Consulte o
+[contrato da TV](docs/02-host-android-e-baseline.md#5-controle-persistência-e-lifecycle-da-tv)
+para estados, evidências e limites dos testes.

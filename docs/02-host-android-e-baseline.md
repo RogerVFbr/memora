@@ -30,8 +30,8 @@ configuração/lockfile, e injeta o `versionName` efetivo no build Vite. A API d
 fontes geradas do AGP determina o diretório final; a linha de execução resolve
 esse caminho no início da tarefa. Não há cópia manual nem dependência de Vite
 em execução. Ambos os frontends usam `base: './'` e target `chrome150`, escolhido
-a partir da consulta de WebView abaixo; compatibilidade no aparelho continua
-pendente de observação. O CSS nativo foi preservado, sem Tailwind ou polyfills
+a partir da consulta de WebView abaixo; os comportamentos observados no aparelho
+estão nas [evidências de I3](#5-controle-persistência-e-lifecycle-da-tv). O CSS nativo foi preservado, sem Tailwind ou polyfills
 adicionais. A entrada de TV ocupa o viewport, inclui o seletor de tema em Ajustes
 e inicia pausada com controles visíveis. A UI mostra a versão injetada no APK.
 
@@ -55,8 +55,9 @@ ligada. `WebView.onPause()` sozinho não comprova suspensão dos timers JavaScri
 
 O manifesto declara launcher Android e Leanback, ausência de exigência de toque,
 orientação landscape, banner e ícone locais, backup desabilitado e Activity de
-entrada exportada. Launcher, área útil/tela inteira, controle físico e efeitos
-visuais ainda exigem teste real; não foram instalados nem iniciados APKs nesta etapa.
+entrada exportada. A área de renderização e a operação do host foram observadas
+em I3; a descoberta/abertura da identidade de release pelo launcher continua
+no smoke de I5.
 
 ## 2. Toolchain
 
@@ -82,7 +83,8 @@ e [Gradle 8.11.1](https://docs.gradle.org/8.11.1/release-notes.html).
 
 ## 3. Baseline em leitura
 
-A skill `firestick-check` confirmou conexão ADB autorizada e identidade esperada
+Na consulta inicial de I1, a skill `firestick-check` confirmou conexão ADB
+autorizada e identidade esperada
 Amazon / AFTKRT / karat. Resultado **parcial**: o dispositivo estava em repouso,
 e a consulta não retornou Activity em primeiro plano. Nenhuma ação foi executada
 para despertar, abrir aplicativo ou alterar o aparelho. O diagnóstico bruto
@@ -93,14 +95,19 @@ permanece em arquivo temporário privado fora do Git.
 | Android | 11 |
 | WebView ativo | `com.amazon.webview.chromium`, `150.amazon-webview-v150-7871-tv.7871.181.20` |
 | Tamanho físico reportado por `wm size` | 1920 × 1080 |
+| Janela Memora visível, observada em I3 | Frame nativo 1920 × 1080 |
+| Viewport WebView, observado em I3 via DevTools em leitura | 960 × 540 CSS; devicePixelRatio 2 |
+| Container queries CSS, observado em I3 | `CSS.supports('container-type', 'inline-size')` verdadeiro |
 
-Esses dados identificam a plataforma consultada; não comprovam resolução do DOM,
-saída HDMI 4K, suporte a efeitos CSS, FPS ou consumo de memória da aplicação.
+Os dados caracterizam a plataforma e a renderização observadas; não comprovam
+saída HDMI 4K, compatibilidade de todo efeito CSS, FPS ou consumo combinado de
+memória nativa/renderer.
 O pacote WebView pode ser atualizado pelo sistema: repetir a consulta na validação
-real. A ausência de foreground não impede o build I1, mas essa medição precisa
-ser repetida com Activity visível, após a autorização específica para iniciá-la,
-antes de aceitar comportamento visual/lifecycle em I3. Não inferir foreground,
-renderização ou compatibilidade a partir do desktop. SPK-06 continua aberto.
+real. A ausência de foreground da consulta inicial I1 foi superada em I3 após
+a abertura autorizada e o despertar manual pelo desenvolvedor: o diagnóstico
+passou a completo, com Activity Memora retomada e janela visível. Os valores
+do viewport acima são leituras do WebView real. Eles não demonstram saída 4K
+ou estabilidade prolongada; SPK-06 continua aberto.
 
 ## 4. Verificações
 
@@ -108,8 +115,9 @@ Build debug, dois testes da política de navegação e lint foram aprovados.
 A inspeção com `aapt dump badging` confirmou pacote de desenvolvimento, SDKs,
 launcher e Leanback; `unzip -l` confirmou HTML/CSS no APK; `apksigner verify
 --verbose` confirmou assinatura debug válida (v2). Resultados detalhados e
-comandos executados ficam na issue e no PR de I1. Validação em hardware limita-se às
-consultas acima: não há aceite de instalação, launcher, D-pad ou lifecycle.
+comandos executados ficam na issue e no PR de I1. Naquela entrega, a validação
+em hardware limitou-se às consultas em leitura; as evidências operacionais
+posteriores estão na seção de I3 abaixo.
 
 A I2 foi verificada também com `npm ci`, builds dos dois frontends e smoke
 Playwright do laboratório e dos arquivos estáticos extraídos do APK. Foram
@@ -121,17 +129,18 @@ injetada. Evidências detalhadas e limitações ficam na issue #8 e no PR respec
 
 ## 5. Controle, persistência e lifecycle da TV
 
-Implementação I3 integrada e APK dev instalado; **aceite no aparelho ainda pendente** na
-[issue #9](https://github.com/RogerVFbr/memora/issues/9). Os comportamentos abaixo
-são o contrato implementado e testado localmente, não observações de hardware.
+Implementação I3 integrada e aceite operacional verificado na
+[issue #9](https://github.com/RogerVFbr/memora/issues/9). O contrato abaixo separa
+comportamentos implementados e evidências efetivamente observadas no aparelho.
 
 ### Entrada e foco
 
 D-pad e OK seguem o encaminhamento padrão do WebView para setas e ativação do
 elemento em foco. Menu, Back e teclas de mídia recebidas pela Activity são
 convertidas em comandos fixos `menu`, `back`, `toggle`, `play` e `pause`, uma vez
-por pressionamento; não se repetem durante key repeat. A disponibilidade dessas
-teclas no controle Fire TV precisa ser confirmada no aparelho. Voltar fecha o
+por pressionamento; não se repetem durante key repeat. D-pad, OK, Menu, Voltar e Play/Pause foram verificados no controle correto e/ou
+por injeção dos respectivos eventos ADB; não se afirma que o controle tenha
+teclas físicas separadas para Play e Pause. Voltar fecha o
 painel, depois os controles; na cena limpa abre os controles, preservando a
 navegação de referência do laboratório.
 
@@ -139,8 +148,7 @@ Na entrada TV, seletores usam botões locais: esquerda/direita percorre opções
 OK escolhe a próxima e cima/baixo navega entre linhas. A bancada mantém selects
 nativos. Abertura foca play/pausa; fechamento do painel restaura seu acionador,
 inclusive após remontagem. Comandos de mídia fecham painéis/controles e mantêm
-o viewport em foco. A Activity solicita ocultar barras do sistema, sem alegar
-que a área de renderização já foi medida no Fire TV.
+o viewport em foco. A Activity solicita ocultar barras do sistema, com área de renderização observada no [baseline](#3-baseline-em-leitura).
 
 ### Contrato nativo mínimo
 
@@ -164,7 +172,7 @@ visível. Pausa explícita com controles fechados e background liberam a
 solicitação. A camada nativa aplica `FLAG_KEEP_SCREEN_ON` somente se a Activity
 estiver retomada e com foco, independentemente de mensagens atrasadas. Não há
 wake lock, serviço de fundo, detecção de presença ou garantia sobre HDMI/TV
-fisicamente desligada. A verificação da flag real continua pendente no hardware.
+fisicamente desligada. A flag real foi conferida nos estados descritos nas evidências abaixo.
 
 ### Preferências e evolução
 
@@ -194,17 +202,52 @@ conferidas com host simulado; isso não valida a flag Android.
 A instalação dev de I3 foi autorizada expressamente e executada em 2026-10-25,
 após repetir a skill `firestick-check` e conferir o hash do APK validado.
 ADB retornou `Success`; `dumpsys package` confirmou `br.com.memora.dev`,
-`versionName=0.1.0-alpha.1-dev` e `versionCode=1`. O diagnóstico prévio manteve a
-limitação de foreground do [baseline](#3-baseline-em-leitura). Nenhuma abertura,
-key event injetado, suspensão forçada ou alteração de configuração foi executada.
+`versionName=0.1.0-alpha.1-dev` e `versionCode=1`. A abertura posterior por
+`am start` também foi autorizada e executada. O aparelho inicialmente estava
+em repouso; o desenvolvedor o despertou pelo controle e confirmou o Memora na TV.
 
-Para aceitar I3, falta concluir os testes operacionais no APK instalado.
-Consulte as [autorizações vigentes](../AGENTS.md#fluxo-de-trabalho-no-repositório)
-antes de executar cada tipo de operação. Verificar controle físico/visibilidade/
-retomada, preferências não
-padrão, DOM/resolução, erros e flag de tela ligada. Registrar evidências sanitizadas
-na issue e atualizar a central antes de encerrar. I4 permanece dependente desse
-aceite; não usar o resultado do desktop como substituto.
+Leituras do DevTools encaminhado apenas por porta local identificaram a origem
+embarcada, listeners instalados, mídia carregada e os três layouts durante
+reprodução. A inspeção conferiu dimensões dos slots e `object-fit: contain` sem
+distorção; captura privada da tela real foi revisada. Os valores de renderização
+ficam no [baseline](#3-baseline-em-leitura). A janela nativa reportou
+`KEEP_SCREEN_ON` nos estados observados e detalhados abaixo. Não houve erro
+crítico observado na leitura delimitada de logs; isso não prova ausência de
+falhas em cenários ainda não executados.
+
+Uma única tecla Menu por ADB foi autorizada e enviada: abriu os controles,
+focou Pausar apresentação e suspendeu o avanço na mesma cena. Nenhuma outra
+tecla foi injetada. O APK recuperado em leitura do dispositivo tem o mesmo hash
+do APK autorizado, descartando divergência do binário instalado.
+
+A tentativa inicial de teste físico foi desconsiderada: o desenvolvedor informou
+que estava usando o controle errado. O reteste com o controle correto confirmou
+navegação, painéis e ajustes; a primeira tentativa não é defeito do aplicativo.
+
+Após a autorização operacional consolidada no [PR #28](https://github.com/RogerVFbr/memora/pull/28),
+os testes ADB verificaram abertura/fechamento de ajustes e coleções, foco inicial,
+retorno aos respectivos acionadores e os três layouts com mídia carregada.
+Menu suspendeu o avanço por mais de um intervalo configurado. Pause com controles
+fechados removeu `KEEP_SCREEN_ON`; reprodução e menus visíveis ativaram a flag.
+Home ocultou o documento, removeu a flag e manteve a cena sem avanço por mais de
+um intervalo. A retomada e a reabertura após `am force-stop` retornaram pausadas,
+com controles visíveis e foco em Iniciar apresentação.
+
+Com autorização específica do desenvolvedor, a interface aplicou Galeria neutra,
+6 segundos, Preencher, informações desligadas, movimento desligado e somente
+Lá fora ativa. O envelope completo foi comparado antes/depois de encerrar e
+reabrir o processo: todos esses valores sobreviveram. O filtro reproduziu dupla
+e mosaico, sem incluir a coleção desativada. Os testes não modificaram
+configurações do sistema, permissões, conectividade ou outros aplicativos.
+
+O aceite de I3 cobre o recorte demonstrativo: não houve release, upgrade de
+pacote de produção, benchmark de FPS/RAM, sessão prolongada ou integração Google.
+A atualização preservando preferências pertence à I6; a sessão contínua e o
+smoke da identidade de release permanecem em I5. SPK-06 continua parcial.
+Endereço, capturas, logs, port forwarding e diagnósticos brutos ficaram privados.
+Consultar as [autorizações vigentes](../AGENTS.md#fluxo-de-trabalho-no-repositório)
+antes de novas operações.
+
 
 Fontes consultadas: [WebViewCompat](https://developer.android.com/reference/androidx/webkit/WebViewCompat)
 e [tela ligada](https://developer.android.com/develop/background-work/background-tasks/awake/screen-on).
