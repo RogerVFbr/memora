@@ -219,7 +219,8 @@ escopo, atualize ambos e registre trabalho restante em issues relacionadas.
   antes de escolher o pacote-alvo; não peça autorização novamente por uma
   operação já coberta por esse escopo.
 - Essa autonomia se limita ao Memora. Não altere configurações globais do Fire
-  Stick nem pacotes, configurações, permissões ou dados de outros aplicativos. Reiniciar/restaurar o dispositivo, reconfigurar rede,
+  Stick nem pacotes, configurações, permissões ou dados de outros aplicativos.
+  Reiniciar/restaurar o dispositivo, reconfigurar rede,
   Bluetooth ou depuração e outras mudanças que excedam o Memora não estão
   incluídas; se forem indispensáveis, explique o impacto e aguarde autorização
   específica antes de executá-las.
