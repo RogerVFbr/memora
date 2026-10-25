@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; G1 em preparação do caminho Picker, com pré-requisitos pendentes.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1 concluída no desenho delimitado; G2 elegível para SPK-01.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
@@ -80,14 +80,14 @@ aplicar o AGENTS.md; a aprovação do plano não amplia a autonomia do Memora.
 A preparação documental é atendida pela [issue #41](https://github.com/RogerVFbr/memora/issues/41)
 e não integra o contador das etapas investigativas.
 
-**Situação em 2026-10-25:** 0 de 6 etapas concluídas. Caminho Picker reafirmado
-pelo desenvolvedor; G1 em andamento. Projeto de teste criado e Picker API
-habilitada; consentimento por configurar e alternativa OAuth Android por esclarecer. Ambient não bloqueia a retomada;
-G2 permanece não liberada até o aceite G1.
+**Situação em 2026-10-25:** 1 de 6 etapas concluídas. G1 com cliente Android,
+consentimento e desenho delimitado preparados. Próxima etapa G2, prova real de
+autorização sem seleção de mídia. Enquadramento da apresentação/retencão ainda
+precisa de esclarecimento antes de G3; não é aceite de produto.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
-| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Em andamento | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52) | [Picker: preparação e próximo ensaio](../04-viabilidade-google-fotos.md#53-g1--retomada-do-caminho-picker) |
+| G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
 | G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | A fazer | — | Depende de G1 e pré-requisitos externos |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
@@ -116,6 +116,10 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G1 / #42: consentimento/cliente preparados pelo proprietário e
+  exportação validada; [desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01).
+  1/6 no desenho, sem OAuth ou mídia comprovados. G2 elegível para prova isolada.
 
 - 2026-10-25 — Preparação Cloud de G1 / #42: CLI autenticada pelo proprietário,
   projeto ativo criado e Picker API habilitada; [resultado e pendências](../04-viabilidade-google-fotos.md#preparação-cloud-executada).
