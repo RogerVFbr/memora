@@ -31,6 +31,14 @@ class OAuthTransactionTest {
             { it.redirect.replace(":/", "://evil/") + "?state=${it.state}&code=x" })
         cases.forEach { build -> val a = attempt(); assertEquals(OAuthTransaction.Result.Rejected, a.consume(build(a), 101)) }
     }
+    @Test fun scaleCallbackIsDistinctAndBoundToItsTransaction() {
+        val a = OAuthTransaction("123-example.apps.googleusercontent.com", 100, "/oauth2redirect/scale")
+        assertTrue(a.redirect.endsWith("/oauth2redirect/scale"))
+        assertEquals(OAuthTransaction.Result.Code("x"), a.consume("${a.redirect}?state=${a.state}&code=x", 101))
+        val b = OAuthTransaction("123-example.apps.googleusercontent.com", 100, "/oauth2redirect/scale")
+        assertEquals(OAuthTransaction.Result.Rejected,
+            b.consume("${b.redirect.removeSuffix("/scale")}?state=${b.state}&code=x", 101))
+    }
     @Test fun deniesWithoutCodeExchange() {
         val a = attempt()
         assertEquals(OAuthTransaction.Result.Denied, a.consume("${a.redirect}?state=${a.state}&error=access_denied", 101))

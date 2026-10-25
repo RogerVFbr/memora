@@ -303,3 +303,23 @@ abre o consentimento e substitui a credencial ativa, preservando a sessão e as
 não inicia medições. Os [procedimentos e pendências G4](docs/04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
 definem quando medir; não limpe dados, desinstale nem revogue o acesso antes das
 observações naturais. O build não comprova expiração real.
+
+### Escala e coleções SPK-04
+
+G5 usa o mesmo build debug, mas uma Activity e armazenamento próprios. Após
+`firestick-check` e a instalação `-r`, execute:
+
+```sh
+adb -s <alvo-adb> shell am start -W -n br.com.memora.dev/br.com.memora.ScaleSpikeActivity
+```
+
+**Criar ou retomar seleção A/B** abre o OAuth/QR de cada amostra. A seleção pelo
+proprietário consulta somente metadados, até 2.000 itens por sessão. Depois de
+concluir no Picker, use **Listar metadados A/B**: a ação consulta uma vez o estado
+da sessão e percorre páginas de até 100 itens. **Comparar seleções offline** e
+**Informações locais** não acessam a rede.
+
+**Remover sessões remotas** exige DELETE confirmado e preserva o catálogo mínimo
+para comparação; **Apagar evidência local** remove arquivo/chave G5 depois dessas
+remoções. O [protocolo G5](docs/04-viabilidade-google-fotos.md#9-escala-e-coleções-g5)
+define amostra, evidências e pendências. Esses comandos não limpam G4.

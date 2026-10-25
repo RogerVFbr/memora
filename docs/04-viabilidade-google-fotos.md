@@ -803,3 +803,54 @@ O resultado antes/depois ainda falta; G4 permanece em validação, issue aberta 
 contador do plano em 3/6. A [sequência revisada aprovada](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem)
 permite G5 durante essa espera, preservando separadamente a amostra G4. Retomar
 as medições G4 quando suas fronteiras ocorrerem.
+
+## 9. Escala e coleções G5
+
+Iniciada a preparação de [G5 / #46](https://github.com/RogerVFbr/memora/issues/46)
+após G3 aceita, conforme a revisão de sequência aprovada no
+[plano §3](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem).
+G4 permanece em validação, com sua amostra preservada. O proprietário dispõe de
+álbuns grandes, mas ainda não sabe suas quantidades; isso não comprova origem
+acima de 2.000 itens. Confirmar o tamanho e a seleção na UI do Picker antes do aceite.
+
+O ensaio é separado: duas seleções A/B, catálogo mínimo cifrado e nenhuma leitura
+de URL/thumbnail/bytes de mídia. Consultar somente JSON Picker e descartar URLs,
+nomes de arquivos, valores de datas/câmera e outros metadados pessoais ao processar
+a página; reter IDs para comparação de interseção, tipo e indicadores/inventário
+de campos. Arquivo, chave e AAD próprios não alteram o snapshot G4.
+
+A amostra será escolhida pelo proprietário após apresentar o recorte privado na
+tela. Medir contagens recebidas/únicas, duplicatas internas, interseção entre
+seleções, páginas, requisições, bytes JSON e duração; comparar esses resultados
+com a quantidade e o comportamento informados por ele na UI do Google. Sem
+origem acima do limite ou seleção real suficiente, manter o aceite correspondente
+pendente. IDs repetidos não demonstram acesso permanente nem membership de álbum.
+
+### 9.1 Instrumentação e validação inicial
+
+Activity, core e armazenamento próprios implementados, com limites de 2.000 itens,
+páginas de 100, 128 páginas, 256 requisições normais e reserva para DELETE,
+2 MiB por corpo JSON e 32 MiB por seleção. Respostas e listagem têm orçamento
+de tempo; atingir limite deixa a travessia incompleta. Cancelamento usa sinal
+explícito pré-worker. Intenção POST e ID retornado são preservados para limpeza;
+transporte incerto bloqueia criação cega. Nenhum endpoint de mídia é aberto.
+
+Build debug, 32 testes, lint e geração de manifesto/recursos release aprovados.
+Testes adicionais cobrem limite, paginação curta/vazia, repetição de token,
+interseção/deduplicação, limites de resposta e cancelamento. Manifesto release
+continua sem ensaios nem INTERNET. SSP e callbackPath isolam o retorno G5, mantendo
+o caminho original para G2–G4: resolução real de ambos no aparelho apontou para
+suas respectivas Activities, sem chooser.
+
+Instalação de atualização aprovada; hash do arquivo cifrado G4 confirmou igualdade
+bit a bit com a referência anterior. Abertura G5 sem rede mostrou slots A/B
+ausentes. OAuth real G5 retornou para a nova Activity, criou a sessão A e mostrou
+QR nativo. Envelope cifrado separado confirmado, sem marcadores de token/URI
+legíveis; G4 continuou bit a bit igual após essa criação. Seleção pessoal ainda
+não recebida; nenhum aceite operacional.
+
+Remover apenas sessões e dados G5 ao fim do ensaio ou a pedido, preservando G4
+até a observação de expiração. DELETE confirmado mantém o catálogo mínimo até
+comparação; apagamento explícito posterior remove arquivo/chave G5. Se o token
+expirar antes da listagem/limpeza, será necessário tratar renovação separada;
+falha ou 404 não comprovam remoção remota.
