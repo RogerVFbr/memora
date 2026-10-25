@@ -1,7 +1,7 @@
 # PRD estendido — Memora
 
 > **Status:** protótipo visual aprovado; incremento demonstrativo instalável concluído e validado no alvo; implementação do MVP ainda não iniciada
-> **Versão:** 0.12 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
+> **Versão:** 0.13 · **Data:** 2026-10-25 · **Idioma:** português (termos técnicos em inglês)
 > **Artefato:** PRD + Technical Design preliminar + ADRs + plano de validação  
 > **Dispositivo-alvo:** Amazon Fire TV Stick 4K Max, 2ª geração (2023), Fire OS 8 / base Android 11  
 > **Leitor principal:** desenvolvedor responsável e agentes de codificação (Codex CLI)
@@ -341,6 +341,14 @@ Google Photos Picker API disponibilizada sem preço por requisição informado n
 - Usuário pode revogar acesso via Conta Google; aplicação oferece logout, limpeza de dados/cache e reset de seleção.
 - Localização e horário de captura podem ser incompletos; informações inferidas recebem indicação.
 - Avaliar política de Google Photos API User Data/Developer Policy para cache, retenção e visualização de conteúdo após sessão.
+- **[DECIDIDO — somente SPK-01]** Em 2026-10-25, o desenvolvedor aceitou o risco
+  residual de código temporário OAuth na URI registrada pelo sistema Fire OS,
+  com PKCE e código consumido. O aceite de logs deste ensaio abrange os logs
+  controlados pelo Memora; não autoriza registrar tokens, verifier ou códigos
+  nesses logs, nem expor credenciais ao React/QR/artefatos versionados. Não é
+  aceitação automática para MVP, persistência ou outras arquiteturas. Consultar
+  a [evidência e limites](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2)
+  antes de reutilizar essa decisão.
 - **[VALIDAR] Enquadramento do uso:** a [política Photos](https://developers.google.com/photos/support/api-policy), consultada em 2026-10-25, restringe substitutos do Google Fotos, incluindo galerias genéricas. Avaliar o uso específico do Memora antes de testar dados reais; não concluir permissão ou proibição do projeto apenas pela descrição de moldura digital.
 
 ---
@@ -462,7 +470,7 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | ID | Severidade | Risco/pergunta | Plano |
 |---|---|---|---|
 | R-001 | **Crítica** | Como manter slideshow ao longo dos dias se sessões expiram e `baseUrl` dura 60 min? | SPK-03, política Google, UX de re-seleção; não prometer persistência |
-| R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | [SPK-01 com autorização positiva no Fire TV](04-viabilidade-google-fotos.md#61-evidência-positiva-no-fire-tv) via cliente Android/URI própria; negativos e aceite final pendentes |
+| R-002 | **Crítica** | Fluxo OAuth nativo de TV não lista escopo Photos Picker | [SPK-01 aceito no alvo](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2) via cliente Android/URI própria; não prova fluxo TV limitado ou acesso recorrente |
 | R-003 | Alta | Seleção máxima de 2.000 itens por sessão; acervo enorme | SPK-04, múltiplas seleções e limites explicitados |
 | R-004 | Alta | API não lista álbuns completos e membership | Modelo de coleções locais, validação com amostras |
 | R-005 | Alta | Dificuldade de media autenticada no WebView | Prototipar bridge/stream local seguro; sem URL/token no JS |
@@ -473,7 +481,11 @@ Ferramentas locais ficam em `tools/` e documentação em `docs/`.
 | R-010 | Média | `FLAG_KEEP_SCREEN_ON` pode manter TV acordada mesmo sem espectador | Configuração de timeout manual e respeito a visibilidade |
 | R-011 | Média | Políticas Google para cache/retenção após sessão | Revisar documentação e termos antes de persistir qualquer byte |
 | R-012 | Média | OAuth em modo teste/reautorização frequente | Testar ciclo de refresh e modo de publicação apropriado |
-| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação G1 e alternativa Ambient condicionada a acesso](04-viabilidade-google-fotos.md#52-g1--tv-gallery-e-acesso-à-ambient-api); sem liberação de dados reais |
+| R-013 | Alta | Enquadramento da apresentação do Memora nos usos permitidos pelas políticas Photos | Avaliar §10 antes do ensaio real; dúvidas impeditivas exigem esclarecimento, [avaliação de enquadramento G1](04-viabilidade-google-fotos.md#51-g1--enquadramento-e-arquitetura-candidata) e [condições de mídia após G2](04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem liberação de dados reais |
+
+Risco residual do ensaio SPK-01: código OAuth temporário observado em logs do
+sistema Fire OS. Tratamento e alcance da aceitação ficam exclusivamente na
+[§10](#10-segurança-e-privacidade); consultar antes de preparar outra entrega.
 
 ### Perguntas de produto ainda abertas (não bloqueiam redigir este PRD)
 

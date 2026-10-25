@@ -500,7 +500,7 @@ Hardware: diagnóstico desta retomada retornou parcial, somente foreground
 indisponível em repouso; identidade/conectividade autorizadas. Instalação `-r`
 concluiu e a abertura da tela foi confirmada pelo proprietário após despertar a
 TV. Não houve limpeza de preferências, instalação de outro pacote ou mudança
-global. O resultado operacional posterior está na [evidência positiva](#61-evidência-positiva-no-fire-tv); G3 não está liberada.
+global. O resultado operacional posterior está na [evidência positiva](#61-evidência-positiva-no-fire-tv) e as condições para a próxima etapa ficam no [aceite](#62-aceite-operacional-da-g2).
 
 
 ### 6.1 Evidência positiva no Fire TV
@@ -524,6 +524,68 @@ Fire TV com cliente Android e URI própria, sem backend. Não foi necessário
 selecionar mídia nem usar cliente Desktop/TV limitado ou Ambient.
 
 Isso não comprova persistência/refresh, expiração real, acesso recorrente, álbuns,
-vídeos ou conformidade do slideshow. G2 continua em validação até os negativos no
-hardware e a revisão de privacidade exigidos na issue. A rejeição anterior não
-substitui um ensaio controlado de cancelamento/negação. G3 permanece não liberada.
+vídeos ou conformidade do slideshow. O [aceite posterior](#62-aceite-operacional-da-g2) acrescenta negativos controlados
+e revisão de privacidade. A rejeição anterior não foi contada como ensaio
+controlado de cancelamento/negação.
+
+
+### 6.2 Aceite operacional da G2
+
+Conclusão de SPK-01 / [#43](https://github.com/RogerVFbr/memora/issues/43) em
+2026-10-25, sobre código integrado no [PR #54](https://github.com/RogerVFbr/memora/pull/54).
+O diagnóstico `firestick-check` da rodada retornou `ok`. Nenhuma configuração
+global foi alterada, nenhum pacote alheio instalado e nenhuma mídia selecionada.
+
+| Caso no Fire TV | Método e resultado observado |
+|---|---|
+| Autorização positiva | Prova original da §6.1 e nova tentativa após os negativos: retorno ao app, troca PKCE, sessão vazia criada/removida e mensagem de sucesso confirmada por leitura UI. |
+| Negativa real Google | Nova tentativa, conta de teste já autenticada e botão **Deny** na página Google. Retorno nativo: **Consentimento negado. Nenhuma sessão criada.** Não é callback mock. |
+| Cancelamento no app | Iniciar tentativa, voltar à Activity sem callback e selecionar **Cancelar tentativa**. UI confirmou cancelamento; callback sintético posterior rejeitado. |
+| Repetição de retorno inválido | Reenvio do callback sintético após cancelamento rejeitado novamente. Não foi reutilizado nem publicado código OAuth real. |
+| Estado errado em tentativa ativa | Após iniciar e voltar à Activity, URI do cliente com estado/código deliberadamente sintéticos rejeitada. Verifica associação local, sem pedir token Google. |
+| Processo perdido | Iniciar tentativa, `am force-stop` somente no Memora Dev e retornar com callback sintético. UI: **Retorno sem tentativa ativa. Inicie novamente.** |
+| Expiração e replay de retorno válido | Cobertos pelos testes unitários existentes. Não foram apresentados como ensaios reais de expiração no hardware; rejeição inicial da §6.1 não prova sua causa. |
+
+Roteiros ADB/UIAutomator de bancada foram locais/temporários; injeções sintéticas
+não foram descritas como falhas reais Google. Capturas de páginas do navegador e
+XML brutos ficaram privados, sem anexos; capturas descartáveis removidas após uso.
+As mensagens do app confirmaram término dos negativos; revisão do código confirmou
+nenhum loop de polling/retry e nenhuma chamada de token nesses ramos.
+
+#### Revisão de privacidade e alcance
+
+Revisados Activity, transação, configuração Gradle e manifestos: nenhuma chamada
+de logging, gravação de token em disco, ponte JS ou QR OAuth. Verifier fica nativo;
+callbacks consumidos/expirados são rejeitados; HTTP não segue redirects, tem
+endpoints fixos e limites de tempo/resposta. JSON/IDs locais não estão no Git;
+client ID público existe no debug privado e está ausente nos recursos release.
+Manifesto release não contém a Activity ou INTERNET; artefatos do cliente local
+não foram publicados. Não afirmamos proteção contra dispositivo comprometido.
+
+Logcat do PID atual foi lido privadamente após nova autorização positiva, sem
+marcadores de access/refresh token ou Bearer com valor. A tentativa de filtrar por
+UID não foi suportada pelo aparelho e não foi contada como verificação. Amostragem
+de logs não é prova universal de ausência; a revisão de código complementa-a.
+
+Na leitura dos logs de ActivityTaskManager filtrados ao ensaio, o sistema registrou
+URI de callback com código e estado temporários. Não havia token/verifier nesses
+registros. O app não controla esse log. O achado foi informado ao desenvolvedor,
+que decidiu ajustar o critério da issue para logs controlados pelo Memora; a
+[decisão e seu alcance ficam no PRD §10](00-PRD.md#10-segurança-e-privacidade).
+Não limpamos logs globais nem tentamos ocultar o resultado. Códigos/verifier/tokens,
+identificadores e linhas brutas não foram publicados.
+
+#### Resultado consolidado
+
+G2 aceita no recorte de autorização: cliente Android/URI própria funciona no Fire
+TV sem backend e permite operação mínima Picker; casos negativos terminam com
+rejeição/cancelamento e sem polling infinito. Fonte integrada, build/sete testes/
+lint e isolamento de release já registrados na §6; esta rodada não mudou código,
+não exigiu novo build e acrescenta revisão documental/links e `git diff --check`.
+Sem serviço contratado, custo de hospedagem não é exigido por este candidato;
+não é medição de custos de uma versão futura.
+
+Próxima etapa técnica é G3 / #44. Antes de obter mídia real, permanecem as
+condições de amostra consentida e esclarecimento de enquadramento/retenção R-013
+já registradas no PRD/G1; esta conclusão de OAuth não as remove. Nenhuma seleção,
+G3, refresh/persistência ou validação de acesso recorrente foi iniciada nesta rodada.
