@@ -1,6 +1,6 @@
 # Plano — viabilidade de acesso ao Google Fotos
 
-> Data: 2026-10-25 · Estado: aprovado para execução; G1 concluída no desenho delimitado; G2 em validação no alvo.
+> Data: 2026-10-25 · Estado: aprovado para execução; G1 e G2 concluídas; próxima etapa técnica G3, sujeita aos pré-requisitos de mídia.
 > Aprovação explícita do desenvolvedor: 2026-10-25; recorte e decomposição G1–G6.
 > Issues G1–G6 publicadas; integração documental pela [issue #41](https://github.com/RogerVFbr/memora/issues/41).
 
@@ -80,15 +80,15 @@ aplicar o AGENTS.md; a aprovação do plano não amplia a autonomia do Memora.
 A preparação documental é atendida pela [issue #41](https://github.com/RogerVFbr/memora/issues/41)
 e não integra o contador das etapas investigativas.
 
-**Situação em 2026-10-25:** 1 de 6 etapas concluídas. G1 com cliente Android,
-consentimento e desenho delimitado preparados. G2 tem autorização positiva no
-alvo sem mídia; faltam negativos controlados e revisão final de privacidade. Enquadramento da apresentação/retencão ainda
-precisa de esclarecimento antes de G3; não é aceite de produto.
+**Situação em 2026-10-25:** 2 de 6 etapas concluídas. G2 aceita no alvo com
+positivos, negativos e revisão de segurança documentados. Próxima etapa técnica
+G3 / #44, sem início nesta rodada e sujeita à amostra consentida e ao
+esclarecimento de enquadramento/retenção antes de acesso a mídia real.
 
 | Etapa | Issue | Estado | PR / commit | Evidência ou pendência |
 |---|---|---|---|---|
 | G1 | [#42](https://github.com/RogerVFbr/memora/issues/42) | Concluída | [PR #49](https://github.com/RogerVFbr/memora/pull/49), [PR #50](https://github.com/RogerVFbr/memora/pull/50), [PR #51](https://github.com/RogerVFbr/memora/pull/51), [PR #52](https://github.com/RogerVFbr/memora/pull/52), [PR #53](https://github.com/RogerVFbr/memora/pull/53) | [Desenho e limites de passagem](../04-viabilidade-google-fotos.md#54-g1--candidato-android-preparado-para-spk-01) |
-| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Em validação | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55) | [Autorização positiva no Fire TV](../04-viabilidade-google-fotos.md#61-evidência-positiva-no-fire-tv); negativos e revisão final pendentes |
+| G2 | [#43](https://github.com/RogerVFbr/memora/issues/43) | Concluída | [PR #54](https://github.com/RogerVFbr/memora/pull/54), [PR #55](https://github.com/RogerVFbr/memora/pull/55) | [Aceite operacional e limites](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2); sem início de G3 |
 | G3 | [#44](https://github.com/RogerVFbr/memora/issues/44) | A fazer | — | Depende do aceite operacional de G2 |
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | A fazer | — | Depende de G3; expirações reais podem atravessar janelas |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | A fazer | — | Depende de G3 e amostra suficiente; executar após G4 |
@@ -116,6 +116,11 @@ Retomar com o [prompt existente](../prompts/implementar-proxima-etapa.md), indic
 este plano quando necessário. Não criar um segundo prompt com status fixos.
 
 ### Histórico
+
+- 2026-10-25 — G2 / #43 concluída: [positivos, negativos e revisão de privacidade](../04-viabilidade-google-fotos.md#62-aceite-operacional-da-g2)
+  comprovados no alvo; risco residual de logs de sistema aceito pelo desenvolvedor
+  somente para SPK-01, conforme PRD §10. 2/6; próxima etapa técnica G3 / #44,
+  com pré-requisitos de mídia pendentes e sem execução nesta rodada.
 
 - 2026-10-25 — G2 / #43: [autorização e sessão vazia confirmadas no alvo](../04-viabilidade-google-fotos.md#61-evidência-positiva-no-fire-tv).
   Aceite parcial registrado; 1/6, G2 em validação, sem seleção de mídia ou avanço G3.
