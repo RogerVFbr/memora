@@ -191,3 +191,40 @@ executa `npm ci`, testes da apresentação e build/testes/lint de release; não
 precisa de servidor Vite. `verify` precisa do SDK/JDK, sem acesso ao keystore ou
 à senha. Configuração de assinatura ausente/inconsistente e destino já existente
 causam falha sem substituir arquivos. Os comandos não publicam nem instalam APKs.
+
+
+## Publicação e obtenção da release
+
+Requer GitHub CLI autenticado. Após gerar a entrega de fonte integrada, o fluxo
+validado da primeira release foi (substitua `<commit-origem>` pelo commit
+registrado no `build-info.json`):
+
+```sh
+git tag -a v0.1.0-alpha.1 <commit-origem> -m "Memora 0.1.0-alpha.1"
+git push origin v0.1.0-alpha.1
+gh release create v0.1.0-alpha.1 builds/0.1.0-alpha.1/* --repo RogerVFbr/memora --verify-tag --draft --prerelease --title "Memora 0.1.0-alpha.1" --notes-file builds/0.1.0-alpha.1/release-notes.md
+gh release download v0.1.0-alpha.1 --repo RogerVFbr/memora --dir .local/release-downloads/0.1.0-alpha.1
+python3 -m tools.android_release verify .local/release-downloads/0.1.0-alpha.1
+```
+
+Tags e diretórios existentes não devem ser recriados. Para obter uma versão já
+publicada, execute somente o download para um diretório novo e a verificação.
+Consulte a [central do plano](docs/plans/01-primeira-versao-instalavel.md#5-central-de-progresso)
+para releases disponíveis e evidências. Ajuste os identificadores para a entrega
+pretendida, preservando os bytes de pré-releases publicadas.
+
+Após `firestick-check` e a consulta ao escopo do AGENTS.md, a primeira instalação
+da identidade de release e sua abertura pelo launcher foram validadas com:
+
+```sh
+adb -s <alvo-adb> install .local/release-downloads/0.1.0-alpha.1/memora-0.1.0-alpha.1.apk
+adb -s <alvo-adb> shell am start -W -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER -n br.com.memora/br.com.memora.MainActivity
+```
+
+Somente depois do aceite de hardware, publique o rascunho como pré-lançamento.
+O arquivo de notas operacionais é local e deve conter apenas resultados
+sanitizados; os quatro anexos permanecem os mesmos:
+
+```sh
+gh release edit v0.1.0-alpha.1 --repo RogerVFbr/memora --draft=false --prerelease --notes-file <notas-operacionais.md>
+```
