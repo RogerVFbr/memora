@@ -104,6 +104,7 @@ ocorrerem; G6 aguarda evidências suficientes.
 
 ### Encerramento desta janela e decisão pendente
 
+Passagem documental consolidada no [PR #65](https://github.com/RogerVFbr/memora/pull/65).
 G5 é a etapa concluída nesta passagem; G4 tem entregas integradas e aceite parcial,
 sem encerramento. O desenvolvedor solicitou registrar os findings/procedimentos
 e retomar em novo contexto, sem iniciar outra etapa agora. Usar o
