@@ -88,7 +88,7 @@ e não integra o contador das etapas investigativas.
 
 **Situação em 2026-10-25:** 4 de 6 etapas concluídas. G3 verificou no alvo a amostra
 completa de 10 fotos e 2 vídeos, entregue pelo PR #57. Evidência privada preservada
-para G4 / #45, com instrumentação integrada e medições dentro da validade.
+para G4 / #45, com expirações OAuth/URL, recuperação e refresh comprovados.
 G5 concluiu investigação de limite, paginação e comparação, sem validar
 transferência no máximo. Próxima ação: retomar medições G4 quando suas fronteiras
 ocorrerem; G6 aguarda evidências suficientes.
@@ -101,6 +101,21 @@ ocorrerem; G6 aguarda evidências suficientes.
 | G4 | [#45](https://github.com/RogerVFbr/memora/issues/45) | Em validação | [PR #58](https://github.com/RogerVFbr/memora/pull/58), [PR #63](https://github.com/RogerVFbr/memora/pull/63), [PR #64](https://github.com/RogerVFbr/memora/pull/64) | [OAuth/URLs observados](../04-viabilidade-google-fotos.md#83-observação-das-fronteiras-oauth-e-url); sessão e revogação pendentes; [refresh comprovado](../04-viabilidade-google-fotos.md#84-prova-de-renovação-sem-navegador) |
 | G5 | [#46](https://github.com/RogerVFbr/memora/issues/46) | Concluída | [PR #60](https://github.com/RogerVFbr/memora/pull/60), [PR #61](https://github.com/RogerVFbr/memora/pull/61), [PR #62](https://github.com/RogerVFbr/memora/pull/62) | [Aceite investigativo, limites e limpeza](../04-viabilidade-google-fotos.md#95-comparação-limpeza-e-aceite-investigativo-g5) |
 | G6 | [#47](https://github.com/RogerVFbr/memora/issues/47) | A fazer | — | Decisão com evidências suficientes ou impedimento conclusivo |
+
+### Encerramento desta janela e decisão pendente
+
+Passagem documental consolidada no [PR #65](https://github.com/RogerVFbr/memora/pull/65).
+G5 é a etapa concluída nesta passagem; G4 tem entregas integradas e aceite parcial,
+sem encerramento. O desenvolvedor solicitou registrar os findings/procedimentos
+e retomar em novo contexto, sem iniciar outra etapa agora. Usar o
+[roteiro de retomada seguro](../04-viabilidade-google-fotos.md#10-procedimentos-testados-e-retomada-segura)
+e os resultados nele referenciados; não refazer G3/G5 nem apagar a amostra G4.
+
+Foi proposta uma síntese provisória G6 enquanto a fronteira da sessão e a
+revogação permanecem pendentes. Essa proposta **não recebeu aprovação**; a
+autorização anterior antecipou G5, não dispensou critérios G4 nem liberou G6/MVP.
+Na próxima seleção, preservar essa distinção: retomar G4 conforme suas condições
+ou esclarecer somente a proposta de antecipação G6 antes de executá-la.
 
 ### Manutenção e retomada
 

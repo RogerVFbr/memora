@@ -1,20 +1,20 @@
 # Viabilidade Google Fotos — fontes e evidências
 
-> Data da consulta: 2026-10-25 · Estado: G1 avaliada com impedimentos; ensaios Google não iniciados.
-> Não é comprovação de integração, conformidade aprovada ou aceite do MVP.
+> Registro atualizado em 2026-10-25; estado consolidado na [central do plano](plans/02-viabilidade-google-fotos.md#5-central-de-progresso).
+> Evidências limitadas aos ensaios descritos; não equivalem a conformidade aprovada ou aceite do MVP.
 
 ## 1. Papel e fronteira
 
 O [PRD](00-PRD.md#3-descobertas-e-restrições-verificadas) concentra definições,
 requisitos e riscos. Este registro acrescenta fontes datadas, perguntas de ensaio
-e evidências operacionais futuras. Sequência e progresso ficam no
+e evidências operacionais e procedimentos testados. Sequência e progresso ficam no
 [plano de viabilidade](plans/02-viabilidade-google-fotos.md#5-central-de-progresso),
 aprovado pelo desenvolvedor. Consulte-o antes de iniciar qualquer experimento.
 Não copiar aqui o tracker ou critérios completos das issues.
 
 A [demonstração instalada](plans/01-primeira-versao-instalavel.md#5-central-de-progresso)
 valida sua experiência local. O [host](02-host-android-e-baseline.md#1-host-e-fronteira)
-não contém conector Google; suas permissões e allowlist atuais não autorizam
+release não contém conector Google; os ensaios nativos debug da [§6](#6-ensaio-oauth-nativo-de-desenvolvimento) são separados. Suas permissões e allowlist não autorizam
 simplesmente carregar páginas OAuth ou mídia autenticada no WebView.
 
 ## 2. Consulta de fontes primárias
@@ -629,6 +629,8 @@ ou playback. Resultados positivos/negativos serão acrescentados após execuçã
 
 ### 7.1 Preparação e validação parcial
 
+Registro da preparação; consultar o [aceite posterior](#73-aceite-operacional-da-g3) para o resultado vigente.
+
 Código nativo debug implementado com separação SPK-01/SPK-02, QR local, polling
 somente em foreground e prazo original não renovável. Core HTTP usa endpoints
 fixos, sem redirects de API; tratamento restrito de redirects de mídia está no
@@ -725,9 +727,9 @@ integração de G3 pelo PR #57. Preservar a amostra e as âncoras da
 revogar autorização ou limpar dados antes das observações naturais.
 
 A matriz separa consulta da sessão, acesso direto às URLs iniciais sem relistagem,
-relistagem da mesma sessão e acesso às URLs retornadas. Renovação OAuth será uma
-intervenção distinta, preservando as âncoras anteriores; não demonstra refresh
-automático nem autorização permanente. Reiniciar apenas o processo do Memora
+relistagem da mesma sessão e acesso às URLs retornadas. A renovação por consentimento
+e a [prova posterior de refresh](#84-prova-de-renovação-sem-navegador) são intervenções
+distintas, preservando as âncoras anteriores; nenhuma comprova autorização permanente. Reiniciar apenas o processo do Memora
 deve restaurar evidência sem executar rede automaticamente.
 
 Fontes revalidadas em 2026-10-25: o [guia de mídia Picker](https://developers.google.com/photos/picker/guides/media-items)
@@ -738,6 +740,8 @@ distingue acesso expirado (PERMISSION_DENIED) de sessão ausente/não pertencent
 idade da URL e expireTime. Não alterar relógio nem usar mock como observação.
 
 ### 8.1 Preparação e pendências
+
+Registro da instrumentação inicial; resultados naturais e de refresh nas [§8.3](#83-observação-das-fronteiras-oauth-e-url) e [§8.4](#84-prova-de-renovação-sem-navegador).
 
 Reabertura real com processo novo executada ainda dentro das validades: o app
 restaurou o resumo positivo G3 sem consulta ou download implícitos. O hash do
@@ -750,7 +754,8 @@ quatro operações explícitas, com intenção persistida
 antes de cada requisição e histórico privado de respostas/falhas. Renovação OAuth
 preserva a credencial original, a primeira URL e a sessão. Credencial nova começa
 com associação não comprovada; sucesso na sessão confirma acesso, mas 403/404
-isolado não demonstra que a conta selecionada é a mesma. Não há refresh automático.
+isolado não demonstra que a conta selecionada é a mesma. Naquela versão ainda
+não havia a ação de refresh sem navegador, acrescentada na §8.4.
 
 Medições no alvo, antes das expirações: consulta de sessão HTTP 200; 12/12 URLs
 iniciais acessíveis sem relistagem, com idades entre 460 e 471 segundos, 12 respostas
@@ -778,31 +783,28 @@ resultados constitui ensaio de expiração natural.
 
 Os limites de leitura e a retenção privada continuam no
 [recorte G3](#7-seleção-e-recuperação-diagnóstica-g3), sem reuso de bytes salvos.
-Nenhuma expiração foi observada ainda. Retomar a partir das âncoras privadas e do
-snapshot cifrado, sem substituí-los por nova seleção. A expiração natural da
-sessão ocorrerá em outra data; G4 permanece sem aceite até reunir as evidências
-exigidas pela issue.
+Na preparação acima ainda não havia expiração observada; a §8.3 registra os
+resultados posteriores OAuth/URL. Preservar as âncoras privadas e o snapshot
+cifrado para a fronteira natural da sessão, ainda pendente; G4 permanece sem
+aceite completo até reunir as evidências exigidas pela issue.
 
 ### 8.2 Condição de retomada da matriz temporal
 
-O código não executa em background nem agenda medições. É necessário retomar
-este ensaio quando a fronteira natural tiver passado, preservando o snapshot:
+O código não executa em background nem agenda medições. OAuth/URLs e recuperação
+já foram observados nas [§8.3](#83-observação-das-fronteiras-oauth-e-url) e
+[§8.4](#84-prova-de-renovação-sem-navegador); não é necessário repetir esses ensaios
+para demonstrar que ocorreram. A fronteira real da sessão continua pendente.
 
-1. Após a expiração OAuth original registrada na §7.3, consultar com **Testar OAuth
-   original**; registrar resposta real, sem tratar falha de rede como expiração.
-2. Após 60 minutos da primeira URL, usar OAuth comprovadamente válido e testar
-   **URLs iniciais** antes de relistar. Se necessário, **Renovar OAuth sem nova
-   seleção**, escolher a mesma conta e consultar a sessão para confirmar acesso.
-   Em seguida, relistar/testar URLs atuais. Registrar idade, respostas e esforço.
-3. Após o expireTime real da sessão, renovar OAuth separadamente e repetir consulta,
-   URLs iniciais e listagem. Considerar 403/404 com suas ambiguidades; não apagar
-   ou recriar a seleção para produzir o resultado. Eventual reseleção e revogação
-   devem ser ensaios distintos, posteriores à observação, conforme a issue.
+Ao retomá-la, executar o [procedimento consolidado](#10-procedimentos-testados-e-retomada-segura),
+controlando a validade OAuth antes de interpretar erros da sessão. Depois do
+expireTime, consultar a mesma sessão e registrar tentativa de listagem/acesso.
+URLs iniciais já expiradas não isolam sozinhas a causa da falha após a sessão;
+um 401/403/404 ou timeout não deve ser reclassificado sem os controles aplicáveis.
 
-O resultado antes/depois ainda falta; G4 permanece em validação, issue aberta e
-contador do plano em 3/6. A [sequência revisada aprovada](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem)
-permite G5 durante essa espera, preservando separadamente a amostra G4. Retomar
-as medições G4 quando suas fronteiras ocorrerem.
+Eventual reseleção e revogação são ensaios distintos, posteriores à observação
+natural e conforme a autorização/escopo aplicáveis. Não apagar nem recriar a
+seleção original para produzir o resultado. O estado, contador e a decisão
+pendente sobre G6 ficam somente na [central do plano](plans/02-viabilidade-google-fotos.md#5-central-de-progresso).
 
 ### 8.3 Observação das fronteiras OAuth e URL
 
@@ -843,7 +845,7 @@ de acesso daqueles endereços e recuperação pelos endereços novamente retorna
 pela mesma sessão válida. Não atribuir os 403 a expiração da sessão ou OAuth.
 Não generaliza prazo exato universal, ausência de cache remoto ou acesso após
 expireTime. A fronteira da sessão e revogação continuam pendentes; a renovação
-por refresh token ainda será investigada, sem presumir login manual horário.
+por refresh token foi comprovada posteriormente na §8.4, sem login manual horário.
 
 ### 8.4 Prova de renovação sem navegador
 
@@ -853,7 +855,7 @@ cliente Android. Assim, a prova anterior de renovação por consentimento não
 demonstra que login manual horário é necessário. Primeiro conferir somente a
 presença da credencial no snapshot cifrado; não imprimir seu valor.
 
-A prova prepara uma ação diagnóstica explícita de refresh, sem navegador, nova
+A prova implementou uma ação diagnóstica explícita de refresh, sem navegador, nova
 seleção ou escopo adicional, preservando token original, URLs e sessão. Resposta
 que omite refresh token deve conservar o anterior; rotação retornada deve ser
 registrada, sem reiniciar localmente uma validade antiga. Preservar também
@@ -900,8 +902,9 @@ Iniciada a preparação de [G5 / #46](https://github.com/RogerVFbr/memora/issues
 após G3 aceita, conforme a revisão de sequência aprovada no
 [plano §3](plans/02-viabilidade-google-fotos.md#3-sequência-e-decisões-de-passagem).
 G4 permanece em validação, com sua amostra preservada. O proprietário dispõe de
-álbuns grandes, mas ainda não sabe suas quantidades; isso não comprova origem
-acima de 2.000 itens. Confirmar tamanho da origem e quantidade selecionada separadamente antes do aceite;
+álbuns grandes e inicialmente desconhecia suas quantidades. Os resultados
+posteriores de limite e contagens estão nas [§9.3](#93-limite-observado-na-seleção)
+a [§9.5](#95-comparação-limpeza-e-aceite-investigativo-g5), distinguindo UI e API;
 seguir a [orientação de busca](#92-experiência-real-e-busca-por-álbum) no Picker.
 
 O ensaio é separado: duas seleções A/B, catálogo mínimo cifrado e nenhuma leitura
@@ -910,14 +913,16 @@ nomes de arquivos, valores de datas/câmera e outros metadados pessoais ao proce
 a página; reter IDs para comparação de interseção, tipo e indicadores/inventário
 de campos. Arquivo, chave e AAD próprios não alteram o snapshot G4.
 
-A amostra será escolhida pelo proprietário após apresentar o recorte privado na
-tela. Medir contagens recebidas/únicas, duplicatas internas, interseção entre
+O protocolo previa escolha pelo proprietário após apresentar o recorte privado
+na tela. Suas execuções e o aceite estão na §9.5. Medir contagens recebidas/únicas, duplicatas internas, interseção entre
 seleções, páginas, requisições, bytes JSON e duração; comparar esses resultados
 com a quantidade e o comportamento informados por ele na UI do Google. Sem
 origem acima do limite ou seleção real suficiente, manter o aceite correspondente
 pendente. IDs repetidos não demonstram acesso permanente nem membership de álbum.
 
 ### 9.1 Instrumentação e validação inicial
+
+Registro anterior à seleção; o [resultado consolidado](#95-comparação-limpeza-e-aceite-investigativo-g5) prevalece para estado e limpeza.
 
 Activity, core e armazenamento próprios implementados pelo
 [PR #60](https://github.com/RogerVFbr/memora/pull/60), com limites de 2.000 itens,
@@ -938,8 +943,8 @@ Instalação de atualização aprovada; hash do arquivo cifrado G4 confirmou igu
 bit a bit com a referência anterior. Abertura G5 sem rede mostrou slots A/B
 ausentes. OAuth real G5 retornou para a nova Activity, criou a sessão A e mostrou
 QR nativo. Envelope cifrado separado confirmado, sem marcadores de token/URI
-legíveis; G4 continuou bit a bit igual após essa criação. Seleção pessoal ainda
-não recebida; nenhum aceite operacional.
+legíveis; G4 continuou bit a bit igual após essa criação. Naquele momento a
+seleção pessoal ainda não havia sido recebida; o aceite posterior está na §9.5.
 
 Remover apenas sessões e dados G5 ao fim do ensaio ou a pedido, preservando G4
 até a observação de expiração. DELETE confirmado mantém o catálogo mínimo até
@@ -963,9 +968,9 @@ da busca por álbum nem constitui falha operacional do Picker.
 
 O proprietário confirmou que a busca exibiu o álbum ou fotos dele; ainda não
 separou essas duas apresentações. Confirmou em seguida a opção de selecionar tudo ou marcar o álbum inteiro, sem
-exigir marcação manual de milhares de itens. Correspondência exata,
-quantidade de origem, limite e seleção continuam sem comprovação; inventário de
-campos da API ainda depende da seleção. A busca por título não demonstra que a
+exigir marcação manual de milhares de itens. Correspondência exata não deve ser
+inferida da busca; as contagens, o limite e os campos posteriormente observados
+estão nas §9.3–9.5. A busca por título não demonstra que a
 API devolve membership nem que haverá sincronização de novas fotos.
 
 ### 9.3 Limite observado na seleção
@@ -979,9 +984,8 @@ item dessa seleção bloqueada foi concluído ou recebido pelo app.
 
 Para evitar marcação/desmarcação manual de milhares de itens, orientar desfazer
 a seleção inteira e procurar outro álbum com seleção entre 101 e 2.000 itens.
-Essa amostra positiva terá origem distinta da negativa de 6.244; manter ambas
-as proveniências separadas ao avaliar o aceite. Atravessar as páginas reais e
-comparar uma segunda seleção com sobreposição conhecida continuam pendentes.
+A amostra positiva teve origem distinta da negativa de 6.244; as proveniências
+foram mantidas separadas. Paginação e comparação posteriores constam da §9.5.
 
 ### 9.4 Amostra positiva A
 
@@ -1001,7 +1005,7 @@ descartados. Não apareceu campo de associação a álbum nessa amostra.
 
 A tentativa negativa de 6.244 e o positivo de 500 têm origens distintas e
 complementares. Não houve transferência de 2.000 itens nem truncamento automático
-demonstrado. A seleção B do mesmo álbum de 500 e comparação dos IDs ainda faltam.
+demonstrado. A seleção B e a comparação foram concluídas na §9.5.
 A primeira autorização B foi rejeitada antes da criação, sem causa determinada;
 repetição controlada funcionou e mostrou QR, mantendo A preservada.
 
@@ -1035,3 +1039,145 @@ distintas: não alegar transferência de 2.000/6.244, truncamento automático ou
 benchmark no limite máximo. O caminho sem duplicatas foi real; proteção contra
 duplicata interna e excesso também tem testes locais, não resposta duplicada
 real simulada como observação. G4 continua sem aceite temporal e G6 não foi iniciada.
+
+## 10. Procedimentos testados e retomada segura
+
+Esta seção reúne a reprodução e preservação do ensaio; resultados, números e
+limites continuam nas seções vinculadas abaixo. Não é um segundo tracker.
+A seleção da etapa deve partir da [central](plans/02-viabilidade-google-fotos.md#5-central-de-progresso),
+das issues/comentários e dos PRs atuais, pelo [prompt genérico](prompts/implementar-proxima-etapa.md).
+
+### 10.1 Preparação e material preservado
+
+- Seguir a skill [implement-issue](../.agents/skills/implement-issue/SKILL.md).
+  Antes do aparelho, executar [firestick-check](../.agents/skills/firestick-check/SKILL.md);
+  não presumir conexão, identidade, tela ou autorização de outra janela.
+- Build, instalação de atualização e abertura usam os comandos reais do
+  [README](../README.md#ensaio-oauth-picker-de-desenvolvimento), com JDK/SDK
+  configurados conforme [pré-requisitos Android](../README.md#host-android-local).
+  A última validação de código aprovou 38 testes e lint; não repetir testes de
+  mídia pessoal sem necessidade. Não existe CI/deploy remoto.
+- Cliente Android exportado em `.local/google/oauth-android-dev.json`; alvo ADB
+  na configuração privada indicada pela skill. Não imprimir/endossar a presença
+  de credenciais em conversa, PR ou log. O build com cliente é privado.
+- `.local/google/g4-timing.json` é apoio privado de cronologia, sem substituir
+  o snapshot no aparelho. Ausência de auxiliares locais ou de scripts em `/tmp`
+  não demonstra perda do ensaio; esses scripts não são comandos do projeto.
+- Não desinstalar, limpar dados, excluir sessão, reselecionar ou revogar o grant
+  antes de observar a fronteira original. Atualização `-r` e reinício somente do
+  processo foram testados preservando a evidência. Não restaurar/reiniciar o
+  dispositivo nem alterar seu relógio como substituto da passagem do tempo.
+
+| Material no sandbox nativo | Implementação e interpretação |
+|---|---|
+| `files/picker-probe.enc` | G3/G4 preservado, AES-GCM pelo `ProbeStore`; alias `memora.picker.probe.v1`, AAD `memora-picker-probe-v1` |
+| `files/picker-scale.enc` | G5 pelo `ScaleStore`; alias `memora.picker.scale.v1`, AAD `memora-picker-scale-v1`; apagado após o aceite G5 |
+| Keystore do aplicativo/dispositivo | Necessário para ler os snapshots; copiar o arquivo cifrado sozinho não cria backup portável nem autoriza exportar plaintext |
+
+Os identificadores acima são nomes de arquivo/chave, não material secreto.
+Backup do aplicativo permanece desabilitado. Os limites e a retenção da amostra
+continuam na [§7](#7-seleção-e-recuperação-diagnóstica-g3); nenhum byte de mídia é
+salvo. Não publicar capturas, QR, IDs, hashes de mídia, URLs, tokens ou diagnósticos
+brutos. Logs do sistema e enquadramento do produto mantêm o alcance do [PRD §10](00-PRD.md#10-segurança-e-privacidade).
+
+### 10.2 Reabrir e controlar OAuth sem perder a amostra
+
+1. Abrir `OAuthSpikeActivity` pelo README. **Informações do ensaio** e
+   **Histórico de expiração** são leituras locais, sem rede. Conferir legibilidade,
+   expireTime, primeira URL, última listagem e indicadores de presença do refresh
+   token. Esses horários são os observados/atualizados no snapshot; não assumir
+   que o access token ainda vale apenas porque o resumo anterior mostra 200.
+2. Para testar processo novo, usar o [comando `force-stop` do README](../README.md#instalação-de-desenvolvimento) e reabrir a
+   mesma Activity. O resultado deve restaurar sem HTTP implícito. A prova e seus
+   limites estão nas [§8.1](#81-preparação-e-pendências) e [§8.4](#84-prova-de-renovação-sem-navegador).
+3. **Consultar sessão** usa a credencial ativa; **Testar OAuth original** usa a
+   original preservada. Registrar 401 separadamente de erros de sessão/URL.
+   **Renovar token sem navegador** tenta o refresh guardado explicitamente;
+   depois confirmar acesso com **Consultar sessão**. Essa sequência recuperou
+   acesso após expiração real e após processo novo (§8.4).
+4. Se refresh estiver ausente ou receber `invalid_grant`, registrar essa condição
+   OAuth. Não concluir que a sessão Picker expirou: Testing pode limitar a
+   credencial antes da fronteira da sessão. **Renovar OAuth sem nova seleção**
+   é o caminho separado por navegador/consentimento, se necessário, usando a
+   mesma conta. Não usar SPK-02, **Iniciar autorização Google** (ensaio de sessão
+   vazia) ou limpeza como substitutos da renovação do snapshot preservado.
+5. Autorização no navegador usa PKCE e callback próprio; não compartilhar senha,
+   código, state ou link. Se houver erro/retorno inválido, não assumir sucesso
+   pela aparência da página. Conferir estado nativo e a sessão antes de repetir;
+   resultado remoto incerto e falha de DELETE devem ser preservados honestamente.
+
+### 10.3 Separar URL, sessão e recuperação
+
+- **Testar URLs iniciais** lê os primeiros endereços sem relistar. **Relistar e
+  testar URLs atuais** faz novas chamadas de listagem e leitura delimitada.
+  Não inverter essas ações ao testar perda de acesso aos endereços iniciais.
+- Controlar OAuth válido e GET da mesma sessão; conferir idade e contador de
+  igualdade de URLs. Os antes/depois e controles reais estão na §8.3. Não usar
+  `EXPECTED_EXPIRED`, ID estável, cache local ou um 403 isolado como aceite.
+- Na fronteira da sessão registrada na §7.3, obter OAuth válido independentemente
+  e consultar a sessão original antes de qualquer exclusão/reseleção. Registrar
+  tempos, código, fase, rede e tentativas de listagem/acesso. Um endpoint de
+  controle separado pode ser necessário para distinguir conta/escopo de sessão;
+  não inventar essa evidência nem reutilizar um token recusado como controle.
+- URLs iniciais já recusadas não provam sozinhas expiração da sessão. Preservar
+  os dados negativos e confrontar as respostas com as definições REST citadas
+  na §8. Não prometer que novo OAuth reabre seleção expirada.
+- Revogação e eventual reseleção ficam para ensaios distintos, depois da
+  observação natural e com o alcance autorizado. Revogar grant do mesmo cliente
+  pode afetar as autorizações dos ensaios; não fazê-lo como limpeza incidental.
+
+### 10.4 Seleção, comparação, cancelamento e limpeza testados
+
+- Para G5, QR abre o Picker no celular. Buscar pelo título do álbum; não presumir
+  aba Álbuns. Orientar uma ação por vez e conferir o controle disponível antes
+  de instruir seleção em lote. O percurso real e a correção da orientação estão
+  na §9.2. Seleção acima do limite teve Done desabilitado; não orientar milhares
+  de marcações manuais nem inferir truncamento automático (§9.3).
+- O procedimento positivo foi selecionar um álbum permitido, concluir no celular,
+  acionar **Listar metadados A**, criar B e repetir o mesmo álbum, listar B e
+  **Comparar seleções offline**. A consulta explícita antes da listagem também
+  recupera conclusão tardia, sem reiniciar o prazo de polling. Resultados e
+  métricas com suas proveniências estão nas §9.4–9.5. Não recriar esse ensaio
+  concluído na próxima janela só para obter novamente os mesmos números.
+- No ensaio G4, sair para outra Activity do Memora solicitou interrupção. O bug
+  de continuação após limpeza do interrupt foi corrigido com sinal explícito
+  pré-worker. Conferir o histórico antes de declarar parada; uma leitura em
+  voo pode terminar dentro dos limites. Processo novo restaurou a interrupção
+  registrada (§8.1). Não há promessa de corte instantâneo de socket.
+- Cancelamento de criação deixa a resposta limitada terminar para obter ID e
+  permitir limpeza. Transporte perdido pode deixar resultado remoto incerto;
+  não afirmar que a ausência local ou 404 prova remoção. Não repetir criação
+  cega sobre slot/snapshot incerto. Procedimentos e limites do core foram
+  revisados; nem toda falha simulada em teste foi reproduzida com o serviço real.
+- Em G5, **Remover sessões remotas** confirmou as duas remoções; depois
+  **Apagar evidência local** removeu o arquivo/chave próprios. Conferência de
+  hash e releitura de G4 validaram isolamento (§9.5). G4 não deve ser limpa
+  por essa sequência: seu apagamento fica para o encerramento autorizado do
+  próprio ensaio. Não executar limpeza agora para preparar o novo contexto.
+
+### 10.5 Diagnósticos locais e limites de evidência
+
+- Hash do arquivo cifrado foi comparado imediatamente antes/depois de operações
+  sem alteração esperada, como reabertura ou limpeza de G5. Novas medições G4
+  gravam histórico e mudam legitimamente esse arquivo. A referência privada
+  `.local/google/g4-before-g5.sha256` é histórica; não é o hash esperado para o
+  snapshot após os ensaios OAuth/URL/refresh posteriores. Não publicar os valores.
+- `FLAG_SECURE` protege as telas nativas do ensaio; uma captura PNG dessas telas
+  pode ser recusada. Foi usada leitura de hierarquia UIAutomator em XML temporário
+  no dispositivo, seguida de remoção do temporário, para conferir somente textos
+  sanitizados do Memora. Não imprimir hierarquia bruta do navegador ou de outras
+  telas pessoais; tratar dumps/capturas como material privado descartável.
+- Captura pontual do navegador OAuth também foi usada privadamente. Antes de
+  interpretar imagem, remover o arquivo anterior, conferir sucesso da captura e
+  validar que o arquivo é novo/PNG; uma falha não autoriza olhar imagem antiga
+  como tela atual. Excluir o descartável após diagnóstico. Captura não comprova
+  espelhamento, autorização concluída ou callback aceito.
+- Coordenadas, nomes de conta, endereços ADB e scripts auxiliares desta conversa
+  não são um procedimento estável. Conferir a tela atual e as ações do usuário;
+  orientar uma ação por vez no celular. Respostas nativas e registros de HTTP
+  são evidências distintas da aparência do navegador e do relato do usuário.
+
+Na próxima janela, usar o estado e as decisões pendentes da central; não inferir
+aprovação de G6, MVP, backend ou tolerância à reseleção a partir desta passagem.
+Não existe execução agendada: retomar o agente e verificar o aparelho quando
+for realizar a medição.

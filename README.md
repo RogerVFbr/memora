@@ -304,6 +304,10 @@ seleção ou consentimento. A tela informa ausência/recusa sem retry automátic
 um sucesso ainda deve ser conferido por **Consultar sessão**. Informações locais
 mostram somente a presença do refresh token, nunca seu valor.
 
+Para o ensaio de processo novo, use o `force-stop` da
+[instalação de desenvolvimento](#instalação-de-desenvolvimento) e reabra
+`OAuthSpikeActivity` pelo comando da seção OAuth acima; não limpe dados.
+
 **Histórico de expiração** lê o registro local sem rede. Abrir novamente o app
 não inicia medições. Os [procedimentos e pendências G4](docs/04-viabilidade-google-fotos.md#8-expiração-e-reabertura-g4)
 definem quando medir; não limpe dados, desinstale nem revogue o acesso antes das
